@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Золотая Рулетка - Элитное Казино</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Стили для системы авторизации */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .auth-btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            background: linear-gradient(45deg, #d4af37, #daa520);
+            color: #000;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+        }
+        
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-greeting {
+            font-size: 1rem;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        .user-balance {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        .balance-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .balance-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            background: linear-gradient(45deg, #d4af37, #daa520);
+            color: #000;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .balance-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+        }
+        
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            background: linear-gradient(45deg, #ff3333, #ff6666);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.5);
+        }
+        
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+            border: 1px solid #d4af37;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: #d4af37;
+            transform: scale(1.2);
+        }
+        
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #d4af37;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(45deg, #d4af37, #daa520);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 1rem;
+            color: #ccc;
+        }
+        
+        .form-footer a {
+            color: #d4af37;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            color: #4CAF50;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        /* Остальные стили остаются без изменений */
+        body {
+            background: radial-gradient(circle at center, #0a0a0a, #000);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(120, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 80, 120, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .casino-border {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .casino-border::before, .casino-border::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(45deg, #d4af37, #f0e68c, #d4af37);
+            box-shadow: 0 0 15px #d4af37;
+        }
+
+        .casino-border::before {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+        }
+
+        .casino-border::after {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            animation: fadeIn 1.5s ease;
+            position: relative;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, #d4af37, #f0e68c, #ffd700, #f0e68c, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 4px;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #f0e68c;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            width: 100%;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .roulette-container {
+            flex: 1;
+            min-width: 350px;
+            max-width: 550px;
+            perspective: 1000px;
+            position: relative;
+        }
+
+        .roulette-wheel {
+            width: 100%;
+            aspect-ratio: 1;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear;
+            background: radial-gradient(circle, #2a0a0a, #000);
+            border-radius: 50%;
+            padding: 20px;
+            box-shadow: 
+                0 0 0 10px #8b0000,
+                0 0 0 20px #d4af37,
+                0 0 30px rgba(212, 175, 55, 0.7),
+                inset 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2d2d2d, #000);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.5),
+                inset 0 0 50px rgba(0, 0, 0, 0.9);
+            border: 5px solid #8b4513;
+        }
+
+        .wheel-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #8b4513, #5d2906);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: gold;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px black;
+            z-index: 10;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 3px solid #daa520;
+        }
+
+        .number {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            left: 50%;
+            top: 0;
+            transform-origin: left bottom;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15%;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 3px black;
+            font-size: 1.2rem;
+        }
+
+        .red {
+            background: linear-gradient(to bottom, #ff0000, #8b0000);
+        }
+
+        .black {
+            background: linear-gradient(to bottom, #000000, #333333);
+        }
+
+        .green {
+            background: linear-gradient(to bottom, #008000, #004d00);
+        }
+
+        .pointer {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 80px;
+            background: linear-gradient(to bottom, #d4af37, #daa520, #b8860b);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            z-index: 20;
+            box-shadow: 0 0 15px gold;
+            border-top: 3px solid #ffd700;
+        }
+
+        .pointer::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            height: 20px;
+            background: linear-gradient(to bottom, #ffd700, transparent);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .controls {
+            flex: 1;
+            min-width: 350px;
+            background: 
+                radial-gradient(circle at top left, rgba(212, 175, 55, 0.2), transparent 50%),
+                radial-gradient(circle at bottom right, rgba(139, 0, 0, 0.2), transparent 50%),
+                rgba(20, 20, 30, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.7),
+                0 0 0 2px #d4af37,
+                0 0 20px rgba(212, 175, 55, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            animation: slideIn 1s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .balance-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(40, 0, 0, 0.7));
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transform: translateX(-100%);
+        }
+
+        .balance-container:hover::before {
+            animation: shimmer 1.5s ease;
+        }
+
+        .balance-label {
+            font-size: 1.3rem;
+            color: #f0e68c;
+            font-weight: 600;
+        }
+
+        .balance {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: gold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            display: flex;
+            align-items: center;
+        }
+
+        .balance::before {
+            content: '₽';
+            margin-right: 5px;
+            font-size: 1.8rem;
+        }
+
+        .bet-controls {
+            margin-bottom: 25px;
+        }
+
+        .bet-amount {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #f0e68c;
+            margin-bottom: 10px;
+            padding-left: 10px;
+            border-left: 3px solid #d4af37;
+        }
+
+        .bet-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bet-input {
+            flex: 1;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(212, 175, 55, 0.7);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .bet-input:focus {
+            outline: none;
+            border-color: gold;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+        }
+
+        .quick-bet {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .bet-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #444, #222);
+            color: #ddd;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bet-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .bet-btn:hover {
+            background: linear-gradient(to bottom, #555, #333);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .bet-btn:hover::before {
+            left: 100%;
+        }
+
+        .bet-type {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .bet-type-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ddd;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .type-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .type-btn:hover::before {
+            opacity: 1;
+        }
+
+        .type-btn.active {
+            background: linear-gradient(135deg, #d4af37, #daa520);
+            color: #000;
+            border-color: gold;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .spin-btn {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #8b0000, #b22222, #8b0000);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(139, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        .spin-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .spin-btn:hover {
+            background: linear-gradient(135deg, #a52a2a, #c23333, #a52a2a);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(139, 0, 0, 0.7);
+        }
+
+        .spin-btn:hover::before {
+            left: 100%;
+        }
+
+        .spin-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.5);
+        }
+
+        .spin-btn:disabled {
+            background: linear-gradient(to bottom, #555, #333);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .spin-btn:disabled:hover::before {
+            left: -100%;
+        }
+
+        .result {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            font-size: 1.3rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .win {
+            color: gold;
+            text-shadow: 0 0 10px gold;
+            animation: pulse 1s infinite;
+            background: rgba(0, 50, 0, 0.4);
+            border-color: rgba(0, 255, 0, 0.3);
+        }
+
+        .lose {
+            color: #ff6347;
+            background: rgba(50, 0, 0, 0.4);
+            border-color: rgba(255, 0, 0, 0.3);
+        }
+
+        .history {
+            width: 100%;
+            max-width: 800px;
+            background: 
+                radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 50%),
+                rgba(20, 20, 30, 0.8);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            animation: slideIn 1s ease 0.2s both;
+            backdrop-filter: blur(5px);
+        }
+
+        .history-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #f0e68c;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .history-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+
+        .history-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .history-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 3px black;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .history-item:hover {
+            transform: scale(1.1);
+        }
+
+        /* Стили для загрузочного окна */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0a0a0a, #000);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-content {
+            text-align: center;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.7);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .loading-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, #d4af37, #f0e68c, #ffd700, #f0e68c, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+        }
+
+        .loading-subtitle {
+            font-size: 1.2rem;
+            color: #f0e68c;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .loading-bar-container {
+            width: 100%;
+            height: 10px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #ffd700, #d4af37);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .loading-text {
+            font-size: 1rem;
+            color: #f0e68c;
+        }
+
+        /* Стили для таблицы ставок */
+        .bets-table-container {
+            width: 100%;
+            max-width: 800px;
+            background: 
+                radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 50%),
+                rgba(20, 20, 30, 0.8);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            animation: slideIn 1s ease 0.4s both;
+            backdrop-filter: blur(5px);
+            margin-top: 20px;
+        }
+
+        .bets-table-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #f0e68c;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .bets-table-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+
+        .bets-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bets-table th {
+            background: rgba(212, 175, 55, 0.2);
+            color: #f0e68c;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .bets-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        .bets-table tr:hover td {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #f0e68c;
+        }
+
+        .bet-amount-cell {
+            color: #fff;
+        }
+
+        .bet-type-cell {
+            font-weight: 600;
+        }
+
+        .bet-red {
+            color: #ff4d4d;
+        }
+
+        .bet-black {
+            color: #fff;
+        }
+
+        .bet-green {
+            color: #4dff4d;
+        }
+
+        .result-cell {
+            font-weight: 600;
+        }
+
+        .win-cell {
+            color: #4dff4d;
+        }
+
+        .lose-cell {
+            color: #ff4d4d;
+        }
+
+        .win-amount-cell {
+            color: #4dff4d;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes wheelSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(3600deg); }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .spinning {
+            animation: wheelSpin 5s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+        }
+
+        .chip {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 3px black;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            z-index: 5;
+            transition: all 0.5s;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            padding: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .winning-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .roulette-container, .controls {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .bets-table-container {
+                overflow-x: auto;
+            }
+        }
+
+        .diamond {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #d4af37;
+            transform: rotate(45deg);
+            opacity: 0.7;
+            animation: float 5s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(45deg); }
+            50% { transform: translateY(-20px) rotate(45deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Загрузочное окно -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">ЗОЛОТАЯ РУЛЕТКА</div>
+            <div class="loading-subtitle">Элитное казино с непревзойденной атмосферой</div>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+            <div class="loading-text" id="loadingText">Загрузка...</div>
+        </div>
+    </div>
+
+    <!-- Контейнер для авторизации -->
+    <div class="auth-container">
+        <div id="auth-buttons">
+            <button class="auth-btn" id="login-btn">Войти</button>
+            <button class="auth-btn" id="register-btn">Регистрация</button>
+        </div>
+        <div id="user-panel" class="user-panel" style="display: none;">
+            <div class="user-info">
+                <span class="user-greeting" id="user-greeting">Привет, пользователь!</span>
+                <span class="user-balance">Баланс: <span id="balance-amount">0</span> ₽</span>
+            </div>
+            <div class="balance-actions">
+                <button class="balance-btn" id="deposit-btn">Пополнить</button>
+                <button class="balance-btn" id="withdraw-btn">Вывести</button>
+                <button class="logout-btn" id="logout-btn">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-login">&times;</button>
+            <h2>Вход в аккаунт</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Имя пользователя</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Пароль</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="submit-btn">Войти</button>
+                <div class="error-message" id="login-error"></div>
+                <div class="form-footer">
+                    Нет аккаунта? <a id="show-register">Зарегистрироваться</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-register">&times;</button>
+            <h2>Регистрация аккаунта</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">Имя пользователя</label>
+                    <input type="text" id="register-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Пароль</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Подтвердите пароль</label>
+                    <input type="password" id="confirm-password" required>
+                </div>
+                <button type="submit" class="submit-btn">Зарегистрироваться</button>
+                <div class="error-message" id="register-error"></div>
+                <div class="success-message" id="register-success"></div>
+                <div class="form-footer">
+                    Уже есть аккаунт? <a id="show-login">Войти</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно пополнения баланса -->
+    <div id="deposit-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-deposit">&times;</button>
+            <h2>Пополнение баланса</h2>
+            <form id="deposit-form">
+                <div class="form-group">
+                    <label for="deposit-amount">Сумма пополнения (₽)</label>
+                    <input type="number" id="deposit-amount" min="1" required>
+                </div>
+                <button type="submit" class="submit-btn">Пополнить</button>
+                <div class="success-message" id="deposit-success"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно вывода средств -->
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-withdraw">&times;</button>
+            <h2>Вывод средств</h2>
+            <form id="withdraw-form">
+                <div class="form-group">
+                    <label for="withdraw-amount">Сумма вывода (₽)</label>
+                    <input type="number" id="withdraw-amount" min="1" required>
+                </div>
+                <button type="submit" class="submit-btn">Вывести</button>
+                <div class="error-message" id="withdraw-error"></div>
+                <div class="success-message" id="withdraw-success"></div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="casino-border"></div>
+    
+    <!-- Декоративные элементы -->
+    <div id="diamonds"></div>
+    
+    <div class="container">
+        <header>
+            <h1>ЗОЛОТАЯ РУЛЕТКА</h1>
+            <p class="subtitle">Элитное казино с непревзойденной атмосферой</p>
+        </header>
+        
+        <div class="game-area">
+            <div class="roulette-container">
+                <div class="roulette-wheel">
+                    <div class="wheel" id="wheel">
+                        <div class="wheel-inner">CASINO</div>
+                        <div class="pointer"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="balance-container">
+                    <div class="balance-label">Ваш баланс:</div>
+                    <div class="balance" id="balance">10 000</div>
+                </div>
+                
+                <div class="bet-controls">
+                    <div class="bet-amount">
+                        <div class="section-title">Сумма ставки</div>
+                        <div class="bet-input-container">
+                            <input type="number" class="bet-input" id="betAmount" value="100" min="10" step="10">
+                        </div>
+                        <div class="quick-bet">
+                            <button class="bet-btn" data-bet="100">100</button>
+                            <button class="bet-btn" data-bet="500">500</button>
+                            <button class="bet-btn" data-bet="1000">1 000</button>
+                            <button class="bet-btn" data-bet="5000">5 000</button>
+                        </div>
+                    </div>
+                    
+                    <div class="bet-type">
+                        <div class="section-title">Тип ставки</div>
+                        <div class="bet-type-buttons">
+                            <button class="type-btn active" data-type="red">Красное</button>
+                            <button class="type-btn" data-type="black">Черное</button>
+                            <button class="type-btn" data-type="green">Зеленое (x14)</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="spin-btn" id="spinBtn">КРУТИТЬ РУЛЕТКУ</button>
+                
+                <div class="result" id="result">Сделайте ставку и испытайте удачу!</div>
+            </div>
+        </div>
+        
+        <div class="history">
+            <div class="history-title">История игр</div>
+            <div class="history-items" id="historyItems"></div>
+        </div>
+
+        <!-- Таблица ставок игроков -->
+        <div class="bets-table-container">
+            <div class="bets-table-title">Последние ставки игроков</div>
+            <table class="bets-table">
+                <thead>
+                    <tr>
+                        <th>Игрок</th>
+                        <th>Ставка</th>
+                        <th>Тип</th>
+                        <th>Результат</th>
+                        <th>Выигрыш</th>
+                    </tr>
+                </thead>
+                <tbody id="betsTableBody">
+                    <!-- Данные будут добавляться через JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Игра предназначена только для развлечения. Ответственная игра - наша главная ценность.</p>
+    </footer>
+
+    <div class="winning-animation" id="winningAnimation"></div>
+
+    <script>
+        // Система авторизации
+        function initAuthSystem() {
+            // Элементы DOM
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const depositBtn = document.getElementById('deposit-btn');
+            const withdrawBtn = document.getElementById('withdraw-btn');
+            
+            const loginModal = document.getElementById('login-modal');
+            const registerModal = document.getElementById('register-modal');
+            const depositModal = document.getElementById('deposit-modal');
+            const withdrawModal = document.getElementById('withdraw-modal');
+            
+            const closeLogin = document.getElementById('close-login');
+            const closeRegister = document.getElementById('close-register');
+            const closeDeposit = document.getElementById('close-deposit');
+            const closeWithdraw = document.getElementById('close-withdraw');
+            
+            const showRegister = document.getElementById('show-register');
+            const showLogin = document.getElementById('show-login');
+            
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const depositForm = document.getElementById('deposit-form');
+            const withdrawForm = document.getElementById('withdraw-form');
+            
+            const authButtons = document.getElementById('auth-buttons');
+            const userPanel = document.getElementById('user-panel');
+            const userGreeting = document.getElementById('user-greeting');
+            const balanceAmount = document.getElementById('balance-amount');
+            
+            const loginError = document.getElementById('login-error');
+            const registerError = document.getElementById('register-error');
+            const registerSuccess = document.getElementById('register-success');
+            const depositSuccess = document.getElementById('deposit-success');
+            const withdrawError = document.getElementById('withdraw-error');
+            const withdrawSuccess = document.getElementById('withdraw-success');
+
+            // Проверяем, авторизован ли пользователь при загрузке страницы
+            checkAuthStatus();
+
+            // Обработчики событий для кнопок
+            loginBtn.addEventListener('click', () => openModal(loginModal));
+            registerBtn.addEventListener('click', () => openModal(registerModal));
+            logoutBtn.addEventListener('click', logout);
+            depositBtn.addEventListener('click', () => openModal(depositModal));
+            withdrawBtn.addEventListener('click', () => openModal(withdrawModal));
+            
+            closeLogin.addEventListener('click', () => closeModal(loginModal));
+            closeRegister.addEventListener('click', () => closeModal(registerModal));
+            closeDeposit.addEventListener('click', () => closeModal(depositModal));
+            closeWithdraw.addEventListener('click', () => closeModal(withdrawModal));
+            
+            showRegister.addEventListener('click', () => {
+                closeModal(loginModal);
+                openModal(registerModal);
+            });
+            
+            showLogin.addEventListener('click', () => {
+                closeModal(registerModal);
+                openModal(loginModal);
+            });
+            
+            // Обработчики форм
+            loginForm.addEventListener('submit', handleLogin);
+            registerForm.addEventListener('submit', handleRegister);
+            depositForm.addEventListener('submit', handleDeposit);
+            withdrawForm.addEventListener('submit', handleWithdraw);
+            
+            // Функции
+            function openModal(modal) {
+                modal.style.display = 'flex';
+                clearMessages();
+            }
+            
+            function closeModal(modal) {
+                modal.style.display = 'none';
+                clearMessages();
+                // Очищаем поля форм
+                if (modal === loginModal) {
+                    loginForm.reset();
+                } else if (modal === registerModal) {
+                    registerForm.reset();
+                } else if (modal === depositModal) {
+                    depositForm.reset();
+                } else if (modal === withdrawModal) {
+                    withdrawForm.reset();
+                }
+            }
+            
+            function clearMessages() {
+                loginError.style.display = 'none';
+                registerError.style.display = 'none';
+                registerSuccess.style.display = 'none';
+                depositSuccess.style.display = 'none';
+                withdrawError.style.display = 'none';
+                withdrawSuccess.style.display = 'none';
+            }
+            
+            function checkAuthStatus() {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    // Пользователь авторизован
+                    const user = JSON.parse(currentUser);
+                    authButtons.style.display = 'none';
+                    userPanel.style.display = 'flex';
+                    userGreeting.textContent = `Привет, ${user.username}!`;
+                    balanceAmount.textContent = user.balance || 0;
+                    
+                    // Обновляем баланс в игре
+                    updateGameBalance(user.balance || 0);
+                } else {
+                    // Пользователь не авторизован
+                    authButtons.style.display = 'flex';
+                    userPanel.style.display = 'none';
+                    updateGameBalance(0);
+                }
+            }
+            
+            function updateUserBalance(newBalance) {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) {
+                    currentUser.balance = newBalance;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Обновляем баланс в массиве всех пользователей
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const userIndex = users.findIndex(u => u.username === currentUser.username);
+                    if (userIndex !== -1) {
+                        users[userIndex].balance = newBalance;
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    
+                    // Обновляем отображение баланса
+                    balanceAmount.textContent = newBalance;
+                    updateGameBalance(newBalance);
+                }
+            }
+            
+            function updateGameBalance(balance) {
+                const gameBalance = document.getElementById('balance');
+                if (gameBalance) {
+                    gameBalance.textContent = balance.toLocaleString();
+                }
+            }
+            
+            function handleLogin(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                
+                // Получаем всех пользователей из localStorage
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                // Ищем пользователя с таким именем и паролем
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    // Успешный вход
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    checkAuthStatus();
+                    closeModal(loginModal);
+                } else {
+                    // Ошибка входа
+                    loginError.textContent = 'Неверное имя пользователя или пароль';
+                    loginError.style.display = 'block';
+                }
+            }
+            
+            function handleRegister(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('register-username').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                // Проверяем, совпадают ли пароли
+                if (password !== confirmPassword) {
+                    registerError.textContent = 'Пароли не совпадают';
+                    registerError.style.display = 'block';
+                    return;
+                }
+                
+                // Проверяем, существует ли уже пользователь с таким именем
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const existingUser = users.find(u => u.username === username);
+                
+                if (existingUser) {
+                    registerError.textContent = 'Пользователь с таким именем уже существует';
+                    registerError.style.display = 'block';
+                    return;
+                }
+                
+                // Добавляем нового пользователя с начальным балансом 10000
+                const newUser = { 
+                    username, 
+                    password, 
+                    balance: 10000  // Начальный баланс
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Показываем сообщение об успехе
+                registerSuccess.textContent = 'Аккаунт успешно создан! Теперь вы можете войти.';
+                registerSuccess.style.display = 'block';
+                
+                // Очищаем форму через 2 секунды и переключаемся на форму входа
+                setTimeout(() => {
+                    registerForm.reset();
+                    closeModal(registerModal);
+                    openModal(loginModal);
+                }, 2000);
+            }
+            
+            function handleDeposit(e) {
+                e.preventDefault();
+                
+                const amount = parseInt(document.getElementById('deposit-amount').value);
+                
+                if (isNaN(amount) || amount <= 0) {
+                    depositSuccess.textContent = 'Введите корректную сумму';
+                    depositSuccess.style.color = '#ff4d4d';
+                    depositSuccess.style.display = 'block';
+                    return;
+                }
+                
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) {
+                    const newBalance = (currentUser.balance || 0) + amount;
+                    updateUserBalance(newBalance);
+                    
+                    depositSuccess.textContent = `Баланс успешно пополнен на ${amount} ₽`;
+                    depositSuccess.style.color = '#4CAF50';
+                    depositSuccess.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeModal(depositModal);
+                    }, 1500);
+                }
+            }
+            
+            function handleWithdraw(e) {
+                e.preventDefault();
+                
+                const amount = parseInt(document.getElementById('withdraw-amount').value);
+                
+                if (isNaN(amount) || amount <= 0) {
+                    withdrawError.textContent = 'Введите корректную сумму';
+                    withdrawError.style.display = 'block';
+                    return;
+                }
+                
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) {
+                    const currentBalance = currentUser.balance || 0;
+                    
+                    if (amount > currentBalance) {
+                        withdrawError.textContent = 'Недостаточно средств на балансе';
+                        withdrawError.style.display = 'block';
+                        return;
+                    }
+                    
+                    const newBalance = currentBalance - amount;
+                    updateUserBalance(newBalance);
+                    
+                    withdrawSuccess.textContent = `Средства в размере ${amount} ₽ успешно выведены`;
+                    withdrawSuccess.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeModal(withdrawModal);
+                    }, 1500);
+                }
+            }
+            
+            function logout() {
+                localStorage.removeItem('currentUser');
+                checkAuthStatus();
+            }
+            
+            // Закрытие модальных окон при клике вне их
+            window.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    closeModal(loginModal);
+                }
+                if (e.target === registerModal) {
+                    closeModal(registerModal);
+                }
+                if (e.target === depositModal) {
+                    closeModal(depositModal);
+                }
+                if (e.target === withdrawModal) {
+                    closeModal(withdrawModal);
+                }
+            });
+        }
+
+        // Инициализация системы авторизации
+        initAuthSystem();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загрузочное окно
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingBar = document.getElementById('loadingBar');
+            const loadingText = document.getElementById('loadingText');
+            
+            // Элементы DOM
+            const balanceElement = document.getElementById('balance');
+            const betAmountInput = document.getElementById('betAmount');
+            const spinBtn = document.getElementById('spinBtn');
+            const resultElement = document.getElementById('result');
+            const historyItems = document.getElementById('historyItems');
+            const wheel = document.getElementById('wheel');
+            const quickBetButtons = document.querySelectorAll('.bet-btn');
+            const typeButtons = document.querySelectorAll('.type-btn');
+            const winningAnimation = document.getElementById('winningAnimation');
+            const diamondsContainer = document.getElementById('diamonds');
+            const betsTableBody = document.getElementById('betsTableBody');
+            
+            // Показать загрузочное окно
+            showLoadingScreen();
+            
+            // Игровые переменные
+            let currentBetType = 'red';
+            let isSpinning = false;
+            let gameHistory = [];
+            let playerBets = [];
+            
+            // Функция получения текущего баланса
+            function getCurrentBalance() {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    return JSON.parse(currentUser).balance || 0;
+                }
+                return 0;
+            }
+
+            // Функция обновления баланса в системе
+            function updateBalanceInSystem(newBalance) {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
+                    user.balance = newBalance;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    // Обновляем баланс в массиве всех пользователей
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const userIndex = users.findIndex(u => u.username === user.username);
+                    if (userIndex !== -1) {
+                        users[userIndex].balance = newBalance;
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    
+                    // Обновляем отображение баланса
+                    const balanceAmount = document.getElementById('balance-amount');
+                    if (balanceAmount) {
+                        balanceAmount.textContent = newBalance;
+                    }
+                    
+                    // Обновляем баланс в игре
+                    updateGameBalance(newBalance);
+                }
+            }
+
+            // Функция обновления баланса в игре
+            function updateGameBalance(balance) {
+                if (balanceElement) {
+                    balanceElement.textContent = balance.toLocaleString();
+                }
+            }
+
+            // Обновление отображения баланса и ставки
+            function updateDisplay() {
+                const currentBalance = getCurrentBalance();
+                updateGameBalance(currentBalance);
+                
+                // Блокировка кнопок, если пользователь не авторизован
+                const isAuthenticated = localStorage.getItem('currentUser');
+                spinBtn.disabled = !isAuthenticated || isSpinning;
+                
+                // Блокировка кнопок ставки, если ставка выходит за пределы баланса
+                if (isAuthenticated) {
+                    const currentBalance = getCurrentBalance();
+                    const betAmount = parseInt(betAmountInput.value) || 0;
+                    spinBtn.disabled = isSpinning || betAmount > currentBalance || betAmount <= 0;
+                }
+            }
+            
+            // Функция загрузочного окна
+            function showLoadingScreen() {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress > 100) progress = 100;
+                    
+                    loadingBar.style.width = `${progress}%`;
+                    loadingText.textContent = `Загрузка... ${Math.round(progress)}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            loadingScreen.style.opacity = '0';
+                            setTimeout(() => {
+                                loadingScreen.style.display = 'none';
+                            }, 500);
+                        }, 500);
+                    }
+                }, 150); // Загрузка займет примерно 3 секунды
+            }
+            
+            // Функция создания декоративных бриллиантов
+            function createDiamonds() {
+                for (let i = 0; i < 15; i++) {
+                    const diamond = document.createElement('div');
+                    diamond.className = 'diamond';
+                    diamond.style.left = `${Math.random() * 100}vw`;
+                    diamond.style.top = `${Math.random() * 100}vh`;
+                    diamond.style.animationDelay = `${Math.random() * 5}s`;
+                    diamond.style.width = `${Math.random() * 10 + 5}px`;
+                    diamond.style.height = diamond.style.width;
+                    diamondsContainer.appendChild(diamond);
+                }
+            }
+            
+            // Функция создания рулетки
+            function createRouletteWheel() {
+                const numbers = [
+                    {value: 0, color: 'green'},
+                    {value: 32, color: 'red'}, {value: 15, color: 'black'}, {value: 19, color: 'red'}, 
+                    {value: 4, color: 'black'}, {value: 21, color: 'red'}, {value: 2, color: 'black'}, 
+                    {value: 25, color: 'red'}, {value: 17, color: 'black'}, {value: 34, color: 'red'}, 
+                    {value: 6, color: 'black'}, {value: 27, color: 'red'}, {value: 13, color: 'black'}, 
+                    {value: 36, color: 'red'}, {value: 11, color: 'black'}, {value: 30, color: 'red'}, 
+                    {value: 8, color: 'black'}, {value: 23, color: 'red'}, {value: 10, color: 'black'}, 
+                    {value: 5, color: 'red'}, {value: 24, color: 'black'}, {value: 16, color: 'red'}, 
+                    {value: 33, color: 'black'}, {value: 1, color: 'red'}, {value: 20, color: 'black'}, 
+                    {value: 14, color: 'red'}, {value: 31, color: 'black'}, {value: 9, color: 'red'}, 
+                    {value: 22, color: 'black'}, {value: 18, color: 'red'}, {value: 29, color: 'black'}, 
+                    {value: 7, color: 'red'}, {value: 28, color: 'black'}, {value: 12, color: 'red'}, 
+                    {value: 35, color: 'black'}, {value: 3, color: 'red'}, {value: 26, color: 'black'}
+                ];
+                
+                numbers.forEach((num, index) => {
+                    const numberElement = document.createElement('div');
+                    numberElement.className = `number ${num.color}`;
+                    numberElement.textContent = num.value;
+                    numberElement.style.transform = `rotate(${index * (360 / numbers.length)}deg)`;
+                    wheel.appendChild(numberElement);
+                });
+            }
+            
+            // Функция вращения рулетки
+            function spinRoulette() {
+                // Проверка авторизации
+                if (!localStorage.getItem('currentUser')) {
+                    document.getElementById('login-modal').style.display = 'flex';
+                    return;
+                }
+
+                if (isSpinning) return;
+                
+                const betAmount = parseInt(betAmountInput.value);
+                
+                // Проверки
+                if (isNaN(betAmount) || betAmount <= 0) {
+                    showResult('Введите корректную сумму ставки!', 'lose');
+                    return;
+                }
+                
+                const currentBalance = getCurrentBalance();
+                if (betAmount > currentBalance) {
+                    showResult('Недостаточно средств для ставки!', 'lose');
+                    return;
+                }
+                
+                // Начинаем вращение
+                isSpinning = true;
+                spinBtn.disabled = true;
+                
+                // Снимаем ставку с баланса
+                const newBalance = currentBalance - betAmount;
+                updateBalanceInSystem(newBalance);
+                
+                // Анимация вращения
+                wheel.classList.add('spinning');
+                
+                // Определяем результат
+                setTimeout(() => {
+                    const winningNumber = Math.floor(Math.random() * 37);
+                    const winningColor = getColorByNumber(winningNumber);
+                    
+                    // Определяем выигрыш
+                    let multiplier = 0;
+                    let winAmount = 0;
+                    
+                    if (currentBetType === 'red' && winningColor === 'red') {
+                        multiplier = 2;
+                        winAmount = betAmount * multiplier;
+                    } else if (currentBetType === 'black' && winningColor === 'black') {
+                        multiplier = 2;
+                        winAmount = betAmount * multiplier;
+                    } else if (currentBetType === 'green' && winningColor === 'green') {
+                        multiplier = 14;
+                        winAmount = betAmount * multiplier;
+                    }
+                    
+                    // Обновляем баланс и показываем результат
+                    if (winAmount > 0) {
+                        const currentBalance = getCurrentBalance();
+                        updateBalanceInSystem(currentBalance + winAmount);
+                        showResult(`ПОБЕДА! Вы выиграли ${winAmount.toLocaleString()} ₽ (x${multiplier})! Выпало: ${winningNumber}`, 'win');
+                        addConfetti();
+                        createMoneyRain();
+                    } else {
+                        showResult(`Вы проиграли ${betAmount.toLocaleString()} ₽. Выпало: ${winningNumber} (${winningColor === 'green' ? 'зеленое' : winningColor === 'red' ? 'красное' : 'черное'})`, 'lose');
+                    }
+                    
+                    // Добавляем в историю
+                    addToHistory(winningNumber, winningColor);
+                    
+                    // Добавляем ставку в таблицу
+                    addPlayerBet("Вы", betAmount, currentBetType, winAmount > 0, winAmount);
+                    
+                    // Завершаем вращение
+                    setTimeout(() => {
+                        wheel.classList.remove('spinning');
+                        isSpinning = false;
+                        updateDisplay();
+                    }, 500);
+                    
+                }, 5000); // Время анимации
+            }
+            
+            // Функция определения цвета по числу
+            function getColorByNumber(number) {
+                if (number === 0) return 'green';
+                
+                const redNumbers = [32, 19, 21, 25, 34, 27, 36, 30, 23, 5, 16, 1, 14, 9, 18, 7, 12, 3];
+                return redNumbers.includes(number) ? 'red' : 'black';
+            }
+            
+            // Функция показа результата
+            function showResult(message, type) {
+                resultElement.textContent = message;
+                resultElement.className = 'result';
+                
+                if (type === 'win') {
+                    resultElement.classList.add('win');
+                } else if (type === 'lose') {
+                    resultElement.classList.add('lose');
+                }
+            }
+            
+            // Функция добавления в историю
+            function addToHistory(number, color) {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${color}`;
+                historyItem.textContent = number;
+                
+                // Ограничиваем историю 12 элементами
+                if (historyItems.children.length >= 12) {
+                    historyItems.removeChild(historyItems.firstChild);
+                }
+                
+                historyItems.appendChild(historyItem);
+                gameHistory.push({number, color});
+            }
+            
+            // Функция создания конфетти при выигрыше
+            function addConfetti() {
+                const confettiCount = 200;
+                const confettiContainer = document.createElement('div');
+                confettiContainer.style.position = 'fixed';
+                confettiContainer.style.top = '0';
+                confettiContainer.style.left = '0';
+                confettiContainer.style.width = '100%';
+                confettiContainer.style.height = '100%';
+                confettiContainer.style.pointerEvents = 'none';
+                confettiContainer.style.zIndex = '1000';
+                
+                document.body.appendChild(confettiContainer);
+                
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'absolute';
+                    confetti.style.width = '15px';
+                    confetti.style.height = '15px';
+                    confetti.style.backgroundColor = getRandomColor();
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.top = '-20px';
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.opacity = Math.random() * 0.5 + 0.5;
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    
+                    confettiContainer.appendChild(confetti);
+                    
+                    // Анимация падения
+                    const animation = confetti.animate([
+                        { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+                        { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                    ], {
+                        duration: Math.random() * 3000 + 2000,
+                        easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+                    });
+                    
+                    animation.onfinish = () => {
+                        confetti.remove();
+                        if (confettiContainer.children.length === 0) {
+                            confettiContainer.remove();
+                        }
+                    };
+                }
+            }
+            
+            // Функция создания дождя из денег при большом выигрыше
+            function createMoneyRain() {
+                const moneyCount = 50;
+                const moneyContainer = document.createElement('div');
+                moneyContainer.style.position = 'fixed';
+                moneyContainer.style.top = '0';
+                moneyContainer.style.left = '0';
+                moneyContainer.style.width = '100%';
+                moneyContainer.style.height = '100%';
+                moneyContainer.style.pointerEvents = 'none';
+                moneyContainer.style.zIndex = '999';
+                
+                document.body.appendChild(moneyContainer);
+                
+                for (let i = 0; i < moneyCount; i++) {
+                    const money = document.createElement('div');
+                    money.innerHTML = '₽';
+                    money.style.position = 'absolute';
+                    money.style.fontSize = `${Math.random() * 20 + 15}px`;
+                    money.style.color = '#d4af37';
+                    money.style.textShadow = '0 0 5px gold';
+                    money.style.top = '-30px';
+                    money.style.left = `${Math.random() * 100}vw`;
+                    money.style.opacity = Math.random() * 0.7 + 0.3;
+                    
+                    moneyContainer.appendChild(money);
+                    
+                    // Анимация падения
+                    const animation = money.animate([
+                        { transform: 'translateY(0) rotate(0deg)', opacity: money.style.opacity },
+                        { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                    ], {
+                        duration: Math.random() * 3000 + 2000,
+                        easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+                    });
+                    
+                    animation.onfinish = () => {
+                        money.remove();
+                        if (moneyContainer.children.length === 0) {
+                            moneyContainer.remove();
+                        }
+                    };
+                }
+            }
+            
+            // Функция получения случайного цвета
+            function getRandomColor() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff69b4'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            // Функции для работы с таблицей ставок
+            function initializeBetsTable() {
+                // Создаем несколько начальных ставок
+                for (let i = 0; i < 5; i++) {
+                    addRandomPlayerBet();
+                }
+                
+                // Обновляем таблицу каждые 3 секунды
+                setInterval(() => {
+                    addRandomPlayerBet();
+                    updateBetsTable();
+                }, 3000);
+            }
+            
+            function addRandomPlayerBet() {
+                const players = [
+                    "Алексей", "Мария", "Дмитрий", "Анна", "Сергей", 
+                    "Елена", "Иван", "Ольга", "Павел", "Наталья"
+                ];
+                const betTypes = ["red", "black", "green"];
+                
+                const player = players[Math.floor(Math.random() * players.length)];
+                const betAmount = Math.floor(Math.random() * 5000) + 100;
+                const betType = betTypes[Math.floor(Math.random() * betTypes.length)];
+                
+                // Случайный результат (70% шанс проигрыша для реалистичности)
+                const isWin = Math.random() > 0.7;
+                let winAmount = 0;
+                
+                if (isWin) {
+                    if (betType === "green") {
+                        winAmount = betAmount * 14;
+                    } else {
+                        winAmount = betAmount * 2;
+                    }
+                }
+                
+                addPlayerBet(player, betAmount, betType, isWin, winAmount);
+            }
+            
+            function addPlayerBet(player, betAmount, betType, isWin, winAmount) {
+                const bet = {
+                    player,
+                    betAmount,
+                    betType,
+                    isWin,
+                    winAmount,
+                    timestamp: new Date()
+                };
+                
+                playerBets.unshift(bet); // Добавляем в начало массива
+                
+                // Ограничиваем количество ставок в таблице
+                if (playerBets.length > 10) {
+                    playerBets.pop();
+                }
+                
+                updateBetsTable();
+            }
+            
+            function updateBetsTable() {
+                betsTableBody.innerHTML = '';
+                
+                playerBets.forEach(bet => {
+                    const row = document.createElement('tr');
+                    
+                    // Игрок
+                    const playerCell = document.createElement('td');
+                    playerCell.className = 'player-name';
+                    playerCell.textContent = bet.player;
+                    
+                    // Сумма ставки
+                    const betAmountCell = document.createElement('td');
+                    betAmountCell.className = 'bet-amount-cell';
+                    betAmountCell.textContent = `${bet.betAmount.toLocaleString()} ₽`;
+                    
+                    // Тип ставки
+                    const betTypeCell = document.createElement('td');
+                    betTypeCell.className = `bet-type-cell bet-${bet.betType}`;
+                    let betTypeText = '';
+                    switch(bet.betType) {
+                        case 'red': betTypeText = 'Красное'; break;
+                        case 'black': betTypeText = 'Черное'; break;
+                        case 'green': betTypeText = 'Зеленое'; break;
+                    }
+                    betTypeCell.textContent = betTypeText;
+                    
+                    // Результат
+                    const resultCell = document.createElement('td');
+                    resultCell.className = `result-cell ${bet.isWin ? 'win-cell' : 'lose-cell'}`;
+                    resultCell.textContent = bet.isWin ? 'Победа' : 'Проигрыш';
+                    
+                    // Выигрыш
+                    const winAmountCell = document.createElement('td');
+                    winAmountCell.className = 'win-amount-cell';
+                    winAmountCell.textContent = bet.isWin ? `${bet.winAmount.toLocaleString()} ₽` : '-';
+                    
+                    // Добавляем ячейки в строку
+                    row.appendChild(playerCell);
+                    row.appendChild(betAmountCell);
+                    row.appendChild(betTypeCell);
+                    row.appendChild(resultCell);
+                    row.appendChild(winAmountCell);
+                    
+                    // Добавляем строку в таблицу
+                    betsTableBody.appendChild(row);
+                });
+            }
+            
+            // Обработчики событий
+            spinBtn.addEventListener('click', spinRoulette);
+            
+            quickBetButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    betAmountInput.value = this.getAttribute('data-bet');
+                    updateDisplay();
+                });
+            });
+            
+            typeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    typeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentBetType = this.getAttribute('data-type');
+                });
+            });
+
+            betAmountInput.addEventListener('input', updateDisplay);
+            
+            // Инициализация
+            createDiamonds();
+            createRouletteWheel();
+            initializeBetsTable();
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>

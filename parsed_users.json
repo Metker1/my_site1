@@ -1,0 +1,185 @@
+{
+  "2025-11-19T13:57:50.515548": {
+    "admin_id": 5710697156,
+    "users_count": 2,
+    "total_balance": 14134,
+    "users": [
+      {
+        "username": "root",
+        "balance": 7067,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T08:19:43.645Z"
+      },
+      {
+        "username": "root",
+        "balance": 7067,
+        "vip_status": "Нет",
+        "registration_date": "Неизвестно"
+      }
+    ]
+  },
+  "2025-11-19T13:58:15.488532": {
+    "admin_id": 5710697156,
+    "users_count": 1,
+    "total_balance": 7067,
+    "users": [
+      {
+        "username": "root",
+        "balance": 7067,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T08:19:43.645Z"
+      }
+    ]
+  },
+  "2025-11-19T13:58:55.638497": {
+    "admin_id": 5710697156,
+    "users_count": 3,
+    "total_balance": 9067,
+    "users": [
+      {
+        "username": "root",
+        "balance": 7067,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T08:19:43.645Z"
+      },
+      {
+        "username": "1234",
+        "balance": 1000,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-19T09:58:41.631Z"
+      },
+      {
+        "username": "1234",
+        "balance": 1000,
+        "vip_status": "Нет",
+        "registration_date": "Неизвестно"
+      }
+    ]
+  },
+  "2025-11-19T13:59:13.314123": {
+    "admin_id": 5710697156,
+    "users_count": 2,
+    "total_balance": 8067,
+    "users": [
+      {
+        "username": "root",
+        "balance": 7067,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T08:19:43.645Z"
+      },
+      {
+        "username": "1234",
+        "balance": 1000,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-19T09:58:41.631Z"
+      }
+    ]
+  },
+  "2025-11-19T14:00:09.488076": {
+    "admin_id": 5710697156,
+    "users_count": 2,
+    "total_balance": 8067,
+    "users": [
+      {
+        "username": "root",
+        "balance": 7067,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T08:19:43.645Z"
+      },
+      {
+        "username": "1234",
+        "balance": 1000,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-19T09:58:41.631Z"
+      }
+    ]
+  },
+  "2025-11-19T14:03:55.786566": {
+    "admin_id": 5710697156,
+    "users_count": 2,
+    "total_balance": 8067,
+    "users": [
+      {
+        "username": "root",
+        "balance": 7067,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T08:19:43.645Z"
+      },
+      {
+        "username": "1234",
+        "balance": 1000,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-19T09:58:41.631Z"
+      }
+    ]
+  },
+  "2025-11-19T14:05:31.204240": {
+    "admin_id": 5710697156,
+    "users_count": 3,
+    "total_balance": 4012,
+    "users": [
+      {
+        "username": "root",
+        "balance": 1512,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T15:11:32.960Z"
+      },
+      {
+        "username": "root1",
+        "balance": 1000,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-19T08:30:51.321Z"
+      },
+      {
+        "username": "root1",
+        "balance": 1500,
+        "vip_status": "Нет",
+        "registration_date": "Неизвестно"
+      }
+    ]
+  },
+  "2025-11-19T14:05:45.123703": {
+    "admin_id": 5710697156,
+    "users_count": 3,
+    "total_balance": 4012,
+    "users": [
+      {
+        "username": "root",
+        "balance": 1512,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T15:11:32.960Z"
+      },
+      {
+        "username": "root1",
+        "balance": 1000,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-19T08:30:51.321Z"
+      },
+      {
+        "username": "root1",
+        "balance": 1500,
+        "vip_status": "Нет",
+        "registration_date": "Неизвестно"
+      }
+    ]
+  },
+  "2025-11-19T14:05:52.573527": {
+    "admin_id": 5710697156,
+    "users_count": 2,
+    "total_balance": 2512,
+    "users": [
+      {
+        "username": "root",
+        "balance": 1512,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-18T15:11:32.960Z"
+      },
+      {
+        "username": "root1",
+        "balance": 1000,
+        "vip_status": "Нет",
+        "registration_date": "2025-11-19T08:30:51.321Z"
+      }
+    ]
+  }
+}

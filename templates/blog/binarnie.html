@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Торговля бинарными опционами - Полная симуляция</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --neon-blue: #00ffff;
+      --neon-pink: #ff00ff;
+      --neon-green: #39ff14;
+      --neon-purple: #bf00ff;
+      --dark-bg: #0a0a16;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: var(--dark-bg);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    
+    /* Прелоадер */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--dark-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    
+    .preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .loader {
+      width: 80px;
+      height: 80px;
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      border-top: 5px solid var(--neon-pink);
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .loader::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 5px solid transparent;
+      border-top: 5px solid var(--neon-blue);
+      border-radius: 50%;
+      animation: spin 2s linear infinite reverse;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .preloader-text {
+      font-size: 1.5rem;
+      text-align: center;
+      margin-top: 20px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 2s infinite alternate;
+    }
+    
+    @keyframes neonPulse {
+      0% { text-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3); }
+      100% { text-shadow: 0 0 15px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3); }
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    @media (max-width: 1000px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .section {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+    
+    h2 {
+      margin-bottom: 20px;
+      color: var(--neon-blue);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .arrow-container {
+      position: relative;
+      height: 300px;
+      margin-bottom: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    
+    .market-arrow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(0deg);
+      font-size: 100px;
+      color: var(--neon-green);
+      text-shadow: 0 0 20px var(--neon-green);
+      transition: transform 0.5s ease, color 0.5s ease;
+      z-index: 2;
+    }
+    
+    .arrow-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-50%);
+    }
+    
+    .price-display {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+    }
+    
+    .price-item {
+      text-align: center;
+    }
+    
+    .price-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    
+    .positive {
+      color: var(--neon-green);
+    }
+    
+    .negative {
+      color: #ff4d4d;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+    
+    button:hover {
+      background: rgba(0, 255, 255, 0.1);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    button.active {
+      background: var(--neon-blue);
+      color: var(--dark-bg);
+      box-shadow: 0 0 15px var(--neon-blue);
+    }
+    
+    .traders-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .traders-table th {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      text-align: left;
+      color: var(--neon-blue);
+    }
+    
+    .traders-table td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .trader-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--neon-pink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .trade-direction {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .up {
+      color: var(--neon-green);
+    }
+    
+    .down {
+      color: #ff4d4d;
+    }
+    
+    .trade-amount {
+      font-weight: bold;
+    }
+    
+    .status {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    
+    .success {
+      background: rgba(57, 255, 20, 0.2);
+      color: var(--neon-green);
+    }
+    
+    .pending {
+      background: rgba(255, 255, 0, 0.2);
+      color: yellow;
+    }
+    
+    .loss {
+      background: rgba(255, 0, 0, 0.2);
+      color: #ff4d4d;
+    }
+    
+    .chart-container {
+      height: 300px;
+      margin-top: 20px;
+      position: relative;
+    }
+    
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    .glow {
+      animation: glow 2s infinite alternate;
+    }
+    
+    @keyframes glow {
+      from { text-shadow: 0 0 10px var(--neon-green); }
+      to { text-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-green); }
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .stat-card {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .stat-up {
+      color: var(--neon-green);
+    }
+    
+    .stat-down {
+      color: #ff4d4d;
+    }
+    
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    /* Стили для торговой панели */
+    .trading-panel {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    
+    .trading-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .trade-option {
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .trade-option:hover {
+      background: rgba(0, 255, 255, 0.1);
+    }
+    
+    .trade-option.active {
+      background: var(--neon-blue);
+      color: var(--dark-bg);
+      box-shadow: 0 0 10px var(--neon-blue);
+    }
+    
+    .amount-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .amount-control input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+    
+    .quick-amounts {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .quick-amount {
+      padding: 8px 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .quick-amount:hover {
+      background: rgba(0, 255, 255, 0.1);
+    }
+    
+    .trade-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .trade-btn {
+      flex: 1;
+      padding: 15px;
+      border-radius: 5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-up {
+      background: linear-gradient(45deg, var(--neon-green), #66ff66);
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+    }
+    
+    .btn-up:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(57, 255, 20, 0.7);
+    }
+    
+    .btn-down {
+      background: linear-gradient(45deg, #ff3333, #ff6666);
+      box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+    }
+    
+    .btn-down:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(255, 51, 51, 0.7);
+    }
+    
+    .user-balance {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    
+    .balance-amount {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--neon-green);
+    }
+    
+    .balance-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .balance-btn {
+      padding: 8px 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .balance-btn:hover {
+      background: rgba(0, 255, 255, 0.1);
+    }
+    
+    .active-trades {
+      margin-top: 20px;
+    }
+    
+    .trade-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .trade-info {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .trade-result {
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    
+    .win {
+      background: rgba(57, 255, 20, 0.2);
+      color: var(--neon-green);
+    }
+    
+    .lose {
+      background: rgba(255, 0, 0, 0.2);
+      color: #ff4d4d;
+    }
+    
+    .countdown {
+      font-weight: bold;
+      color: var(--neon-blue);
+    }
+    
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    
+    .history-table th {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      text-align: left;
+      color: var(--neon-blue);
+    }
+    
+    .history-table td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      border: 2px solid var(--neon-blue);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    }
+    
+    .modal h2 {
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-confirm {
+      background: var(--neon-green);
+      color: var(--dark-bg);
+    }
+    
+    .btn-cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    
+    /* Стили для авторизации */
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 20px;
+    }
+    
+    .auth-btn {
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    .auth-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+    }
+    
+    .user-panel {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .user-greeting {
+      font-size: 1rem;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+    
+    .balance-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .logout-btn {
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      background: linear-gradient(45deg, #ff3333, #ff6666);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+    }
+    
+    .logout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 51, 51, 0.5);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #ccc;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+    }
+    
+    .form-footer {
+      text-align: center;
+      margin-top: 1rem;
+      color: #ccc;
+    }
+    
+    .form-footer a {
+      color: var(--neon-blue);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    .error-message {
+      color: #ff4d4d;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      display: none;
+    }
+    
+    .success-message {
+      color: var(--neon-green);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      display: none;
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .close-btn:hover {
+      color: var(--neon-pink);
+      transform: scale(1.2);
+    }
+    
+    /* Стили для симуляции живых игроков */
+    .live-traders-container {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      width: 280px;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 15px;
+      border: 1px solid var(--neon-green);
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      max-height: 400px;
+      overflow: hidden;
+    }
+    
+    .live-traders-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .live-traders-header h3 {
+      color: var(--neon-green);
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    
+    .live-traders-list {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    
+    .trader-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      animation: traderAppear 0.5s ease;
+    }
+    
+    @keyframes traderAppear {
+      0% {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .trader-user {
+      display: flex;
+      align-items: center;
+    }
+    
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+      margin-right: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+    
+    .user-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .trader-info {
+      text-align: right;
+    }
+    
+    .trader-amount {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    
+    .trader-win {
+      color: var(--neon-green);
+      font-size: 0.8rem;
+    }
+    
+    .trader-lose {
+      color: #ff4d4d;
+      font-size: 0.8rem;
+    }
+    
+    .trader-asset {
+      font-size: 0.7rem;
+      color: #aaa;
+      margin-top: 2px;
+    }
+    
+    /* Анимация для выигрышных трейдеров */
+    @keyframes winPulse {
+      0% { background-color: transparent; }
+      50% { background-color: rgba(57, 255, 20, 0.2); }
+      100% { background-color: transparent; }
+    }
+    
+    .trader-win-animation {
+      animation: winPulse 1s ease;
+    }
+  </style>
+</head>
+<body>
+  <!-- Прелоадер -->
+  <div class="preloader" id="preloader">
+    <div class="loader"></div>
+    <div class="preloader-text">Neon Trading Platform</div>
+  </div>
+
+  <!-- Симуляция живых трейдеров -->
+  <div class="live-traders-container">
+    <div class="live-traders-header">
+      <h3>Живые трейдеры</h3>
+      <div class="online-dot"></div>
+    </div>
+    <div class="live-traders-list" id="live-traders-list">
+      <!-- Трейдеры будут добавляться через JavaScript -->
+    </div>
+  </div>
+
+  <h1><i class="fas fa-chart-line"></i> Торговля бинарными опционами - Полная симуляция</h1>
+  
+  <!-- Контейнер для авторизации -->
+  <div class="auth-container">
+    <div id="auth-buttons">
+      <button class="auth-btn" id="login-btn">Войти</button>
+      <button class="auth-btn" id="register-btn">Регистрация</button>
+    </div>
+    <div id="user-panel" class="user-panel" style="display: none;">
+      <div class="user-info">
+        <span class="user-greeting" id="user-greeting">Привет, пользователь!</span>
+        <span class="balance-amount">Баланс: <span id="balance-amount">0</span> ₽</span>
+      </div>
+      <div class="balance-actions">
+        <button class="balance-btn" id="deposit-btn">Пополнить</button>
+        <button class="balance-btn" id="withdraw-btn">Вывести</button>
+        <button class="logout-btn" id="logout-btn">Выйти</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="section">
+      <h2><i class="fas fa-arrow-trend-up"></i> Индикатор рынка</h2>
+      
+      <div class="arrow-container">
+        <div class="arrow-line"></div>
+        <div class="market-arrow" id="market-arrow">
+          <i class="fas fa-arrow-up"></i>
+        </div>
+      </div>
+      
+      <div class="price-display">
+        <div class="price-item">
+          <div>Текущая цена</div>
+          <div class="price-value" id="current-price">1.2345</div>
+        </div>
+        <div class="price-item">
+          <div>Изменение</div>
+          <div class="price-value positive" id="price-change">+0.34%</div>
+        </div>
+        <div class="price-item">
+          <div>Волатильность</div>
+          <div class="price-value" id="volatility">Высокая</div>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <canvas id="price-chart"></canvas>
+      </div>
+      
+      <div class="controls">
+        <button class="active" id="trend-up">Бычий тренд</button>
+        <button id="trend-down">Медвежий тренд</button>
+        <button id="trend-random">Случайный</button>
+        <button id="trend-volatile">Волатильный</button>
+      </div>
+      
+      <div class="stats">
+        <div class="stat-card">
+          <div>Активных трейдеров</div>
+          <div class="stat-value" id="active-traders">24</div>
+          <div class="stat-up">+5 за час</div>
+        </div>
+        <div class="stat-card">
+          <div>Объем торгов</div>
+          <div class="stat-value">$2.4M</div>
+          <div class="stat-up">+12%</div>
+        </div>
+        <div class="stat-card">
+          <div>Процент успеха</div>
+          <div class="stat-value">68%</div>
+          <div class="stat-down">-2%</div>
+        </div>
+      </div>
+      
+      <div class="trading-panel">
+        <h2><i class="fas fa-trade"></i> Торговая панель</h2>
+        
+        <div class="trading-controls">
+          <div>
+            <h3>Актив</h3>
+            <div class="trade-option active" data-asset="EUR/USD">
+              EUR/USD
+            </div>
+            <div class="trade-option" data-asset="GBP/USD">
+              GBP/USD
+            </div>
+            <div class="trade-option" data-asset="USD/JPY">
+              USD/JPY
+            </div>
+            <div class="trade-option" data-asset="BTC/USD">
+              BTC/USD
+            </div>
+          </div>
+          
+          <div>
+            <h3>Время экспирации</h3>
+            <div class="trade-option active" data-time="1">
+              1 мин
+            </div>
+            <div class="trade-option" data-time="5">
+              5 мин
+            </div>
+            <div class="trade-option" data-time="15">
+              15 мин
+            </div>
+            <div class="trade-option" data-time="60">
+              1 час
+            </div>
+          </div>
+        </div>
+        
+        <div class="amount-control">
+          <label for="trade-amount">Сумма ставки:</label>
+          <input type="number" id="trade-amount" min="1" value="100">
+        </div>
+        
+        <div class="quick-amounts">
+          <div class="quick-amount" data-amount="50">50 ₽</div>
+          <div class="quick-amount" data-amount="100">100 ₽</div>
+          <div class="quick-amount" data-amount="500">500 ₽</div>
+          <div class="quick-amount" data-amount="1000">1000 ₽</div>
+        </div>
+        
+        <div class="trade-buttons">
+          <button class="trade-btn btn-down" id="trade-down">ВНИЗ</button>
+          <button class="trade-btn btn-up" id="trade-up">ВВЕРХ</button>
+        </div>
+      </div>
+      
+      <div class="active-trades">
+        <h3><i class="fas fa-clock"></i> Активные сделки</h3>
+        <div id="active-trades-list">
+          <!-- Активные сделки будут добавляться здесь -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2><i class="fas fa-users"></i> Активные трейдеры</h2>
+      
+      <table class="traders-table">
+        <thead>
+          <tr>
+            <th>Трейдер</th>
+            <th>Направление</th>
+            <th>Сумма</th>
+            <th>Актив</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody id="traders-list">
+          <!-- Трейдеры будут добавлены через JavaScript -->
+        </tbody>
+      </table>
+      
+      <h2 style="margin-top: 30px;"><i class="fas fa-history"></i> История ваших сделок</h2>
+      
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Время</th>
+            <th>Актив</th>
+            <th>Направление</th>
+            <th>Сумма</th>
+            <th>Результат</th>
+          </tr>
+        </thead>
+        <tbody id="trade-history">
+          <!-- История сделок будет добавляться здесь -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Модальное окно подтверждения сделки -->
+  <div class="modal" id="trade-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-trade">&times;</button>
+      <h2><i class="fas fa-hand-holding-usd"></i> Подтверждение сделки</h2>
+      <p id="trade-details">Вы собираетесь открыть сделку...</p>
+      <div class="modal-buttons">
+        <button class="modal-btn btn-cancel" id="cancel-trade">Отмена</button>
+        <button class="modal-btn btn-confirm" id="confirm-trade">Подтвердить</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Модальное окно пополнения баланса -->
+  <div class="modal" id="deposit-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-deposit">&times;</button>
+      <h2><i class="fas fa-wallet"></i> Пополнение баланса</h2>
+      <div class="form-group">
+        <input type="number" id="deposit-amount" min="100" value="1000" placeholder="Сумма пополнения">
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn btn-cancel" id="cancel-deposit">Отмена</button>
+        <button class="modal-btn btn-confirm" id="confirm-deposit">Пополнить</button>
+      </div>
+      <div class="success-message" id="deposit-success"></div>
+    </div>
+  </div>
+
+  <!-- Модальное окно входа -->
+  <div id="login-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-login">&times;</button>
+      <h2>Вход в аккаунт</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-username">Имя пользователя</label>
+          <input type="text" id="login-username" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Пароль</label>
+          <input type="password" id="login-password" required>
+        </div>
+        <button type="submit" class="submit-btn">Войти</button>
+        <div class="error-message" id="login-error"></div>
+        <div class="form-footer">
+          Нет аккаунта? <a id="show-register">Зарегистрироваться</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно регистрации -->
+  <div id="register-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-register">&times;</button>
+      <h2>Регистрация аккаунта</h2>
+      <form id="register-form">
+        <div class="form-group">
+          <label for="register-username">Имя пользователя</label>
+          <input type="text" id="register-username" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Пароль</label>
+          <input type="password" id="register-password" required>
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Подтвердите пароль</label>
+          <input type="password" id="confirm-password" required>
+        </div>
+        <button type="submit" class="submit-btn">Зарегистрироваться</button>
+        <div class="error-message" id="register-error"></div>
+        <div class="success-message" id="register-success"></div>
+        <div class="form-footer">
+          Уже есть аккаунт? <a id="show-login">Войти</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Данные для симуляции
+    const traders = [
+      { name: "Алексей Петров", avatar: "AP", direction: "up", amount: "$500", asset: "EUR/USD", status: "success" },
+      { name: "Мария Иванова", avatar: "МИ", direction: "down", amount: "$350", asset: "GBP/USD", status: "pending" },
+      { name: "Дмитрий Сидоров", avatar: "ДС", direction: "up", amount: "$1200", asset: "USD/JPY", status: "success" },
+      { name: "Ольга Козлова", avatar: "ОК", direction: "down", amount: "$750", asset: "Gold", status: "loss" },
+      { name: "Сергей Новиков", avatar: "СН", direction: "up", amount: "$250", asset: "BTC/USD", status: "pending" },
+      { name: "Елена Воробьева", avatar: "ЕВ", direction: "down", amount: "$600", asset: "Oil", status: "success" },
+      { name: "Иван Кузнецов", avatar: "ИК", direction: "up", amount: "$900", asset: "EUR/USD", status: "pending" },
+      { name: "Анна Соколова", avatar: "АС", direction: "up", amount: "$400", asset: "GBP/USD", status: "success" }
+    ];
+
+    const assets = ["EUR/USD", "GBP/USD", "USD/JPY", "BTC/USD"];
+    const statuses = ["success", "pending", "loss"];
+    
+    // Элементы DOM
+    const marketArrow = document.getElementById('market-arrow');
+    const currentPrice = document.getElementById('current-price');
+    const priceChange = document.getElementById('price-change');
+    const volatility = document.getElementById('volatility');
+    const tradersList = document.getElementById('traders-list');
+    const activeTraders = document.getElementById('active-traders');
+    const userBalance = document.getElementById('user-balance');
+    const tradeAmount = document.getElementById('trade-amount');
+    const activeTradesList = document.getElementById('active-trades-list');
+    const tradeHistory = document.getElementById('trade-history');
+    
+    // Кнопки управления
+    const trendUpBtn = document.getElementById('trend-up');
+    const trendDownBtn = document.getElementById('trend-down');
+    const trendRandomBtn = document.getElementById('trend-random');
+    const trendVolatileBtn = document.getElementById('trend-volatile');
+    
+    // Торговые элементы
+    const tradeOptions = document.querySelectorAll('.trade-option');
+    const quickAmounts = document.querySelectorAll('.quick-amount');
+    const tradeUpBtn = document.getElementById('trade-up');
+    const tradeDownBtn = document.getElementById('trade-down');
+    const depositBtn = document.getElementById('deposit-btn');
+    const withdrawBtn = document.getElementById('withdraw-btn');
+    
+    // Модальные окна
+    const tradeModal = document.getElementById('trade-modal');
+    const depositModal = document.getElementById('deposit-modal');
+    const loginModal = document.getElementById('login-modal');
+    const registerModal = document.getElementById('register-modal');
+    const cancelTrade = document.getElementById('cancel-trade');
+    const confirmTrade = document.getElementById('confirm-trade');
+    const closeTrade = document.getElementById('close-trade');
+    const cancelDeposit = document.getElementById('cancel-deposit');
+    const confirmDeposit = document.getElementById('confirm-deposit');
+    const closeDeposit = document.getElementById('close-deposit');
+    const closeLogin = document.getElementById('close-login');
+    const closeRegister = document.getElementById('close-register');
+    const depositAmount = document.getElementById('deposit-amount');
+    const tradeDetails = document.getElementById('trade-details');
+    
+    // Авторизация
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const showRegister = document.getElementById('show-register');
+    const showLogin = document.getElementById('show-login');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const authButtons = document.getElementById('auth-buttons');
+    const userPanel = document.getElementById('user-panel');
+    const userGreeting = document.getElementById('user-greeting');
+    
+    // Переменные состояния
+    let currentTrend = 'up';
+    let priceValue = 1.2345;
+    let changePercent = 0.34;
+    let tradersCount = 24;
+    let userBalanceValue = 1000;
+    let selectedAsset = 'EUR/USD';
+    let selectedTime = 1;
+    let assetData = {};
+    let activeTrades = [];
+    let tradeHistoryData = [];
+    let updateInterval;
+    let priceChart;
+    
+    // Инициализация данных для активов
+    function initAssetData() {
+      assets.forEach(asset => {
+        const initialData = [];
+        let currentValue;
+        
+        // Устанавливаем разные начальные значения для разных активов
+        switch(asset) {
+          case 'EUR/USD':
+            currentValue = 1.0850;
+            break;
+          case 'GBP/USD':
+            currentValue = 1.2750;
+            break;
+          case 'USD/JPY':
+            currentValue = 149.50;
+            break;
+          case 'BTC/USD':
+            currentValue = 43200;
+            break;
+          default:
+            currentValue = 1.2300;
+        }
+        
+        for (let i = 0; i < 50; i++) {
+          currentValue += (Math.random() - 0.5) * 0.005;
+          initialData.push(currentValue);
+        }
+        
+        assetData[asset] = {
+          price: currentValue,
+          history: initialData,
+          trend: 0.0001,
+          volatility: getVolatility(asset)
+        };
+      });
+    }
+    
+    // Получение волатильности для актива
+    function getVolatility(asset) {
+      switch(asset) {
+        case 'BTC/USD': return 0.02;
+        case 'USD/JPY': return 0.008;
+        default: return 0.002;
+      }
+    }
+    
+    // Инициализация графика
+    const initChart = () => {
+      const ctx = document.getElementById('price-chart').getContext('2d');
+      
+      priceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array(50).fill(''),
+          datasets: [{
+            label: selectedAsset,
+            data: assetData[selectedAsset].history,
+            borderColor: '#00ffff',
+            backgroundColor: 'rgba(0, 255, 255, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              display: false
+            },
+            x: {
+              display: false
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          interaction: {
+            intersect: false
+          }
+        }
+      });
+    };
+    
+    // Функция обновления стрелки рынка
+    const updateMarketArrow = (trend) => {
+      let newAngle;
+      let arrowColor;
+      
+      switch(trend) {
+        case 'up':
+          newAngle = -45;
+          arrowColor = '#39ff14';
+          break;
+        case 'down':
+          newAngle = 135;
+          arrowColor = '#ff4d4d';
+          break;
+        case 'random':
+          newAngle = Math.random() * 180 - 90;
+          arrowColor = newAngle < 0 ? '#39ff14' : '#ff4d4d';
+          break;
+        case 'volatile':
+          // Быстро меняющееся направление
+          newAngle = Math.random() * 360 - 180;
+          arrowColor = '#ff00ff';
+          break;
+      }
+      
+      marketArrow.style.transform = `translate(-50%, -50%) rotate(${newAngle}deg)`;
+      marketArrow.style.color = arrowColor;
+      marketArrow.style.textShadow = `0 0 20px ${arrowColor}`;
+      
+      // Анимация пульсации для волатильного режима
+      if (trend === 'volatile') {
+        marketArrow.classList.add('pulse');
+      } else {
+        marketArrow.classList.remove('pulse');
+      }
+      
+      currentTrend = trend;
+    };
+    
+    // Функция обновления цены
+    const updatePrice = () => {
+      const asset = assetData[selectedAsset];
+      let change;
+      
+      switch(currentTrend) {
+        case 'up':
+          change = (Math.random() * 0.1) + 0.05;
+          break;
+        case 'down':
+          change = -(Math.random() * 0.1) - 0.05;
+          break;
+        case 'random':
+          change = (Math.random() - 0.5) * 0.2;
+          break;
+        case 'volatile':
+          change = (Math.random() - 0.5) * 0.5;
+          break;
+      }
+      
+      asset.price += change / 100 * asset.volatility;
+      changePercent = change;
+      priceValue = asset.price;
+      
+      currentPrice.textContent = priceValue.toFixed(asset === assetData['BTC/USD'] ? 0 : 4);
+      
+      if (changePercent > 0) {
+        priceChange.textContent = `+${changePercent.toFixed(2)}%`;
+        priceChange.className = 'price-value positive';
+      } else {
+        priceChange.textContent = `${changePercent.toFixed(2)}%`;
+        priceChange.className = 'price-value negative';
+      }
+      
+      // Обновление волатильности
+      if (Math.abs(changePercent) > 0.3) {
+        volatility.textContent = 'Высокая';
+        volatility.className = 'price-value negative';
+      } else if (Math.abs(changePercent) > 0.1) {
+        volatility.textContent = 'Средняя';
+        volatility.className = 'price-value';
+      } else {
+        volatility.textContent = 'Низкая';
+        volatility.className = 'price-value positive';
+      }
+      
+      // Обновление графика
+      asset.history.push(asset.price);
+      if (asset.history.length > 50) {
+        asset.history.shift();
+      }
+      
+      priceChart.data.datasets[0].data = asset.history;
+      priceChart.data.datasets[0].label = selectedAsset;
+      priceChart.update('none');
+    };
+    
+    // Функция обновления списка трейдеров
+    const updateTradersList = () => {
+      // Случайным образом обновляем некоторых трейдеров
+      const updatedTraders = [...traders];
+      
+      // Случайно меняем статусы и направления
+      for (let i = 0; i < 2; i++) {
+        const randomIndex = Math.floor(Math.random() * updatedTraders.length);
+        updatedTraders[randomIndex].status = statuses[Math.floor(Math.random() * statuses.length)];
+        updatedTraders[randomIndex].direction = Math.random() > 0.5 ? 'up' : 'down';
+      }
+      
+      // Очищаем список
+      tradersList.innerHTML = '';
+      
+      // Заполняем обновленными данными
+      updatedTraders.forEach(trader => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+          <td>
+            <div class="trader-info">
+              <div class="avatar">${trader.avatar}</div>
+              <div>${trader.name}</div>
+            </div>
+          </td>
+          <td>
+            <div class="trade-direction ${trader.direction}">
+              <i class="fas fa-arrow-${trader.direction === 'up' ? 'up' : 'down'}"></i>
+              ${trader.direction === 'up' ? 'ВВЕРХ' : 'ВНИЗ'}
+            </div>
+          </td>
+          <td class="trade-amount">${trader.amount}</td>
+          <td>${trader.asset}</td>
+          <td><span class="status ${trader.status}">${getStatusText(trader.status)}</span></td>
+        `;
+        
+        tradersList.appendChild(row);
+      });
+      
+      // Обновляем счетчик активных трейдеров
+      tradersCount += Math.floor(Math.random() * 3) - 1;
+      if (tradersCount < 20) tradersCount = 20;
+      if (tradersCount > 30) tradersCount = 30;
+      activeTraders.textContent = tradersCount;
+    };
+    
+    // Вспомогательная функция для получения текста статуса
+    const getStatusText = (status) => {
+      switch(status) {
+        case 'success': return 'Успех';
+        case 'pending': return 'В процессе';
+        case 'loss': return 'Потеря';
+        default: return 'Неизвестно';
+      }
+    };
+    
+    // Функция обновления активных сделок
+    const updateActiveTrades = () => {
+      // Очищаем список
+      activeTradesList.innerHTML = '';
+      
+      // Обновляем каждую активную сделку
+      activeTrades.forEach((trade, index) => {
+        const tradeElement = document.createElement('div');
+        tradeElement.className = 'trade-item';
+        
+        // Вычисляем оставшееся время
+        const timeLeft = Math.max(0, trade.expirationTime - Date.now());
+        const secondsLeft = Math.floor(timeLeft / 1000);
+        
+        tradeElement.innerHTML = `
+          <div class="trade-info">
+            <div><strong>${trade.asset}</strong> - ${trade.direction === 'up' ? 'ВВЕРХ' : 'ВНИЗ'}</div>
+            <div>Сумма: ${trade.amount} ₽</div>
+          </div>
+          <div class="countdown">${secondsLeft}с</div>
+        `;
+        
+        activeTradesList.appendChild(tradeElement);
+        
+        // Если время истекло, завершаем сделку
+        if (timeLeft <= 0) {
+          completeTrade(index);
+        }
+      });
+    };
+    
+    // Функция завершения сделки
+    const completeTrade = (index) => {
+      const trade = activeTrades[index];
+      
+      // Определяем, выиграла ли сделка
+      const entryPrice = trade.entryPrice;
+      const currentPrice = assetData[trade.asset].price;
+      let isWin = false;
+      
+      if (trade.direction === 'up' && currentPrice > entryPrice) {
+        isWin = true;
+      } else if (trade.direction === 'down' && currentPrice < entryPrice) {
+        isWin = true;
+      }
+      
+      // Вычисляем результат
+      const payout = 0.85; // 85% выплата
+      const resultAmount = isWin ? Math.floor(trade.amount * (1 + payout)) : 0;
+      
+      // Обновляем баланс
+      if (isWin) {
+        userBalanceValue += resultAmount;
+        updateUserBalance();
+      }
+      
+      // Добавляем в историю
+      tradeHistoryData.unshift({
+        time: new Date().toLocaleTimeString(),
+        asset: trade.asset,
+        direction: trade.direction,
+        amount: trade.amount,
+        result: isWin ? `+${resultAmount} ₽` : `-${trade.amount} ₽`,
+        resultClass: isWin ? 'win' : 'lose'
+      });
+      
+      // Ограничиваем историю 10 последними сделками
+      if (tradeHistoryData.length > 10) {
+        tradeHistoryData.pop();
+      }
+      
+      // Обновляем отображение истории
+      updateTradeHistory();
+      
+      // Удаляем сделку из активных
+      activeTrades.splice(index, 1);
+    };
+    
+    // Функция обновления истории сделок
+    const updateTradeHistory = () => {
+      // Очищаем таблицу
+      tradeHistory.innerHTML = '';
+      
+      // Заполняем данными
+      tradeHistoryData.forEach(trade => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+          <td>${trade.time}</td>
+          <td>${trade.asset}</td>
+          <td class="trade-direction ${trade.direction}">
+            <i class="fas fa-arrow-${trade.direction === 'up' ? 'up' : 'down'}"></i>
+            ${trade.direction === 'up' ? 'ВВЕРХ' : 'ВНИЗ'}
+          </td>
+          <td>${trade.amount} ₽</td>
+          <td><span class="trade-result ${trade.resultClass}">${trade.result}</span></td>
+        `;
+        
+        tradeHistory.appendChild(row);
+      });
+    };
+    
+    // Функция обновления баланса пользователя
+    const updateUserBalance = () => {
+      const balanceAmount = document.getElementById('balance-amount');
+      balanceAmount.textContent = userBalanceValue;
+      
+      // Сохраняем баланс в localStorage для текущего пользователя
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (currentUser) {
+        currentUser.balance = userBalanceValue;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      }
+    };
+    
+    // Функция размещения сделки
+    const placeTrade = (direction) => {
+      const amount = parseInt(tradeAmount.value);
+      
+      // Проверяем, достаточно ли средств
+      if (amount > userBalanceValue) {
+        alert('Недостаточно средств на балансе!');
+        return;
+      }
+      
+      if (amount <= 0) {
+        alert('Введите корректную сумму!');
+        return;
+      }
+      
+      // Снимаем средства с баланса
+      userBalanceValue -= amount;
+      updateUserBalance();
+      
+      // Создаем сделку
+      const trade = {
+        asset: selectedAsset,
+        direction: direction,
+        amount: amount,
+        entryPrice: assetData[selectedAsset].price,
+        expirationTime: Date.now() + (selectedTime * 60 * 1000) // В миллисекундах
+      };
+      
+      // Добавляем в активные сделки
+      activeTrades.push(trade);
+      
+      // Обновляем отображение активных сделок
+      updateActiveTrades();
+      
+      // Добавляем в таблицу трейдеров
+      const randomName = ["Александр", "Михаил", "Денис", "Владимир", "Артем"][Math.floor(Math.random() * 5)];
+      const randomAvatar = randomName.substring(0, 2).toUpperCase();
+      
+      const newTrader = {
+        name: `${randomName} (Вы)`,
+        avatar: randomAvatar,
+        direction: direction,
+        amount: `${amount} ₽`,
+        asset: selectedAsset,
+        status: "pending"
+      };
+      
+      traders.unshift(newTrader);
+      if (traders.length > 8) traders.pop();
+      
+      updateTradersList();
+    };
+    
+    // Функция запуска симуляции
+    const startSimulation = () => {
+      // Останавливаем предыдущий интервал, если он есть
+      if (updateInterval) clearInterval(updateInterval);
+      
+      // Устанавливаем интервал обновления в зависимости от тренда
+      let intervalTime;
+      switch(currentTrend) {
+        case 'up':
+        case 'down':
+          intervalTime = 2000;
+          break;
+        case 'random':
+          intervalTime = 1500;
+          break;
+        case 'volatile':
+          intervalTime = 800;
+          break;
+      }
+      
+      updateInterval = setInterval(() => {
+        updatePrice();
+        updateTradersList();
+        updateActiveTrades();
+        
+        // Для случайного и волатильного трендов также обновляем стрелку
+        if (currentTrend === 'random' || currentTrend === 'volatile') {
+          updateMarketArrow(currentTrend);
+        }
+      }, intervalTime);
+    };
+    
+    // Симуляция живых трейдеров
+    function initLiveTraders() {
+      const liveTradersList = document.getElementById('live-traders-list');
+      
+      const firstNames = ['Алексей', 'Мария', 'Дмитрий', 'Анна', 'Сергей', 'Ольга', 'Иван', 'Елена', 'Андрей', 'Наталья'];
+      const lastNames = ['Иванов', 'Петрова', 'Сидоров', 'Кузнецова', 'Смирнов', 'Федорова', 'Попов', 'Новикова', 'Васильев', 'Морозова'];
+      const assets = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'BTC/USD'];
+      
+      function generateRandomTrader() {
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        const asset = assets[Math.floor(Math.random() * assets.length)];
+        const amount = Math.floor(Math.random() * 10000) + 1000;
+        const isWin = Math.random() > 0.4;
+        const winAmount = isWin ? Math.floor(amount * (Math.random() * 0.5 + 0.5)) : 0;
+        
+        return {
+          name: `${firstName} ${lastName.charAt(0)}.`,
+          asset: asset,
+          amount: amount,
+          isWin: isWin,
+          winAmount: winAmount
+        };
+      }
+      
+      function addTraderToLiveFeed() {
+        const trader = generateRandomTrader();
+        const traderItem = document.createElement('div');
+        traderItem.className = 'trader-item';
+        
+        const initials = trader.name.split(' ').map(n => n[0]).join('');
+        
+        traderItem.innerHTML = `
+          <div class="trader-user">
+            <div class="user-avatar">${initials}</div>
+            <div class="user-name">${trader.name}</div>
+          </div>
+          <div class="trader-info">
+            <div class="trader-amount">${trader.amount} ₽</div>
+            <div class="${trader.isWin ? 'trader-win' : 'trader-lose'}">
+              ${trader.isWin ? `+${trader.winAmount} ₽` : 'Проигрыш'}
+            </div>
+            <div class="trader-asset">${trader.asset}</div>
+          </div>
+        `;
+        
+        if (trader.isWin) {
+          setTimeout(() => {
+            traderItem.classList.add('trader-win-animation');
+            setTimeout(() => {
+              traderItem.classList.remove('trader-win-animation');
+            }, 1000);
+          }, 100);
+        }
+        
+        liveTradersList.insertBefore(traderItem, liveTradersList.firstChild);
+        
+        if (liveTradersList.children.length > 10) {
+          liveTradersList.removeChild(liveTradersList.lastChild);
+        }
+      }
+      
+      // Заполняем начальными данными
+      for (let i = 0; i < 5; i++) {
+        addTraderToLiveFeed();
+      }
+      
+      // Добавляем новые записи каждые 3-8 секунд
+      setInterval(addTraderToLiveFeed, Math.random() * 5000 + 3000);
+    }
+    
+    // Система авторизации
+    function initAuthSystem() {
+      // Проверяем авторизацию при загрузке
+      checkAuthStatus();
+      
+      // Открытие модальных окон
+      loginBtn.addEventListener('click', () => loginModal.style.display = 'flex');
+      registerBtn.addEventListener('click', () => registerModal.style.display = 'flex');
+      
+      // Закрытие модальных окон
+      closeLogin.addEventListener('click', () => loginModal.style.display = 'none');
+      closeRegister.addEventListener('click', () => registerModal.style.display = 'none');
+      
+      // Переключение между окнами входа и регистрации
+      showRegister.addEventListener('click', () => {
+        loginModal.style.display = 'none';
+        registerModal.style.display = 'flex';
+      });
+      
+      showLogin.addEventListener('click', () => {
+        registerModal.style.display = 'none';
+        loginModal.style.display = 'flex';
+      });
+      
+      // Закрытие модальных окон при клике вне их
+      window.addEventListener('click', (e) => {
+        if (e.target === loginModal) loginModal.style.display = 'none';
+        if (e.target === registerModal) registerModal.style.display = 'none';
+        if (e.target === tradeModal) tradeModal.style.display = 'none';
+        if (e.target === depositModal) depositModal.style.display = 'none';
+      });
+      
+      // Обработка формы входа
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const errorElement = document.getElementById('login-error');
+        
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(u => u.username === username && u.password === password);
+        
+        if (user) {
+          // Сохраняем текущего пользователя
+          localStorage.setItem('currentUser', JSON.stringify({
+            username: user.username,
+            balance: user.balance || 1000
+          }));
+          
+          // Обновляем баланс
+          userBalanceValue = user.balance || 1000;
+          
+          loginModal.style.display = 'none';
+          checkAuthStatus();
+          loginForm.reset();
+          errorElement.style.display = 'none';
+        } else {
+          errorElement.textContent = 'Неверное имя пользователя или пароль';
+          errorElement.style.display = 'block';
+        }
+      });
+      
+      // Обработка формы регистрации
+      registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('register-username').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const errorElement = document.getElementById('register-error');
+        const successElement = document.getElementById('register-success');
+        
+        if (password !== confirmPassword) {
+          errorElement.textContent = 'Пароли не совпадают';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        if (password.length < 4) {
+          errorElement.textContent = 'Пароль должен содержать минимум 4 символа';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        
+        if (users.find(u => u.username === username)) {
+          errorElement.textContent = 'Пользователь с таким именем уже существует';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        // Создаем нового пользователя
+        users.push({
+          username,
+          password,
+          balance: 1000, // Начальный баланс
+          registrationDate: new Date().toISOString()
+        });
+        
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        successElement.textContent = 'Регистрация прошла успешно! Теперь вы можете войти.';
+        successElement.style.display = 'block';
+        errorElement.style.display = 'none';
+        
+        // Очищаем форму
+        registerForm.reset();
+        
+        // Переключаем на окно входа через 2 секунды
+        setTimeout(() => {
+          registerModal.style.display = 'none';
+          loginModal.style.display = 'flex';
+          successElement.style.display = 'none';
+        }, 2000);
+      });
+      
+      // Обработка формы пополнения
+      depositBtn.addEventListener('click', () => {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+          alert('Для пополнения баланса необходимо войти в систему');
+          return;
+        }
+        
+        depositModal.style.display = 'flex';
+      });
+      
+      cancelDeposit.addEventListener('click', () => {
+        depositModal.style.display = 'none';
+      });
+      
+      closeDeposit.addEventListener('click', () => {
+        depositModal.style.display = 'none';
+      });
+      
+      confirmDeposit.addEventListener('click', () => {
+        const amount = parseInt(depositAmount.value);
+        if (amount >= 100) {
+          userBalanceValue += amount;
+          updateUserBalance();
+          
+          const successElement = document.getElementById('deposit-success');
+          successElement.textContent = `Баланс пополнен на ${amount} ₽`;
+          successElement.style.display = 'block';
+          
+          setTimeout(() => {
+            depositModal.style.display = 'none';
+            successElement.style.display = 'none';
+          }, 2000);
+        } else {
+          alert('Минимальная сумма пополнения 100 ₽!');
+        }
+      });
+      
+      // Обработка формы вывода
+      withdrawBtn.addEventListener('click', () => {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+          alert('Для вывода средств необходимо войти в систему');
+          return;
+        }
+        
+        const amount = parseInt(prompt('Введите сумму для вывода:'));
+        if (amount && amount > 0 && amount <= userBalanceValue) {
+          userBalanceValue -= amount;
+          updateUserBalance();
+          alert(`Заявка на вывод ${amount} ₽ принята! Средства поступят в течение 24 часов.`);
+        } else if (amount) {
+          alert('Недостаточно средств на балансе!');
+        }
+      });
+      
+      // Выход из системы
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        userBalanceValue = 1000; // Сбрасываем баланс
+        checkAuthStatus();
+      });
+    }
+    
+    // Функция проверки статуса авторизации
+    function checkAuthStatus() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      
+      if (currentUser) {
+        authButtons.style.display = 'none';
+        userPanel.style.display = 'flex';
+        userGreeting.textContent = `Привет, ${currentUser.username}!`;
+        userBalanceValue = currentUser.balance || 1000;
+        updateUserBalance();
+      } else {
+        authButtons.style.display = 'flex';
+        userPanel.style.display = 'none';
+        userBalanceValue = 1000;
+        updateUserBalance();
+      }
+    }
+    
+    // Обработчики событий для кнопок
+    trendUpBtn.addEventListener('click', () => {
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      trendUpBtn.classList.add('active');
+      updateMarketArrow('up');
+      startSimulation();
+    });
+    
+    trendDownBtn.addEventListener('click', () => {
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      trendDownBtn.classList.add('active');
+      updateMarketArrow('down');
+      startSimulation();
+    });
+    
+    trendRandomBtn.addEventListener('click', () => {
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      trendRandomBtn.classList.add('active');
+      updateMarketArrow('random');
+      startSimulation();
+    });
+    
+    trendVolatileBtn.addEventListener('click', () => {
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      trendVolatileBtn.classList.add('active');
+      updateMarketArrow('volatile');
+      startSimulation();
+    });
+    
+    // Обработчики для торговых опций
+    tradeOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        // Определяем тип опции (актив или время)
+        if (option.dataset.asset) {
+          // Это выбор актива
+          document.querySelectorAll('.trade-option[data-asset]').forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+          selectedAsset = option.dataset.asset;
+          
+          // Обновляем график для выбранного актива
+          priceChart.data.datasets[0].data = assetData[selectedAsset].history;
+          priceChart.data.datasets[0].label = selectedAsset;
+          priceChart.update();
+          
+          // Обновляем отображение цены
+          currentPrice.textContent = assetData[selectedAsset].price.toFixed(selectedAsset === 'BTC/USD' ? 0 : 4);
+        } else if (option.dataset.time) {
+          // Это выбор времени
+          document.querySelectorAll('.trade-option[data-time]').forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+          selectedTime = parseInt(option.dataset.time);
+        }
+      });
+    });
+    
+    // Обработчики для быстрого выбора суммы
+    quickAmounts.forEach(amount => {
+      amount.addEventListener('click', () => {
+        tradeAmount.value = amount.dataset.amount;
+      });
+    });
+    
+    // Обработчики для кнопок торговли
+    tradeUpBtn.addEventListener('click', () => {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('Для торговли необходимо войти в систему');
+        return;
+      }
+      
+      const amount = parseInt(tradeAmount.value);
+      if (amount > userBalanceValue) {
+        alert('Недостаточно средств на балансе!');
+        return;
+      }
+      
+      tradeDetails.textContent = `Вы собираетесь открыть сделку ВВЕРХ по активу ${selectedAsset} на сумму ${amount} ₽ с экспирацией через ${selectedTime} минут.`;
+      tradeModal.style.display = 'flex';
+      
+      // Сохраняем направление для подтверждения
+      tradeUpBtn.dataset.pendingDirection = 'up';
+    });
+    
+    tradeDownBtn.addEventListener('click', () => {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('Для торговли необходимо войти в систему');
+        return;
+      }
+      
+      const amount = parseInt(tradeAmount.value);
+      if (amount > userBalanceValue) {
+        alert('Недостаточно средств на балансе!');
+        return;
+      }
+      
+      tradeDetails.textContent = `Вы собираетесь открыть сделку ВНИЗ по активу ${selectedAsset} на сумму ${amount} ₽ с экспирацией через ${selectedTime} минут.`;
+      tradeModal.style.display = 'flex';
+      
+      // Сохраняем направление для подтверждения
+      tradeDownBtn.dataset.pendingDirection = 'down';
+    });
+    
+    // Обработчики для модальных окон
+    cancelTrade.addEventListener('click', () => {
+      tradeModal.style.display = 'none';
+    });
+    
+    closeTrade.addEventListener('click', () => {
+      tradeModal.style.display = 'none';
+    });
+    
+    confirmTrade.addEventListener('click', () => {
+      tradeModal.style.display = 'none';
+      const direction = tradeUpBtn.dataset.pendingDirection || tradeDownBtn.dataset.pendingDirection;
+      placeTrade(direction);
+    });
+    
+    // Прелоадер
+    function initPreloader() {
+      setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        preloader.classList.add('hidden');
+      }, 3000); // 3 секунды
+    }
+    
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+      initPreloader();
+      initAssetData();
+      initChart();
+      initAuthSystem();
+      initLiveTraders();
+      updateTradersList();
+      updateUserBalance();
+      updateTradeHistory();
+      startSimulation();
+      
+      // Добавляем анимацию плавания для стрелки
+      marketArrow.classList.add('floating');
+    });
+  </script>
+</body>
+</html>

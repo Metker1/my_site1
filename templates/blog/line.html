@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neon Casino - Линия матчей</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --neon-pink: #ff00ff;
+      --neon-blue: #00ffff;
+      --neon-purple: #bf00ff;
+      --neon-green: #39ff14;
+      --dark-bg: #0a0a16;
+      --darker-bg: #050510;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+    
+    /* Стили для прелоадера */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--darker-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    
+    .preloader-content {
+      text-align: center;
+      position: relative;
+      z-index: 100;
+    }
+    
+    .preloader-logo {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .preloader-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      animation: logoRotate 3s linear infinite;
+    }
+    
+    .preloader-circle:nth-child(1) {
+      border-top-color: var(--neon-pink);
+      animation-delay: 0s;
+    }
+    
+    .preloader-circle:nth-child(2) {
+      border-right-color: var(--neon-blue);
+      animation-delay: 0.5s;
+    }
+    
+    .preloader-circle:nth-child(3) {
+      border-bottom-color: var(--neon-green);
+      animation-delay: 1s;
+    }
+    
+    .preloader-circle:nth-child(4) {
+      border-left-color: var(--neon-purple);
+      animation-delay: 1.5s;
+    }
+    
+    .preloader-inner {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.7);
+      animation: innerPulse 1.5s ease-in-out infinite;
+      overflow: hidden;
+    }
+    
+    .preloader-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: rotate(45deg);
+      animation: shine 2s infinite;
+    }
+    
+    .preloader-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 1.5s infinite alternate;
+    }
+    
+    .preloader-subtitle {
+      font-family: 'Exo 2', sans-serif;
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: var(--neon-blue);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .preloader-progress {
+      width: 300px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    .preloader-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      border-radius: 5px;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+    }
+    
+    .preloader-percentage {
+      margin-top: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+    
+    .preloader-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .preloader-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--neon-green);
+      animation: preloaderParticleFloat 5s infinite linear;
+    }
+    
+    @keyframes preloaderParticleFloat {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(100px);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes logoRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes innerPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); }
+      50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 0, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.5); }
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    @keyframes neonPulse {
+      0% { text-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3); }
+      100% { text-shadow: 0 0 15px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3); }
+    }
+    
+    /* Стили для системы авторизации */
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .auth-btn {
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 600;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+    }
+
+    .user-panel {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-greeting {
+      font-size: 1rem;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+
+    .user-balance {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--neon-blue);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .balance-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .balance-btn {
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+    }
+
+    .balance-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+    }
+
+    .logout-btn {
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      background: linear-gradient(45deg, #ff3333, #ff6666);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+    }
+
+    .logout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 51, 51, 0.5);
+    }
+
+    /* Модальные окна */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+      border: 1px solid var(--neon-pink);
+      position: relative;
+      animation: modalAppear 0.4s ease-out;
+    }
+
+    @keyframes modalAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: var(--neon-pink);
+      transform: scale(1.2);
+    }
+
+    .modal h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--neon-blue);
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #ccc;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-family: 'Exo 2', sans-serif;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 1rem;
+      color: #ccc;
+    }
+
+    .form-footer a {
+      color: var(--neon-blue);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: #ff4d4d;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      display: none;
+    }
+
+    .success-message {
+      color: var(--neon-green);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      display: none;
+    }
+
+    /* Эффект пульсации для баланса */
+    @keyframes balancePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .balance-updated {
+      animation: balancePulse 0.5s ease;
+    }
+
+    /* Остальные стили остаются без изменений */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Exo 2', sans-serif;
+      color: white;
+      background: var(--darker-bg);
+      overflow-x: hidden;
+      min-height: 100vh;
+      transition: background 0.5s ease;
+    }
+
+    /* Анимированный фон */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(10, 10, 30, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 10, 30, 0.2) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    .floating-shapes {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--neon-pink);
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+
+    .shape-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--neon-blue);
+      top: 60%;
+      left: 80%;
+      animation-delay: -5s;
+    }
+
+    .shape-3 {
+      width: 250px;
+      height: 250px;
+      background: var(--neon-purple);
+      top: 20%;
+      left: 70%;
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, 30px) scale(1.1); }
+      50% { transform: translate(-15px, 20px) scale(0.9); }
+      75% { transform: translate(10px, -15px) scale(1.05); }
+    }
+
+    .neon-lines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .neon-line {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+      opacity: 0.3;
+      animation: lineMove 10s linear infinite;
+    }
+
+    .neon-line:nth-child(1) {
+      top: 20%;
+      animation-delay: 0s;
+    }
+
+    .neon-line:nth-child(2) {
+      top: 40%;
+      animation-delay: -2s;
+    }
+
+    .neon-line:nth-child(3) {
+      top: 60%;
+      animation-delay: -4s;
+    }
+
+    .neon-line:nth-child(4) {
+      top: 80%;
+      animation-delay: -6s;
+    }
+
+    @keyframes lineMove {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .particles-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--neon-green);
+      animation: particleFloat 15s infinite linear;
+    }
+
+    @keyframes particleFloat {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(100px);
+        opacity: 0;
+      }
+    }
+
+    /* Заголовок с логотипом */
+    header {
+      padding: 1rem 2rem;
+      text-align: center;
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 150px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .neon-logo {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .neon-logo:hover {
+      transform: scale(1.1);
+    }
+
+    .logo-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      animation: logoRotate 10s linear infinite;
+    }
+
+    .logo-circle:nth-child(1) {
+      border-top-color: var(--neon-pink);
+      animation-delay: 0s;
+      animation-duration: 8s;
+    }
+
+    .logo-circle:nth-child(2) {
+      border-right-color: var(--neon-blue);
+      animation-delay: 0.5s;
+      animation-duration: 12s;
+    }
+
+    .logo-circle:nth-child(3) {
+      border-bottom-color: var(--neon-green);
+      animation-delay: 1s;
+      animation-duration: 10s;
+    }
+
+    .logo-circle:nth-child(4) {
+      border-left-color: var(--neon-purple);
+      animation-delay: 1.5s;
+      animation-duration: 15s;
+    }
+
+    .logo-inner {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 0.9rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      animation: innerPulse 3s ease-in-out infinite;
+      overflow: hidden;
+    }
+
+    .header-title {
+      margin: 0;
+      font-size: 2.5rem;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 2s infinite alternate;
+    }
+
+    /* Новая навигация */
+    .main-nav {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 12px;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 5px 15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+
+    .nav-list {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 10px;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      padding: 12px 20px;
+      border-radius: 10px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+
+    .nav-link:hover::before {
+      left: 100%;
+    }
+
+    .nav-link:hover {
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+      border: 1px solid var(--neon-pink);
+      transform: translateY(-2px);
+    }
+
+    .nav-link.active {
+      color: var(--neon-green);
+      background: rgba(57, 255, 20, 0.1);
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+      border: 1px solid var(--neon-green);
+      transform: translateY(-2px);
+    }
+
+    /* Основной контент */
+    main {
+      padding: 3rem 1rem;
+      display: grid;
+      gap: 2.5rem;
+      grid-template-columns: 1fr;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Секция линии матчей */
+    .sports-line-section {
+      margin-bottom: 3rem;
+    }
+
+    .sports-line-section h2 {
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Фильтры спорта */
+    .sport-filters {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sport-filter {
+      padding: 0.8rem 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--neon-blue);
+      border-radius: 10px;
+      color: white;
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sport-filter:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+    }
+
+    .sport-filter.active {
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+    }
+
+    /* Сетка матчей */
+    .matches-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .match-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      overflow: hidden;
+      border: 1px solid transparent;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .match-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .match-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .match-card:hover::before {
+      opacity: 1;
+      animation: borderRotate 3s linear infinite;
+    }
+
+    @keyframes borderRotate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    .match-header {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .match-header h3 {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+    }
+
+    .match-content {
+      padding: 1.5rem;
+    }
+
+    .match-teams {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 40%;
+    }
+
+    .team-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--neon-blue);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 5px;
+      font-size: 1.5rem;
+    }
+
+    .team-name {
+      font-size: 0.9rem;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .vs {
+      font-weight: bold;
+      color: var(--neon-pink);
+      font-size: 1.2rem;
+    }
+
+    .match-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .match-date {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .match-odds {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .odd {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.5rem;
+      border-radius: 5px;
+      text-align: center;
+      flex: 1;
+      margin: 0 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .odd:hover {
+      background: var(--neon-blue);
+      transform: scale(1.05);
+    }
+
+    .odd.active {
+      background: var(--neon-pink);
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+    }
+
+    .odd-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--neon-green);
+    }
+
+    .odd-label {
+      font-size: 0.8rem;
+    }
+
+    .betting-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bet-amount {
+      display: flex;
+      gap: 10px;
+    }
+
+    .bet-amount input {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-family: 'Exo 2', sans-serif;
+    }
+
+    .bet-amount input:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .place-bet-btn {
+      padding: 0.8rem;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .place-bet-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+    }
+
+    .place-bet-btn:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .bet-status {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      min-height: 20px;
+    }
+
+    .bet-waiting {
+      color: var(--neon-blue);
+    }
+
+    .bet-win {
+      color: var(--neon-green);
+      font-weight: bold;
+    }
+
+    .bet-lose {
+      color: #ff4d4d;
+    }
+
+    /* Кнопка возврата */
+    .back-btn-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: none;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+      z-index: 1;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .back-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: all 0.6s ease;
+      z-index: -1;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(255, 0, 255, 0.9);
+    }
+
+    .back-btn:hover::before {
+      left: 100%;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 900px) {
+      .matches-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-title {
+        font-size: 2rem;
+      }
+
+      .nav-list {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .nav-link {
+        font-size: 0.8rem;
+        padding: 10px 15px;
+      }
+
+      .auth-container {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .user-panel {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header-title {
+        font-size: 1.8rem;
+      }
+
+      .sport-filters {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .sport-filter {
+        width: 80%;
+        justify-content: center;
+      }
+
+      .nav-link {
+        font-size: 0.7rem;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Прелоадер -->
+  <div id="preloader">
+    <div class="preloader-particles" id="preloader-particles"></div>
+    <div class="preloader-content">
+      <div class="preloader-logo">
+        <div class="preloader-circle"></div>
+        <div class="preloader-circle"></div>
+        <div class="preloader-circle"></div>
+        <div class="preloader-circle"></div>
+        <div class="preloader-inner">NC</div>
+      </div>
+      <h1 class="preloader-title">NEON CASINO</h1>
+      <p class="preloader-subtitle">Загрузка линии матчей...</p>
+      <div class="preloader-progress">
+        <div class="preloader-progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="preloader-percentage" id="progress-percentage">0%</div>
+    </div>
+  </div>
+
+  <!-- Анимированный фон -->
+  <div class="bg-animation">
+    <div class="bg-grid"></div>
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="neon-lines">
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+    </div>
+    <div class="particles-container" id="particles-container"></div>
+  </div>
+
+  <header>
+    <div class="header-top">
+      <div class="logo-container">
+        <div class="neon-logo" id="neon-logo">
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-inner">NC</div>
+        </div>
+      </div>
+
+      <!-- Контейнер для авторизации -->
+      <div class="auth-container">
+        <div id="auth-buttons">
+          <button class="auth-btn" id="login-btn">Войти</button>
+          <button class="auth-btn" id="register-btn">Регистрация</button>
+        </div>
+        <div id="user-panel" class="user-panel" style="display: none;">
+          <div class="user-info">
+            <span class="user-greeting" id="user-greeting">Привет, пользователь!</span>
+            <span class="user-balance">Баланс: <span id="balance-amount">0</span> ₽</span>
+          </div>
+          <div class="balance-actions">
+            <button class="balance-btn" id="deposit-btn">Пополнить</button>
+            <button class="balance-btn" id="withdraw-btn">Вывести</button>
+            <button class="logout-btn" id="logout-btn">Выйти</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="header-title">Линия матчей</h1>
+
+
+
+  <main>
+    <!-- Фильтры спорта -->
+    <div class="sport-filters">
+      <button class="sport-filter active" data-sport="all">
+        <i class="fas fa-list"></i> Все матчи
+      </button>
+      <button class="sport-filter" data-sport="football">
+        <i class="fas fa-futbol"></i> Футбол
+      </button>
+      <button class="sport-filter" data-sport="basketball">
+        <i class="fas fa-basketball-ball"></i> Баскетбол
+      </button>
+      <button class="sport-filter" data-sport="hockey">
+        <i class="fas fa-hockey-puck"></i> Хоккей
+      </button>
+      <button class="sport-filter" data-sport="tennis">
+        <i class="fas fa-table-tennis"></i> Теннис
+      </button>
+      <button class="sport-filter" data-sport="mma">
+        <i class="fas fa-fist-raised"></i> MMA
+      </button>
+    </div>
+
+    <!-- Секция линии матчей -->
+    <section class="sports-line-section">
+      <h2>Линия матчей</h2>
+      <div class="matches-grid" id="matches-grid">
+        <!-- Матчи будут добавляться через JavaScript -->
+      </div>
+    </section>
+
+    <!-- Кнопка возврата -->
+    <div class="back-btn-container">
+      <a href="/" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Вернуться на главную
+      </a>
+    </div>
+  </main>
+
+  <!-- Модальные окна авторизации -->
+  <!-- Модальное окно входа -->
+  <div id="login-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-login">&times;</button>
+      <h2>Вход в аккаунт</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-username">Имя пользователя</label>
+          <input type="text" id="login-username" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Пароль</label>
+          <input type="password" id="login-password" required>
+        </div>
+        <button type="submit" class="submit-btn">Войти</button>
+        <div class="error-message" id="login-error"></div>
+        <div class="form-footer">
+          Нет аккаунта? <a id="show-register">Зарегистрироваться</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно регистрации -->
+  <div id="register-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-register">&times;</button>
+      <h2>Регистрация аккаунта</h2>
+      <form id="register-form">
+        <div class="form-group">
+          <label for="register-username">Имя пользователя</label>
+          <input type="text" id="register-username" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Пароль</label>
+          <input type="password" id="register-password" required>
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Подтвердите пароль</label>
+          <input type="password" id="confirm-password" required>
+        </div>
+        <button type="submit" class="submit-btn">Зарегистрироваться</button>
+        <div class="error-message" id="register-error"></div>
+        <div class="success-message" id="register-success"></div>
+        <div class="form-footer">
+          Уже есть аккаунт? <a id="show-login">Войти</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно пополнения баланса -->
+  <div id="deposit-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-deposit">&times;</button>
+      <h2>Пополнение баланса</h2>
+      <form id="deposit-form">
+        <div class="form-group">
+          <label for="deposit-amount">Сумма пополнения (₽)</label>
+          <input type="number" id="deposit-amount" min="1" required>
+        </div>
+        <button type="submit" class="submit-btn">Пополнить</button>
+        <div class="success-message" id="deposit-success"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно вывода средств -->
+  <div id="withdraw-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-withdraw">&times;</button>
+      <h2>Вывод средств</h2>
+      <form id="withdraw-form">
+        <div class="form-group">
+          <label for="withdraw-amount">Сумма вывода (₽)</label>
+          <input type="number" id="withdraw-amount" min="1" required>
+        </div>
+        <button type="submit" class="submit-btn">Вывести</button>
+        <div class="error-message" id="withdraw-error"></div>
+        <div class="success-message" id="withdraw-success"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Функция для инициализации прелоадера
+    function initPreloader() {
+      const preloader = document.getElementById('preloader');
+      const progressBar = document.getElementById('progress-bar');
+      const progressPercentage = document.getElementById('progress-percentage');
+      const preloaderParticles = document.getElementById('preloader-particles');
+
+      // Создание частиц для прелоадера
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'preloader-particle';
+
+        const left = Math.random() * 100;
+        const size = Math.random() * 4 + 2;
+        const duration = Math.random() * 5 + 3;
+        const delay = Math.random() * 5;
+
+        particle.style.left = `${left}%`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+
+        const colors = ['var(--neon-pink)', 'var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-green)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.background = randomColor;
+        particle.style.boxShadow = `0 0 10px ${randomColor}`;
+
+        preloaderParticles.appendChild(particle);
+      }
+
+      // Симуляция загрузки
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+
+          // Завершение загрузки
+          setTimeout(() => {
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+              preloader.style.display = 'none';
+            }, 500);
+          }, 300);
+        }
+
+        progressBar.style.width = `${progress}%`;
+        progressPercentage.textContent = `${Math.round(progress)}%`;
+      }, 100); // Обновляем каждые 100мс, всего около 3 секунд
+    }
+
+    // Создание частиц для фона
+    function initParticles() {
+      const container = document.getElementById('particles-container');
+      const particleCount = 50;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+
+        const left = Math.random() * 100;
+        const size = Math.random() * 4 + 2;
+        const duration = Math.random() * 20 + 10;
+        const delay = Math.random() * 10;
+
+        particle.style.left = `${left}%`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+
+        const colors = ['var(--neon-pink)', 'var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-green)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.background = randomColor;
+        particle.style.boxShadow = `0 0 10px ${randomColor}`;
+
+        container.appendChild(particle);
+      }
+    }
+
+    // Система авторизации
+    function initAuthSystem() {
+      const loginBtn = document.getElementById('login-btn');
+      const registerBtn = document.getElementById('register-btn');
+      const logoutBtn = document.getElementById('logout-btn');
+      const depositBtn = document.getElementById('deposit-btn');
+      const withdrawBtn = document.getElementById('withdraw-btn');
+
+      const loginModal = document.getElementById('login-modal');
+      const registerModal = document.getElementById('register-modal');
+      const depositModal = document.getElementById('deposit-modal');
+      const withdrawModal = document.getElementById('withdraw-modal');
+
+      const closeLogin = document.getElementById('close-login');
+      const closeRegister = document.getElementById('close-register');
+      const closeDeposit = document.getElementById('close-deposit');
+      const closeWithdraw = document.getElementById('close-withdraw');
+
+      const showRegister = document.getElementById('show-register');
+      const showLogin = document.getElementById('show-login');
+
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const depositForm = document.getElementById('deposit-form');
+      const withdrawForm = document.getElementById('withdraw-form');
+
+      // Проверяем авторизацию при загрузке
+      checkAuthStatus();
+
+      // Открытие модальных окон
+      loginBtn.addEventListener('click', () => loginModal.style.display = 'flex');
+      registerBtn.addEventListener('click', () => registerModal.style.display = 'flex');
+      depositBtn.addEventListener('click', () => depositModal.style.display = 'flex');
+      withdrawBtn.addEventListener('click', () => withdrawModal.style.display = 'flex');
+
+      // Закрытие модальных окон
+      closeLogin.addEventListener('click', () => loginModal.style.display = 'none');
+      closeRegister.addEventListener('click', () => registerModal.style.display = 'none');
+      closeDeposit.addEventListener('click', () => depositModal.style.display = 'none');
+      closeWithdraw.addEventListener('click', () => withdrawModal.style.display = 'none');
+
+      // Переключение между окнами входа и регистрации
+      showRegister.addEventListener('click', () => {
+        loginModal.style.display = 'none';
+        registerModal.style.display = 'flex';
+      });
+
+      showLogin.addEventListener('click', () => {
+        registerModal.style.display = 'none';
+        loginModal.style.display = 'flex';
+      });
+
+      // Закрытие модальных окон при клике вне их
+      window.addEventListener('click', (e) => {
+        if (e.target === loginModal) loginModal.style.display = 'none';
+        if (e.target === registerModal) registerModal.style.display = 'none';
+        if (e.target === depositModal) depositModal.style.display = 'none';
+        if (e.target === withdrawModal) withdrawModal.style.display = 'none';
+      });
+
+      // Обработка формы входа
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const errorElement = document.getElementById('login-error');
+
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(u => u.username === username && u.password === password);
+
+        if (user) {
+          // Сохраняем текущего пользователя
+          localStorage.setItem('currentUser', JSON.stringify({
+            username: user.username,
+            balance: user.balance || 1000
+          }));
+
+          loginModal.style.display = 'none';
+          checkAuthStatus();
+          loginForm.reset();
+          errorElement.style.display = 'none';
+        } else {
+          errorElement.textContent = 'Неверное имя пользователя или пароль';
+          errorElement.style.display = 'block';
+        }
+      });
+
+      // Обработка формы регистрации
+      registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('register-username').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const errorElement = document.getElementById('register-error');
+        const successElement = document.getElementById('register-success');
+
+        if (password !== confirmPassword) {
+          errorElement.textContent = 'Пароли не совпадают';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+
+        if (password.length < 4) {
+          errorElement.textContent = 'Пароль должен содержать минимум 4 символа';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+
+        if (users.find(u => u.username === username)) {
+          errorElement.textContent = 'Пользователь с таким именем уже существует';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+
+        // Создаем нового пользователя
+        users.push({
+          username,
+          password,
+          balance: 1000, // Начальный баланс
+          registrationDate: new Date().toISOString()
+        });
+
+        localStorage.setItem('users', JSON.stringify(users));
+
+        successElement.textContent = 'Регистрация прошла успешно! Теперь вы можете войти.';
+        successElement.style.display = 'block';
+        errorElement.style.display = 'none';
+
+        // Очищаем форму
+        registerForm.reset();
+
+        // Переключаем на окно входа через 2 секунды
+        setTimeout(() => {
+          registerModal.style.display = 'none';
+          loginModal.style.display = 'flex';
+          successElement.style.display = 'none';
+        }, 2000);
+      });
+
+      // Обработка формы пополнения
+      depositForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const amount = parseInt(document.getElementById('deposit-amount').value);
+        const successElement = document.getElementById('deposit-success');
+
+        if (isNaN(amount) || amount <= 0) {
+          successElement.textContent = 'Введите корректную сумму';
+          successElement.style.color = '#ff4d4d';
+          successElement.style.display = 'block';
+          return;
+        }
+
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+          currentUser.balance = (currentUser.balance || 0) + amount;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+          // Обновляем пользователя в общем списке
+          const users = JSON.parse(localStorage.getItem('users')) || [];
+          const userIndex = users.findIndex(u => u.username === currentUser.username);
+          if (userIndex !== -1) {
+            users[userIndex].balance = currentUser.balance;
+            localStorage.setItem('users', JSON.stringify(users));
+          }
+
+          successElement.textContent = `Баланс пополнен на ${amount} ₽`;
+          successElement.style.color = 'var(--neon-green)';
+          successElement.style.display = 'block';
+
+          // Обновляем отображение баланса
+          checkAuthStatus();
+
+          // Очищаем форму через 2 секунды
+          setTimeout(() => {
+            depositForm.reset();
+            successElement.style.display = 'none';
+            depositModal.style.display = 'none';
+          }, 2000);
+        }
+      });
+
+      // Обработка формы вывода
+      withdrawForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const amount = parseInt(document.getElementById('withdraw-amount').value);
+        const errorElement = document.getElementById('withdraw-error');
+        const successElement = document.getElementById('withdraw-success');
+
+        if (isNaN(amount) || amount <= 0) {
+          errorElement.textContent = 'Введите корректную сумму';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+          errorElement.textContent = 'Необходимо войти в систему';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+
+        if (amount > currentUser.balance) {
+          errorElement.textContent = 'Недостаточно средств';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+
+        // В реальном приложении здесь был бы запрос к серверу
+        currentUser.balance -= amount;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+        // Обновляем пользователя в общем списке
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const userIndex = users.findIndex(u => u.username === currentUser.username);
+        if (userIndex !== -1) {
+          users[userIndex].balance = currentUser.balance;
+          localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        successElement.textContent = `Запрос на вывод ${amount} ₽ принят. Средства поступят в течение 24 часов.`;
+        successElement.style.display = 'block';
+        errorElement.style.display = 'none';
+
+        // Обновляем отображение баланса
+        checkAuthStatus();
+
+        // Очищаем форму через 3 секунды
+        setTimeout(() => {
+          withdrawForm.reset();
+          successElement.style.display = 'none';
+          withdrawModal.style.display = 'none';
+        }, 3000);
+      });
+
+      // Выход из системы
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        checkAuthStatus();
+      });
+
+      // Функция проверки статуса авторизации
+      function checkAuthStatus() {
+        const authButtons = document.getElementById('auth-buttons');
+        const userPanel = document.getElementById('user-panel');
+        const userGreeting = document.getElementById('user-greeting');
+        const balanceAmount = document.getElementById('balance-amount');
+
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+        if (currentUser) {
+          authButtons.style.display = 'none';
+          userPanel.style.display = 'flex';
+          userGreeting.textContent = `Привет, ${currentUser.username}!`;
+          balanceAmount.textContent = currentUser.balance || 0;
+        } else {
+          authButtons.style.display = 'flex';
+          userPanel.style.display = 'none';
+        }
+      }
+    }
+
+    // Инициализация линии матчей
+    function initMatchesLine() {
+      const matchesGrid = document.getElementById('matches-grid');
+      const sportFilters = document.querySelectorAll('.sport-filter');
+
+      // Список матчей
+      const matches = [
+        {
+          id: 1,
+          sport: 'football',
+          team1: 'ЦСКА',
+          team2: 'Спартак',
+          league: 'Чемпионат России',
+          date: '15 дек, 18:00',
+          odds: {
+            team1: 2.1,
+            draw: 3.2,
+            team2: 2.8
+          }
+        },
+        {
+          id: 2,
+          sport: 'football',
+          team1: 'Зенит',
+          team2: 'Динамо',
+          league: 'Чемпионат России',
+          date: '16 дек, 19:00',
+          odds: {
+            team1: 1.8,
+            draw: 3.4,
+            team2: 4.2
+          }
+        },
+        {
+          id: 3,
+          sport: 'basketball',
+          team1: 'Лейкерс',
+          team2: 'Селтикс',
+          league: 'NBA',
+          date: '15 дек, 03:30',
+          odds: {
+            team1: 1.9,
+            team2: 1.8
+          }
+        },
+        {
+          id: 4,
+          sport: 'basketball',
+          team1: 'Голден Стэйт',
+          team2: 'Чикаго',
+          league: 'NBA',
+          date: '16 дек, 04:00',
+          odds: {
+            team1: 1.7,
+            team2: 2.1
+          }
+        },
+        {
+          id: 5,
+          sport: 'hockey',
+          team1: 'Вашингтон',
+          team2: 'Питтсбург',
+          league: 'НХЛ',
+          date: '15 дек, 02:00',
+          odds: {
+            team1: 2.1,
+            team2: 2.7
+          }
+        },
+        {
+          id: 6,
+          sport: 'hockey',
+          team1: 'Тампа Бэй',
+          team2: 'Бостон',
+          league: 'НХЛ',
+          date: '16 дек, 02:30',
+          odds: {
+            team1: 2.4,
+            team2: 1.9
+          }
+        },
+        {
+          id: 7,
+          sport: 'tennis',
+          team1: 'Надаль',
+          team2: 'Джокович',
+          league: 'ATP Тур',
+          date: '15 дек, 16:00',
+          odds: {
+            team1: 2.3,
+            team2: 1.6
+          }
+        },
+        {
+          id: 8,
+          sport: 'tennis',
+          team1: 'Федерер',
+          team2: 'Медведев',
+          league: 'ATP Тур',
+          date: '16 дек, 17:00',
+          odds: {
+            team1: 2.8,
+            team2: 1.4
+          }
+        },
+        {
+          id: 9,
+          sport: 'mma',
+          team1: 'Макгрегор',
+          team2: 'Нурмагомедов',
+          league: 'UFC',
+          date: '15 дек, 23:00',
+          odds: {
+            team1: 3.2,
+            team2: 1.4
+          }
+        },
+        {
+          id: 10,
+          sport: 'mma',
+          team1: 'Миочич',
+          team2: 'Кормье',
+          league: 'UFC',
+          date: '16 дек, 22:00',
+          odds: {
+            team1: 2.1,
+            team2: 1.8
+          }
+        }
+      ];
+
+      // Функция для создания карточки матча
+      function createMatchCard(match) {
+        const matchCard = document.createElement('div');
+        matchCard.className = 'match-card';
+        matchCard.dataset.matchId = match.id;
+        matchCard.dataset.sport = match.sport;
+
+        const sportName = getSportName(match.sport);
+
+        matchCard.innerHTML = `
+          <div class="match-header">
+            <h3>${sportName}</h3>
+          </div>
+          <div class="match-content">
+            <div class="match-info">
+              <div class="match-date">
+                <i class="far fa-clock"></i>
+                <span>${match.date}</span>
+              </div>
+              <div class="match-league">${match.league}</div>
+            </div>
+            <div class="match-teams">
+              <div class="team">
+                <div class="team-logo">${match.team1.substring(0, 2)}</div>
+                <div class="team-name">${match.team1}</div>
+              </div>
+              <div class="vs">VS</div>
+              <div class="team">
+                <div class="team-logo">${match.team2.substring(0, 2)}</div>
+                <div class="team-name">${match.team2}</div>
+              </div>
+            </div>
+            <div class="match-odds">
+              ${match.odds.draw ? `
+              <div class="odd" data-outcome="team1">
+                <div class="odd-value">${match.odds.team1}</div>
+                <div class="odd-label">П1</div>
+              </div>
+              <div class="odd" data-outcome="draw">
+                <div class="odd-value">${match.odds.draw}</div>
+                <div class="odd-label">X</div>
+              </div>
+              <div class="odd" data-outcome="team2">
+                <div class="odd-value">${match.odds.team2}</div>
+                <div class="odd-label">П2</div>
+              </div>
+              ` : `
+              <div class="odd" data-outcome="team1">
+                <div class="odd-value">${match.odds.team1}</div>
+                <div class="odd-label">П1</div>
+              </div>
+              <div class="odd" data-outcome="team2">
+                <div class="odd-value">${match.odds.team2}</div>
+                <div class="odd-label">П2</div>
+              </div>
+              `}
+            </div>
+            <div class="betting-controls">
+              <div class="bet-amount">
+                <input type="number" min="1" placeholder="Сумма ставки" class="bet-input">
+              </div>
+              <button class="place-bet-btn" disabled>Сделать ставку</button>
+              <div class="bet-status"></div>
+            </div>
+          </div>
+        `;
+
+        // Инициализация обработчиков событий для этой карточки
+        initMatchCard(matchCard, match);
+
+        return matchCard;
+      }
+
+      // Инициализация карточки матча
+      function initMatchCard(card, match) {
+        const odds = card.querySelectorAll('.odd');
+        const betInput = card.querySelector('.bet-input');
+        const placeBetBtn = card.querySelector('.place-bet-btn');
+        const betStatus = card.querySelector('.bet-status');
+
+        let selectedOutcome = null;
+
+        // Обработчики выбора исхода
+        odds.forEach(odd => {
+          odd.addEventListener('click', () => {
+            // Снимаем выделение со всех исходов
+            odds.forEach(o => o.classList.remove('active'));
+            // Выделяем выбранный исход
+            odd.classList.add('active');
+            selectedOutcome = odd.dataset.outcome;
+
+            // Активируем кнопку ставки, если введена сумма
+            if (betInput.value && parseInt(betInput.value) > 0) {
+              placeBetBtn.disabled = false;
+            }
+          });
+        });
+
+        // Обработчик ввода суммы ставки
+        betInput.addEventListener('input', () => {
+          if (selectedOutcome && betInput.value && parseInt(betInput.value) > 0) {
+            placeBetBtn.disabled = false;
+          } else {
+            placeBetBtn.disabled = true;
+          }
+        });
+
+        // Обработчик кнопки ставки
+        placeBetBtn.addEventListener('click', () => {
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser){
+            betStatus.textContent = 'Войдите в систему для ставок';
+            betStatus.className = 'bet-status bet-lose';
+            return;
+          }
+
+          const amount = parseInt(betInput.value);
+          if (isNaN(amount) || amount <= 0) {
+            betStatus.textContent = 'Введите корректную сумму';
+            betStatus.className = 'bet-status bet-lose';
+            return;
+          }
+
+          if (amount > currentUser.balance) {
+            betStatus.textContent = 'Недостаточно средств';
+            betStatus.className = 'bet-status bet-lose';
+            return;
+          }
+
+          if (!selectedOutcome) {
+            betStatus.textContent = 'Выберите исход';
+            betStatus.className = 'bet-status bet-lose';
+            return;
+          }
+
+          // Снимаем деньги со счета
+          currentUser.balance -= amount;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+          // Обновляем отображение баланса
+          const balanceAmount = document.getElementById('balance-amount');
+          if (balanceAmount) {
+            balanceAmount.textContent = currentUser.balance;
+            balanceAmount.classList.add('balance-updated');
+            setTimeout(() => {
+              balanceAmount.classList.remove('balance-updated');
+            }, 500);
+          }
+
+          // Симулируем результат ставки
+          betStatus.textContent = 'Ставка принята...';
+          betStatus.className = 'bet-status bet-waiting';
+          placeBetBtn.disabled = true;
+
+          setTimeout(() => {
+            const oddsValue = match.odds[selectedOutcome];
+            const isWin = Math.random() < 0.4; // 40% шанс на выигрыш для демонстрации
+
+            if (isWin) {
+              const winAmount = Math.floor(amount * oddsValue);
+              currentUser.balance += winAmount;
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+              betStatus.textContent = `Вы выиграли ${winAmount} ₽!`;
+              betStatus.className = 'bet-status bet-win';
+
+              // Обновляем баланс
+              if (balanceAmount) {
+                balanceAmount.textContent = currentUser.balance;
+                balanceAmount.classList.add('balance-updated');
+                setTimeout(() => {
+                  balanceAmount.classList.remove('balance-updated');
+                }, 500);
+              }
+            } else {
+              betStatus.textContent = 'Ставка не сыграла';
+              betStatus.className = 'bet-status bet-lose';
+            }
+
+            placeBetBtn.disabled = false;
+          }, 2000);
+        });
+      }
+
+      // Функция для получения названия спорта
+      function getSportName(sport) {
+        switch(sport) {
+          case 'football': return 'Футбол';
+          case 'basketball': return 'Баскетбол';
+          case 'hockey': return 'Хоккей';
+          case 'tennis': return 'Теннис';
+          case 'mma': return 'MMA';
+          default: return 'Спорт';
+        }
+      }
+
+      // Функция для отображения матчей
+      function displayMatches(sportFilter = 'all') {
+        matchesGrid.innerHTML = '';
+
+        const filteredMatches = sportFilter === 'all'
+          ? matches
+          : matches.filter(match => match.sport === sportFilter);
+
+        filteredMatches.forEach(match => {
+          const matchCard = createMatchCard(match);
+          matchesGrid.appendChild(matchCard);
+        });
+      }
+
+      // Инициализация фильтров
+      sportFilters.forEach(filter => {
+        filter.addEventListener('click', () => {
+          // Снимаем активный класс со всех фильтров
+          sportFilters.forEach(f => f.classList.remove('active'));
+          // Добавляем активный класс к выбранному фильтру
+          filter.classList.add('active');
+
+          // Отображаем матчи по выбранному фильтру
+          const sport = filter.getAttribute('data-sport');
+          displayMatches(sport);
+        });
+      });
+
+      // Изначально отображаем все матчи
+      displayMatches();
+    }
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      initPreloader();
+      initParticles();
+      initAuthSystem();
+      initMatchesLine();
+    });
+  </script>
+</body>
+</html>

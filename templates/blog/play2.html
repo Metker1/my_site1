@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vegas Dice Casino | Ставки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a2a, #1a0033, #330000);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Стили для системы авторизации */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .auth-btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            background: linear-gradient(45deg, #00ffff, #bf00ff);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Arial', sans-serif;
+            font-weight: 600;
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+        }
+        
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-greeting {
+            font-size: 1rem;
+            color: #39ff14;
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+        }
+        
+        .user-balance {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .balance-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .balance-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            background: linear-gradient(45deg, #ff00ff, #bf00ff);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .balance-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            background: linear-gradient(45deg, #ff3333, #ff6666);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.5);
+        }
+        
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: rgba(20, 20, 40, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+            border: 1px solid #ff00ff;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: #ff00ff;
+            transform: scale(1.2);
+        }
+        
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #00ffff;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(45deg, #ff00ff, #bf00ff);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 1rem;
+            color: #ccc;
+        }
+        
+        .form-footer a {
+            color: #00ffff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            color: #39ff14;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        /* Остальные стили остаются без изменений */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 100, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 150, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Загрузочный экран */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a2a, #1a0033, #330000);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease;
+        }
+        
+        .casino-loader {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .loader-chip {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, gold, #ff9900);
+            border-radius: 50%;
+            box-shadow: 0 0 30px gold, 0 0 60px rgba(255, 215, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: chip-spin 3s linear infinite;
+        }
+        
+        .loader-chip::before {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+        
+        .loader-chip::after {
+            content: '🎲';
+            font-size: 60px;
+            position: absolute;
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .loader-dice {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            animation: dice-orbit 4s linear infinite;
+        }
+        
+        .loader-dice:nth-child(2) {
+            animation-delay: -1.3s;
+        }
+        
+        .loader-dice:nth-child(3) {
+            animation-delay: -2.6s;
+        }
+        
+        .loading-text {
+            font-size: 3rem;
+            color: gold;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+            margin-bottom: 10px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            position: relative;
+            animation: text-flicker 3s infinite alternate;
+        }
+        
+        .loading-subtext {
+            color: #ccc;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 500px;
+            line-height: 1.5;
+        }
+        
+        .progress-container {
+            width: 500px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #ffcc00, #ff9900, #ff6600);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: progress-shine 1.5s infinite;
+        }
+        
+        .loading-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            font-size: 1rem;
+        }
+        
+        .loading-details {
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 0.9rem;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        /* Анимация фона */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-item {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+        }
+
+        .floating-item:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            font-size: 40px;
+            animation-delay: 0s;
+        }
+
+        .floating-item:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            font-size: 60px;
+            animation-delay: -2s;
+        }
+
+        .floating-item:nth-child(3) {
+            bottom: 30%;
+            left: 15%;
+            font-size: 50px;
+            animation-delay: -4s;
+        }
+
+        .floating-item:nth-child(4) {
+            bottom: 20%;
+            right: 20%;
+            font-size: 45px;
+            animation-delay: -6s;
+        }
+
+        .floating-item:nth-child(5) {
+            top: 50%;
+            left: 5%;
+            font-size: 55px;
+            animation-delay: -8s;
+        }
+
+        .floating-item:nth-child(6) {
+            top: 15%;
+            left: 50%;
+            font-size: 35px;
+            animation-delay: -10s;
+        }
+        
+        .floating-item:nth-child(7) {
+            top: 70%;
+            right: 10%;
+            font-size: 40px;
+            animation-delay: -5s;
+        }
+        
+        .floating-item:nth-child(8) {
+            top: 40%;
+            right: 5%;
+            font-size: 50px;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+        
+        @keyframes chip-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); box-shadow: 0 0 40px gold, 0 0 80px rgba(255, 215, 0, 0.7); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        @keyframes dice-orbit {
+            0% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+        }
+        
+        @keyframes text-flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 0 0 10px gold, 0 0 20px #ff9900, 0 0 30px #ff6600;
+            }
+            20%, 24%, 55% {
+                text-shadow: 0 0 5px gold, 0 0 10px #ff9900, 0 0 15px #ff6600;
+            }
+        }
+        
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+        /* Основной контейнер */
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(10, 10, 40, 0.9);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 
+                0 0 50px rgba(255, 215, 0, 0.4),
+                inset 0 0 50px rgba(255, 215, 0, 0.1);
+            text-align: center;
+            margin-top: 20px;
+            border: 3px solid gold;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #ffcc00, #ff9900, #ff6600, #ff3300);
+            z-index: -1;
+            border-radius: 30px;
+            opacity: 0.2;
+            filter: blur(15px);
+        }
+        
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 100, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 
+                0 0 10px #ffcc00,
+                0 0 20px #ff9900,
+                0 0 30px #ff6600,
+                0 0 40px #ff3300;
+            letter-spacing: 4px;
+            background: linear-gradient(to right, #ffcc00, #ff9900, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            font-weight: bold;
+            animation: neon-flicker 3s infinite alternate;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, gold, #ff9900, gold, transparent);
+            box-shadow: 0 0 15px gold;
+        }
+        
+        .casino-lights {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .light-beam {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, gold, transparent);
+            box-shadow: 0 0 10px gold;
+            animation: light-sweep 8s infinite linear;
+        }
+        
+        .light-beam:nth-child(2) {
+            top: 30%;
+            animation-delay: -2s;
+        }
+        
+        .light-beam:nth-child(3) {
+            top: 60%;
+            animation-delay: -4s;
+        }
+        
+        .light-beam:nth-child(4) {
+            top: 90%;
+            animation-delay: -6s;
+        }
+
+        .balance-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 215, 0, 0.15);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid gold;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .balance-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .balance-section:hover::before {
+            left: 100%;
+        }
+
+        .balance {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: gold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            display: flex;
+            align-items: center;
+        }
+
+        .balance::before {
+            content: '💰';
+            margin-right: 15px;
+            font-size: 2.2rem;
+        }
+
+        .bet-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .bet-amount {
+            font-size: 2rem;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 2px solid gold;
+            min-width: 150px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .bet-amount::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.1) 50%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .bet-amount:hover::after {
+            opacity: 1;
+        }
+
+        .bet-btn {
+            background: linear-gradient(135deg, #ff9900, #ff6600);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
+        }
+
+        .bet-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .bet-btn:hover::before {
+            opacity: 1;
+        }
+
+        .bet-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px gold;
+        }
+
+        .bet-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: #777;
+        }
+
+        .bet-btn:disabled::before {
+            display: none;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            font-size: 1.5rem;
+            gap: 20px;
+        }
+
+        .player, .casino {
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            width: 45%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .player {
+            border: 2px solid #3498db;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+        }
+
+        .casino {
+            border: 2px solid #e74c3c;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+        }
+
+        .player::before, .casino::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, gold, transparent);
+        }
+
+        .player h2, .casino h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .player.win, .casino.lose {
+            border: 2px solid #2ecc71;
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.7);
+            animation: pulse-win 0.5s ease-in-out;
+        }
+
+        .player.lose, .casino.win {
+            border: 2px solid #e74c3c;
+            box-shadow: 0 0 25px rgba(231, 76, 60, 0.7);
+        }
+
+        .player.draw, .casino.draw {
+            border: 2px solid #f39c12;
+            box-shadow: 0 0 25px rgba(243, 156, 18, 0.7);
+        }
+
+        @keyframes pulse-win {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes light-sweep {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .dice-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .dice {
+            width: 160px;
+            height: 160px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            margin: 0 20px;
+            perspective: 1000px;
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 15px;
+            border: 3px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                inset 0 0 15px rgba(0, 0, 0, 0.2),
+                0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dot {
+            width: 25px;
+            height: 25px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Расположение точек для каждой грани */
+        .front { transform: translateZ(80px); }
+        .back { transform: rotateY(180deg) translateZ(80px); }
+        .right { transform: rotateY(90deg) translateZ(80px); }
+        .left { transform: rotateY(-90deg) translateZ(80px); }
+        .top { transform: rotateX(90deg) translateZ(80px); }
+        .bottom { transform: rotateX(-90deg) translateZ(80px); }
+
+        /* Конфигурации точек для значений костей */
+        .value-1 .dot:nth-child(1) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        
+        .value-2 .dot:nth-child(1) { top: 20%; left: 20%; }
+        .value-2 .dot:nth-child(2) { bottom: 20%; right: 20%; }
+        
+        .value-3 .dot:nth-child(1) { top: 20%; left: 20%; }
+        .value-3 .dot:nth-child(2) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .value-3 .dot:nth-child(3) { bottom: 20%; right: 20%; }
+        
+        .value-4 .dot:nth-child(1) { top: 20%; left: 20%; }
+        .value-4 .dot:nth-child(2) { top: 20%; right: 20%; }
+        .value-4 .dot:nth-child(3) { bottom: 20%; left: 20%; }
+        .value-4 .dot:nth-child(4) { bottom: 20%; right: 20%; }
+        
+        .value-5 .dot:nth-child(1) { top: 20%; left: 20%; }
+        .value-5 .dot:nth-child(2) { top: 20%; right: 20%; }
+        .value-5 .dot:nth-child(3) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .value-5 .dot:nth-child(4) { bottom: 20%; left: 20%; }
+        .value-5 .dot:nth-child(5) { bottom: 20%; right: 20%; }
+        
+        .value-6 .dot:nth-child(1) { top: 20%; left: 20%; }
+        .value-6 .dot:nth-child(2) { top: 20%; right: 20%; }
+        .value-6 .dot:nth-child(3) { top: 50%; left: 20%; transform: translateY(-50%); }
+        .value-6 .dot:nth-child(4) { top: 50%; right: 20%; transform: translateY(-50%); }
+        .value-6 .dot:nth-child(5) { bottom: 20%; left: 20%; }
+        .value-6 .dot:nth-child(6) { bottom: 20%; right: 20%; }
+
+        .controls {
+            margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ffcc00, #ff9900, #ff6600);
+            border: none;
+            border-radius: 50px;
+            color: #222;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 20px 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 
+                0 5px 20px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(255, 204, 0, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 10px 25px rgba(255, 204, 0, 0.7),
+                0 0 20px rgba(255, 204, 0, 0.7);
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        button:disabled {
+            background: #444;
+            color: #777;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        button:disabled::before {
+            display: none;
+        }
+
+        .result {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            min-height: 80px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transition: all 0.5s;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            font-weight: bold;
+        }
+
+        .result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .result.win::before, .result.lose::before, .result.draw::before {
+            opacity: 1;
+        }
+
+        .win {
+            color: #2ecc71;
+            animation: pulse 1s infinite, glow-win 2s infinite;
+            background: rgba(46, 204, 113, 0.2);
+            border: 2px solid #2ecc71;
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.5);
+        }
+
+        .lose {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid #e74c3c;
+            box-shadow: 0 0 25px rgba(231, 76, 60, 0.5);
+        }
+
+        .draw {
+            color: #f39c12;
+            background: rgba(243, 156, 18, 0.2);
+            border: 2px solid #f39c12;
+            box-shadow: 0 0 25px rgba(243, 156, 18, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes glow-win {
+            0% { box-shadow: 0 0 15px #2ecc71; }
+            50% { box-shadow: 0 0 30px #2ecc71; }
+            100% { box-shadow: 0 0 15px #2ecc71; }
+        }
+
+        @keyframes neon-flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 
+                    0 0 10px #ffcc00,
+                    0 0 20px #ff9900,
+                    0 0 30px #ff6600;
+            }
+            20%, 24%, 55% {
+                text-shadow: 
+                    0 0 5px #ffcc00,
+                    0 0 10px #ff9900,
+                    0 0 15px #ff6600;
+            }
+        }
+
+        @keyframes roll {
+            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+            25% { transform: rotateX(180deg) rotateY(180deg) rotateZ(90deg); }
+            50% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+            75% { transform: rotateX(540deg) rotateY(540deg) rotateZ(270deg); }
+            100% { transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg); }
+        }
+
+        .rolling {
+            animation: roll 1.5s ease-out;
+        }
+
+        .history {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .history h3 {
+            margin-bottom: 15px;
+            color: gold;
+            position: relative;
+            display: inline-block;
+            font-size: 1.5rem;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+        }
+
+        .history h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, gold, transparent);
+        }
+
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            transition: background 0.3s;
+            border-radius: 5px;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .coins-fall {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .coin {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, gold, #ff9900);
+            border-radius: 50%;
+            animation: coin-fall linear forwards;
+            box-shadow: 0 0 15px gold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #333;
+        }
+
+        @keyframes coin-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .win-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 10%, rgba(46, 204, 113, 0.3) 20%);
+            animation: win-pulse 0.5s ease-out;
+            pointer-events: none;
+            z-index: 50;
+            display: none;
+        }
+
+        @keyframes win-pulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .jackpot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 6rem;
+            font-weight: bold;
+            color: gold;
+            text-shadow: 
+                0 0 10px #ff9900,
+                0 0 20px #ff6600,
+                0 0 30px #ff3300;
+            animation: jackpot-animation 2s ease-out;
+            z-index: 60;
+            display: none;
+            text-align: center;
+        }
+
+        @keyframes jackpot-animation {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .pulse-glow {
+            animation: pulse-glow-animation 2s infinite;
+        }
+
+        @keyframes pulse-glow-animation {
+            0% { box-shadow: 0 0 15px gold; }
+            50% { box-shadow: 0 0 30px gold; }
+            100% { box-shadow: 0 0 15px gold; }
+        }
+
+        /* Таблица ставок других игроков */
+        .other-bets {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .other-bets h3 {
+            margin-bottom: 15px;
+            color: gold;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            font-size: 1.5rem;
+        }
+        
+        .bets-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1rem;
+        }
+        
+        .bets-table th {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 12px;
+            text-align: left;
+            color: gold;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .bets-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .bets-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .bet-win {
+            color: #2ecc71;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(46, 204, 113, 0.5);
+        }
+        
+        .bet-lose {
+            color: #e74c3c;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+        }
+
+        /* Неоновые огни */
+        .neon-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, 
+                #ff0000, #ff9900, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 800% 800%;
+            animation: neon-flow 10s linear infinite;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .neon-lights.bottom {
+            top: auto;
+            bottom: 0;
+        }
+
+        @keyframes neon-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 800% 50%; }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .balance-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .dice {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .score-board {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .player, .casino {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .bet-amount {
+                font-size: 1.5rem;
+                padding: 10px 20px;
+                min-width: 100px;
+            }
+            
+            button {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
+            
+            .casino-loader {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .loader-dice {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            
+            .loading-text {
+                font-size: 2rem;
+            }
+            
+            .progress-container {
+                width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Загрузочный экран -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="casino-loader">
+            <div class="loader-chip"></div>
+            <div class="loader-dice">🎲</div>
+            <div class="loader-dice">🎲</div>
+            <div class="loader-dice">🎲</div>
+        </div>
+        <div class="loading-text">VEGAS DICE CASINO</div>
+        <div class="loading-subtext">Идет подготовка игрового стола... Пожалуйста, подождите</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="loadingProgress"></div>
+            <div class="loading-percentage" id="loadingPercentage">0%</div>
+        </div>
+        <div class="loading-details" id="loadingDetails">Инициализация игрового движка...</div>
+    </div>
+
+    <!-- Неоновые огни -->
+    <div class="neon-lights"></div>
+    <div class="neon-lights bottom"></div>
+
+    <div class="background-animation">
+        <div class="floating-item">🎰</div>
+        <div class="floating-item">💰</div>
+        <div class="floating-item">♠️</div>
+        <div class="floating-item">♥️</div>
+        <div class="floating-item">♦️</div>
+        <div class="floating-item">♣️</div>
+        <div class="floating-item">🎲</div>
+        <div class="floating-item">🃏</div>
+    </div>
+
+    <!-- Контейнер для авторизации -->
+    <div class="auth-container">
+        <div id="auth-buttons">
+            <button class="auth-btn" id="login-btn">Войти</button>
+            <button class="auth-btn" id="register-btn">Регистрация</button>
+        </div>
+        <div id="user-panel" class="user-panel" style="display: none;">
+            <div class="user-info">
+                <span class="user-greeting" id="user-greeting">Привет, пользователь!</span>
+                <span class="user-balance">Баланс: <span id="balance-amount">0</span> ₽</span>
+            </div>
+            <div class="balance-actions">
+                <button class="balance-btn" id="deposit-btn">Пополнить</button>
+                <button class="balance-btn" id="withdraw-btn">Вывести</button>
+                <button class="logout-btn" id="logout-btn">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-login">&times;</button>
+            <h2>Вход в аккаунт</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Имя пользователя</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Пароль</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="submit-btn">Войти</button>
+                <div class="error-message" id="login-error"></div>
+                <div class="form-footer">
+                    Нет аккаунта? <a id="show-register">Зарегистрироваться</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-register">&times;</button>
+            <h2>Регистрация аккаунта</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">Имя пользователя</label>
+                    <input type="text" id="register-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Пароль</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Подтвердите пароль</label>
+                    <input type="password" id="confirm-password" required>
+                </div>
+                <button type="submit" class="submit-btn">Зарегистрироваться</button>
+                <div class="error-message" id="register-error"></div>
+                <div class="success-message" id="register-success"></div>
+                <div class="form-footer">
+                    Уже есть аккаунт? <a id="show-login">Войти</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно пополнения баланса -->
+    <div id="deposit-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-deposit">&times;</button>
+            <h2>Пополнение баланса</h2>
+            <form id="deposit-form">
+                <div class="form-group">
+                    <label for="deposit-amount">Сумма пополнения (₽)</label>
+                    <input type="number" id="deposit-amount" min="1" required>
+                </div>
+                <button type="submit" class="submit-btn">Пополнить</button>
+                <div class="success-message" id="deposit-success"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно вывода средств -->
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-withdraw">&times;</button>
+            <h2>Вывод средств</h2>
+            <form id="withdraw-form">
+                <div class="form-group">
+                    <label for="withdraw-amount">Сумма вывода (₽)</label>
+                    <input type="number" id="withdraw-amount" min="1" required>
+                </div>
+                <button type="submit" class="submit-btn">Вывести</button>
+                <div class="error-message" id="withdraw-error"></div>
+                <div class="success-message" id="withdraw-success"></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="casino-lights">
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+        </div>
+        
+        <h1>🎲 VEGAS DICE CASINO 🎲</h1>
+        
+        <div class="balance-section pulse-glow">
+            <div class="balance-info">
+                <div>Ваш баланс:</div>
+                <div class="balance" id="balance">1000</div>
+            </div>
+            
+            <div class="bet-controls">
+                <button class="bet-btn" id="decrease-bet">-</button>
+                <div class="bet-amount" id="bet-amount">50</div>
+                <button class="bet-btn" id="increase-bet">+</button>
+            </div>
+        </div>
+        
+        <div class="score-board">
+            <div class="player" id="player-section">
+                <h2>Игрок</h2>
+                <div class="score" id="player-score">0</div>
+            </div>
+            <div class="casino" id="casino-section">
+                <h2>Казино</h2>
+                <div class="score" id="casino-score">0</div>
+            </div>
+        </div>
+        
+        <div class="dice-container">
+            <div class="dice" id="player-dice">
+                <!-- Грани кости будут созданы через JavaScript -->
+            </div>
+            <div class="dice" id="casino-dice">
+                <!-- Грани кости будут созданы через JavaScript -->
+            </div>
+        </div>
+        
+        <div class="result" id="result">Сделайте ставку и бросьте кости!</div>
+        
+        <div class="controls">
+            <button id="roll-button">Бросить кости</button>
+            <button id="max-bet">Максимальная ставка</button>
+        </div>
+        
+        <!-- Таблица ставок других игроков -->
+        <div class="other-bets">
+            <h3>Ставки других игроков</h3>
+            <table class="bets-table">
+                <thead>
+                    <tr>
+                        <th>Игрок</th>
+                        <th>Ставка</th>
+                        <th>Результат</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody id="otherBetsTable">
+                    <!-- Данные будут добавляться через JS -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="history">
+            <h3>История игр</h3>
+            <div id="history-list"></div>
+        </div>
+    </div>
+
+    <div class="coins-fall" id="coins-fall"></div>
+    <div class="win-animation" id="win-animation"></div>
+    <div class="jackpot" id="jackpot">ДЖЕКПОТ!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Система авторизации
+            function initAuthSystem() {
+                // Элементы DOM
+                const loginBtn = document.getElementById('login-btn');
+                const registerBtn = document.getElementById('register-btn');
+                const logoutBtn = document.getElementById('logout-btn');
+                const depositBtn = document.getElementById('deposit-btn');
+                const withdrawBtn = document.getElementById('withdraw-btn');
+                
+                const loginModal = document.getElementById('login-modal');
+                const registerModal = document.getElementById('register-modal');
+                const depositModal = document.getElementById('deposit-modal');
+                const withdrawModal = document.getElementById('withdraw-modal');
+                
+                const closeLogin = document.getElementById('close-login');
+                const closeRegister = document.getElementById('close-register');
+                const closeDeposit = document.getElementById('close-deposit');
+                const closeWithdraw = document.getElementById('close-withdraw');
+                
+                const showRegister = document.getElementById('show-register');
+                const showLogin = document.getElementById('show-login');
+                
+                const loginForm = document.getElementById('login-form');
+                const registerForm = document.getElementById('register-form');
+                const depositForm = document.getElementById('deposit-form');
+                const withdrawForm = document.getElementById('withdraw-form');
+                
+                const authButtons = document.getElementById('auth-buttons');
+                const userPanel = document.getElementById('user-panel');
+                const userGreeting = document.getElementById('user-greeting');
+                const balanceAmount = document.getElementById('balance-amount');
+                
+                const loginError = document.getElementById('login-error');
+                const registerError = document.getElementById('register-error');
+                const registerSuccess = document.getElementById('register-success');
+                const depositSuccess = document.getElementById('deposit-success');
+                const withdrawError = document.getElementById('withdraw-error');
+                const withdrawSuccess = document.getElementById('withdraw-success');
+
+                // Проверяем, авторизован ли пользователь при загрузке страницы
+                checkAuthStatus();
+
+                // Обработчики событий для кнопок
+                loginBtn.addEventListener('click', () => openModal(loginModal));
+                registerBtn.addEventListener('click', () => openModal(registerModal));
+                logoutBtn.addEventListener('click', logout);
+                depositBtn.addEventListener('click', () => openModal(depositModal));
+                withdrawBtn.addEventListener('click', () => openModal(withdrawModal));
+                
+                closeLogin.addEventListener('click', () => closeModal(loginModal));
+                closeRegister.addEventListener('click', () => closeModal(registerModal));
+                closeDeposit.addEventListener('click', () => closeModal(depositModal));
+                closeWithdraw.addEventListener('click', () => closeModal(withdrawModal));
+                
+                showRegister.addEventListener('click', () => {
+                    closeModal(loginModal);
+                    openModal(registerModal);
+                });
+                
+                showLogin.addEventListener('click', () => {
+                    closeModal(registerModal);
+                    openModal(loginModal);
+                });
+                
+                // Обработчики форм
+                loginForm.addEventListener('submit', handleLogin);
+                registerForm.addEventListener('submit', handleRegister);
+                depositForm.addEventListener('submit', handleDeposit);
+                withdrawForm.addEventListener('submit', handleWithdraw);
+                
+                // Функции
+                function openModal(modal) {
+                    modal.style.display = 'flex';
+                    clearMessages();
+                }
+                
+                function closeModal(modal) {
+                    modal.style.display = 'none';
+                    clearMessages();
+                    // Очищаем поля форм
+                    if (modal === loginModal) {
+                        loginForm.reset();
+                    } else if (modal === registerModal) {
+                        registerForm.reset();
+                    } else if (modal === depositModal) {
+                        depositForm.reset();
+                    } else if (modal === withdrawModal) {
+                        withdrawForm.reset();
+                    }
+                }
+                
+                function clearMessages() {
+                    loginError.style.display = 'none';
+                    registerError.style.display = 'none';
+                    registerSuccess.style.display = 'none';
+                    depositSuccess.style.display = 'none';
+                    withdrawError.style.display = 'none';
+                    withdrawSuccess.style.display = 'none';
+                }
+                
+                function checkAuthStatus() {
+                    const currentUser = localStorage.getItem('currentUser');
+                    if (currentUser) {
+                        // Пользователь авторизован
+                        const user = JSON.parse(currentUser);
+                        authButtons.style.display = 'none';
+                        userPanel.style.display = 'flex';
+                        userGreeting.textContent = `Привет, ${user.username}!`;
+                        balanceAmount.textContent = user.balance || 0;
+                        
+                        // Обновляем баланс в игре
+                        updateGameBalance(user.balance || 0);
+                    } else {
+                        // Пользователь не авторизован
+                        authButtons.style.display = 'flex';
+                        userPanel.style.display = 'none';
+                        updateGameBalance(0);
+                    }
+                }
+                
+                function updateUserBalance(newBalance) {
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    if (currentUser) {
+                        currentUser.balance = newBalance;
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        
+                        // Обновляем баланс в массиве всех пользователей
+                        const users = JSON.parse(localStorage.getItem('users') || '[]');
+                        const userIndex = users.findIndex(u => u.username === currentUser.username);
+                        if (userIndex !== -1) {
+                            users[userIndex].balance = newBalance;
+                            localStorage.setItem('users', JSON.stringify(users));
+                        }
+                        
+                        // Обновляем отображение баланса
+                        balanceAmount.textContent = newBalance;
+                        updateGameBalance(newBalance);
+                    }
+                }
+                
+                function updateGameBalance(balance) {
+                    const gameBalance = document.getElementById('balance');
+                    if (gameBalance) {
+                        gameBalance.textContent = balance;
+                    }
+                }
+                
+                function handleLogin(e) {
+                    e.preventDefault();
+                    
+                    const username = document.getElementById('login-username').value;
+                    const password = document.getElementById('login-password').value;
+                    
+                    // Получаем всех пользователей из localStorage
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    
+                    // Ищем пользователя с таким именем и паролем
+                    const user = users.find(u => u.username === username && u.password === password);
+                    
+                    if (user) {
+                        // Успешный вход
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                        checkAuthStatus();
+                        closeModal(loginModal);
+                    } else {
+                        // Ошибка входа
+                        loginError.textContent = 'Неверное имя пользователя или пароль';
+                        loginError.style.display = 'block';
+                    }
+                }
+                
+                function handleRegister(e) {
+                    e.preventDefault();
+                    
+                    const username = document.getElementById('register-username').value;
+                    const password = document.getElementById('register-password').value;
+                    const confirmPassword = document.getElementById('confirm-password').value;
+                    
+                    // Проверяем, совпадают ли пароли
+                    if (password !== confirmPassword) {
+                        registerError.textContent = 'Пароли не совпадают';
+                        registerError.style.display = 'block';
+                        return;
+                    }
+                    
+                    // Проверяем, существует ли уже пользователь с таким именем
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const existingUser = users.find(u => u.username === username);
+                    
+                    if (existingUser) {
+                        registerError.textContent = 'Пользователь с таким именем уже существует';
+                        registerError.style.display = 'block';
+                        return;
+                    }
+                    
+                    // Добавляем нового пользователя с начальным балансом 1000
+                    const newUser = { 
+                        username, 
+                        password, 
+                        balance: 1000  // Начальный баланс
+                    };
+                    users.push(newUser);
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Показываем сообщение об успехе
+                    registerSuccess.textContent = 'Аккаунт успешно создан! Теперь вы можете войти.';
+                    registerSuccess.style.display = 'block';
+                    
+                    // Очищаем форму через 2 секунды и переключаемся на форму входа
+                    setTimeout(() => {
+                        registerForm.reset();
+                        closeModal(registerModal);
+                        openModal(loginModal);
+                    }, 2000);
+                }
+                
+                function handleDeposit(e) {
+                    e.preventDefault();
+                    
+                    const amount = parseInt(document.getElementById('deposit-amount').value);
+                    
+                    if (isNaN(amount) || amount <= 0) {
+                        depositSuccess.textContent = 'Введите корректную сумму';
+                        depositSuccess.style.color = '#ff4d4d';
+                        depositSuccess.style.display = 'block';
+                        return;
+                    }
+                    
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    if (currentUser) {
+                        const newBalance = (currentUser.balance || 0) + amount;
+                        updateUserBalance(newBalance);
+                        
+                        depositSuccess.textContent = `Баланс успешно пополнен на ${amount} ₽`;
+                        depositSuccess.style.color = '#39ff14';
+                        depositSuccess.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            closeModal(depositModal);
+                        }, 1500);
+                    }
+                }
+                
+                function handleWithdraw(e) {
+                    e.preventDefault();
+                    
+                    const amount = parseInt(document.getElementById('withdraw-amount').value);
+                    
+                    if (isNaN(amount) || amount <= 0) {
+                        withdrawError.textContent = 'Введите корректную сумму';
+                        withdrawError.style.display = 'block';
+                        return;
+                    }
+                    
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    if (currentUser) {
+                        const currentBalance = currentUser.balance || 0;
+                        
+                        if (amount > currentBalance) {
+                            withdrawError.textContent = 'Недостаточно средств на балансе';
+                            withdrawError.style.display = 'block';
+                            return;
+                        }
+                        
+                        const newBalance = currentBalance - amount;
+                        updateUserBalance(newBalance);
+                        
+                        withdrawSuccess.textContent = `Средства в размере ${amount} ₽ успешно выведены`;
+                        withdrawSuccess.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            closeModal(withdrawModal);
+                        }, 1500);
+                    }
+                }
+                
+                function logout() {
+                    localStorage.removeItem('currentUser');
+                    checkAuthStatus();
+                }
+                
+                // Закрытие модальных окон при клике вне их
+                window.addEventListener('click', (e) => {
+                    if (e.target === loginModal) {
+                        closeModal(loginModal);
+                    }
+                    if (e.target === registerModal) {
+                        closeModal(registerModal);
+                    }
+                    if (e.target === depositModal) {
+                        closeModal(depositModal);
+                    }
+                    if (e.target === withdrawModal) {
+                        closeModal(withdrawModal);
+                    }
+                });
+            }
+
+            // Инициализация системы авторизации
+            initAuthSystem();
+
+            // Игровая логика
+            const playerDice = document.getElementById('player-dice');
+            const casinoDice = document.getElementById('casino-dice');
+            const rollButton = document.getElementById('roll-button');
+            const resultDiv = document.getElementById('result');
+            const playerScoreDiv = document.getElementById('player-score');
+            const casinoScoreDiv = document.getElementById('casino-score');
+            const historyList = document.getElementById('history-list');
+            const balanceDiv = document.getElementById('balance');
+            const betAmountDiv = document.getElementById('bet-amount');
+            const decreaseBetBtn = document.getElementById('decrease-bet');
+            const increaseBetBtn = document.getElementById('increase-bet');
+            const maxBetBtn = document.getElementById('max-bet');
+            const coinsFall = document.getElementById('coins-fall');
+            const winAnimation = document.getElementById('win-animation');
+            const jackpot = document.getElementById('jackpot');
+            const playerSection = document.getElementById('player-section');
+            const casinoSection = document.getElementById('casino-section');
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingProgress = document.getElementById('loadingProgress');
+            const loadingPercentage = document.getElementById('loadingPercentage');
+            const loadingDetails = document.getElementById('loadingDetails');
+            const otherBetsTable = document.getElementById('otherBetsTable');
+            
+            let playerScore = 0;
+            let casinoScore = 0;
+            let gameHistory = [];
+            let betAmount = 50;
+            let isRolling = false;
+            
+            // Список имен игроков для генерации случайных ставок
+            const playerNames = [
+                "Алексей", "Мария", "Дмитрий", "Анна", "Иван", "Ольга", 
+                "Сергей", "Елена", "Михаил", "Наталья", "Андрей", "Татьяна",
+                "Владимир", "Светлана", "Павел", "Юлия", "Николай", "Ирина"
+            ];
+            
+            // Сообщения для загрузки
+            const loadingMessages = [
+                "Инициализация игрового движка...",
+                "Загрузка текстур...",
+                "Настройка анимаций...",
+                "Подготовка звуковых эффектов...",
+                "Создание игровой среды...",
+                "Почти готово..."
+            ];
+            
+            // Функция загрузки
+            function startLoading() {
+                let progress = 0;
+                let messageIndex = 0;
+                
+                const interval = setInterval(() => {
+                    progress += 1;
+                    loadingProgress.style.width = `${progress}%`;
+                    loadingPercentage.textContent = `${progress}%`;
+                    
+                    // Обновляем сообщение каждые 15%
+                    if (progress % 15 === 0 && messageIndex < loadingMessages.length) {
+                        loadingDetails.textContent = loadingMessages[messageIndex];
+                        messageIndex++;
+                    }
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        loadingDetails.textContent = "Готово! Начинаем игру...";
+                        setTimeout(() => {
+                            loadingScreen.style.opacity = '0';
+                            setTimeout(() => {
+                                loadingScreen.style.display = 'none';
+                            }, 800);
+                        }, 500);
+                    }
+                }, 30); // 3 секунды загрузки
+            }
+            
+            // Функция генерации случайных ставок других игроков
+            function generateRandomBets() {
+                // Очищаем таблицу, но оставляем несколько записей для реалистичности
+                if (otherBetsTable.children.length > 8) {
+                    otherBetsTable.removeChild(otherBetsTable.lastChild);
+                }
+                
+                // Генерируем случайную ставку
+                const playerName = playerNames[Math.floor(Math.random() * playerNames.length)];
+                const bet = Math.floor(Math.random() * 500) + 50;
+                const isWin = Math.random() > 0.6; // 40% шанс на выигрыш
+                const winAmount = isWin ? bet * 2 : 0;
+                
+                // Создаем новую строку таблицы
+                const row = document.createElement('tr');
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = playerName;
+                
+                const betCell = document.createElement('td');
+                betCell.textContent = `${bet} ₽`;
+                
+                const resultCell = document.createElement('td');
+                if (isWin) {
+                    resultCell.textContent = 'Выигрыш';
+                    resultCell.className = 'bet-win';
+                } else {
+                    resultCell.textContent = 'Проигрыш';
+                    resultCell.className = 'bet-lose';
+                }
+                
+                const amountCell = document.createElement('td');
+                amountCell.textContent = isWin ? `+${winAmount} ₽` : `-${bet} ₽`;
+                amountCell.className = isWin ? 'bet-win' : 'bet-lose';
+                
+                row.appendChild(nameCell);
+                row.appendChild(betCell);
+                row.appendChild(resultCell);
+                row.appendChild(amountCell);
+                
+                // Добавляем строку в начало таблицы
+                otherBetsTable.insertBefore(row, otherBetsTable.firstChild);
+                
+                // Анимация появления новой строки
+                row.style.opacity = '0';
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s';
+                    row.style.opacity = '1';
+                }, 10);
+            }
+            
+            // Запускаем генерацию случайных ставок каждые 2-5 секунд
+            function startRandomBets() {
+                generateRandomBets(); // Первая ставка сразу
+                setInterval(generateRandomBets, Math.random() * 3000 + 2000); // Случайный интервал 2-5 секунд
+            }
+            
+            // Создаем грани для костей
+            function createDiceFaces(diceElement) {
+                const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+                
+                for (let i = 0; i < 6; i++) {
+                    const face = document.createElement('div');
+                    face.className = `face ${faces[i]}`;
+                    
+                    // Создаем точки для каждой грани
+                    for (let j = 0; j < 6; j++) {
+                        const dot = document.createElement('div');
+                        dot.className = 'dot';
+                        face.appendChild(dot);
+                    }
+                    
+                    diceElement.appendChild(face);
+                }
+            }
+            
+            createDiceFaces(playerDice);
+            createDiceFaces(casinoDice);
+            
+            // Функция броска кости
+            function rollDice() {
+                return Math.floor(Math.random() * 6) + 1;
+            }
+            
+            // Функция установки значения на кости
+            function setDiceValue(diceElement, value) {
+                // Удаляем предыдущие классы значений
+                for (let i = 1; i <= 6; i++) {
+                    diceElement.classList.remove(`value-${i}`);
+                }
+                
+                // Добавляем новый класс значения
+                diceElement.classList.add(`value-${value}`);
+            }
+            
+            // Функция анимации броска
+            function animateDiceRoll(diceElement, callback) {
+                diceElement.classList.add('rolling');
+                
+                setTimeout(() => {
+                    diceElement.classList.remove('rolling');
+                    if (callback) callback();
+                }, 1500);
+            }
+            
+            // Функция получения текущего баланса
+            function getCurrentBalance() {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    return JSON.parse(currentUser).balance || 0;
+                }
+                return 0;
+            }
+            
+            // Функция обновления баланса в системе
+            function updateBalanceInSystem(newBalance) {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
+                    user.balance = newBalance;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    // Обновляем баланс в массиве всех пользователей
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const userIndex = users.findIndex(u => u.username === user.username);
+                    if (userIndex !== -1) {
+                        users[userIndex].balance = newBalance;
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    
+                    // Обновляем отображение баланса
+                    const balanceAmount = document.getElementById('balance-amount');
+                    if (balanceAmount) {
+                        balanceAmount.textContent = newBalance;
+                    }
+                    
+                    // Обновляем баланс в игре
+                    updateGameBalance(newBalance);
+                }
+            }
+            
+            // Функция обновления баланса в игре
+            function updateGameBalance(balance) {
+                if (balanceDiv) {
+                    balanceDiv.textContent = balance;
+                    // Изменение цвета баланса в зависимости от суммы
+                    if (balance >= 1500) {
+                        balanceDiv.style.color = '#2ecc71';
+                        balanceDiv.style.textShadow = '0 0 10px rgba(46, 204, 113, 0.7)';
+                    } else if (balance <= 500) {
+                        balanceDiv.style.color = '#e74c3c';
+                        balanceDiv.style.textShadow = '0 0 10px rgba(231, 76, 60, 0.7)';
+                    } else {
+                        balanceDiv.style.color = 'gold';
+                        balanceDiv.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.7)';
+                    }
+                }
+            }
+            
+            // Функция обновления истории
+            function updateHistory(playerValue, casinoValue, result, winAmount) {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                let resultText = '';
+                let resultClass = '';
+                
+                if (result === 'win') {
+                    resultText = `Вы выиграли +${winAmount}!`;
+                    resultClass = 'win';
+                } else if (result === 'lose') {
+                    resultText = `Вы проиграли -${betAmount}`;
+                    resultClass = 'lose';
+                } else {
+                    resultText = 'Ничья! Ставка возвращена';
+                    resultClass = 'draw';
+                }
+                
+                historyItem.innerHTML = `
+                    <span>Игрок: ${playerValue} | Казино: ${casinoValue}</span>
+                    <span class="${resultClass}">${resultText}</span>
+                `;
+                
+                historyList.insertBefore(historyItem, historyList.firstChild);
+                
+                // Ограничиваем историю 10 последними играми
+                if (historyList.children.length > 10) {
+                    historyList.removeChild(historyList.lastChild);
+                }
+                
+                gameHistory.push({
+                    player: playerValue,
+                    casino: casinoValue,
+                    result: result,
+                    winAmount: winAmount
+                });
+            }
+            
+            // Функция создания падающих монет
+            function createCoins(count) {
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        const coin = document.createElement('div');
+                        coin.className = 'coin';
+                        coin.style.left = Math.random() * 100 + 'vw';
+                        coin.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                        coin.textContent = '$';
+                        coinsFall.appendChild(coin);
+                        
+                        setTimeout(() => {
+                            coinsFall.removeChild(coin);
+                        }, 3000);
+                    }, i * 100);
+                }
+            }
+            
+            // Функция анимации выигрыша
+            function showWinAnimation() {
+                winAnimation.style.display = 'block';
+                setTimeout(() => {
+                    winAnimation.style.display = 'none';
+                }, 500);
+            }
+            
+            // Функция джекпота
+            function showJackpot() {
+                jackpot.style.display = 'block';
+                setTimeout(() => {
+                    jackpot.style.display = 'none';
+                }, 2000);
+            }
+            
+            // Обновление ставки
+            function updateBet() {
+                betAmountDiv.textContent = betAmount;
+                const currentBalance = getCurrentBalance();
+                
+                // Блокировка кнопок, если ставка выходит за пределы баланса
+                decreaseBetBtn.disabled = betAmount <= 10;
+                increaseBetBtn.disabled = betAmount >= currentBalance || betAmount >= 500;
+                maxBetBtn.disabled = currentBalance < 10;
+                
+                // Блокировка кнопки броска, если ставка больше баланса
+                rollButton.disabled = betAmount > currentBalance || isRolling || !localStorage.getItem('currentUser');
+            }
+            
+            // Сброс стилей секций игрока и казино
+            function resetSections() {
+                playerSection.classList.remove('win', 'lose', 'draw');
+                casinoSection.classList.remove('win', 'lose', 'draw');
+            }
+            
+            // Обработчики изменения ставки
+            decreaseBetBtn.addEventListener('click', function() {
+                if (betAmount > 10) {
+                    betAmount -= 10;
+                    updateBet();
+                }
+            });
+            
+            increaseBetBtn.addEventListener('click', function() {
+                const currentBalance = getCurrentBalance();
+                if (betAmount < currentBalance && betAmount < 500) {
+                    betAmount += 10;
+                    updateBet();
+                }
+            });
+            
+            maxBetBtn.addEventListener('click', function() {
+                const currentBalance = getCurrentBalance();
+                betAmount = Math.min(currentBalance, 500);
+                updateBet();
+            });
+            
+            // Обработчик нажатия на кнопку броска
+            rollButton.addEventListener('click', function() {
+                // Проверяем авторизацию
+                if (!localStorage.getItem('currentUser')) {
+                    document.getElementById('login-modal').style.display = 'flex';
+                    return;
+                }
+                
+                const currentBalance = getCurrentBalance();
+                if (isRolling || betAmount > currentBalance) return;
+                
+                isRolling = true;
+                rollButton.disabled = true;
+                resultDiv.textContent = 'Бросаем кости...';
+                resultDiv.className = 'result';
+                
+                // Сбрасываем стили секций
+                resetSections();
+                
+                // Снимаем ставку с баланса
+                const newBalance = currentBalance - betAmount;
+                updateBalanceInSystem(newBalance);
+                updateBet();
+                
+                // Бросаем кости
+                const playerValue = rollDice();
+                const casinoValue = rollDice();
+                
+                // Анимируем бросок костей игрока
+                animateDiceRoll(playerDice, () => {
+                    setDiceValue(playerDice, playerValue);
+                });
+                
+                // Анимируем бросок костей казино с небольшой задержкой
+                setTimeout(() => {
+                    animateDiceRoll(casinoDice, () => {
+                        setDiceValue(casinoDice, casinoValue);
+                        
+                        // Определяем результат
+                        let resultText = '';
+                        let resultClass = '';
+                        let winAmount = 0;
+                        
+                        if (playerValue > casinoValue) {
+                            resultText = `Вы выиграли ${betAmount * 2}! 🎉`;
+                            resultClass = 'win';
+                            playerScore++;
+                            winAmount = betAmount * 2;
+                            const newBalanceAfterWin = newBalance + winAmount;
+                            updateBalanceInSystem(newBalanceAfterWin);
+                            
+                            // Подсветка секций
+                            playerSection.classList.add('win');
+                            casinoSection.classList.add('lose');
+                            
+                            // Эффекты выигрыша
+                            createCoins(20);
+                            showWinAnimation();
+                            
+                            // Джекпот при выпадении двух шестерок
+                            if (playerValue === 6 && casinoValue === 1) {
+                                const jackpotAmount = betAmount * 5;
+                                const newBalanceAfterJackpot = newBalanceAfterWin + jackpotAmount;
+                                updateBalanceInSystem(newBalanceAfterJackpot);
+                                resultText = `ДЖЕКПОТ! Вы выиграли ${jackpotAmount}! 🎰`;
+                                showJackpot();
+                                winAmount = jackpotAmount;
+                            }
+                        } else if (playerValue < casinoValue) {
+                            resultText = `Казино выиграло! Вы потеряли ${betAmount} 😞`;
+                            resultClass = 'lose';
+                            casinoScore++;
+                            
+                            // Подсветка секций
+                            playerSection.classList.add('lose');
+                            casinoSection.classList.add('win');
+                        } else {
+                            resultText = 'Ничья! Ставка возвращена 🤝';
+                            resultClass = 'draw';
+                            updateBalanceInSystem(newBalance + betAmount);
+                            
+                            // Подсветка секций
+                            playerSection.classList.add('draw');
+                            casinoSection.classList.add('draw');
+                        }
+                        
+                        // Обновляем результат
+                        resultDiv.textContent = resultText;
+                        resultDiv.className = `result ${resultClass}`;
+                        
+                        // Обновляем счет
+                        playerScoreDiv.textContent = playerScore;
+                        casinoScoreDiv.textContent = casinoScore;
+                        
+                        // Обновляем баланс
+                        updateBet();
+                        
+                        // Обновляем историю
+                        updateHistory(
+                            playerValue, 
+                            casinoValue, 
+                            playerValue > casinoValue ? 'win' : 
+                            playerValue < casinoValue ? 'lose' : 'draw',
+                            winAmount
+                        );
+                        
+                        // Включаем кнопку обратно
+                        isRolling = false;
+                        updateBet();
+                    });
+                }, 500);
+            });
+            
+            // Инициализация начальных значений
+            setDiceValue(playerDice, 1);
+            setDiceValue(casinoDice, 1);
+            updateBet();
+            
+            // Запускаем загрузку
+            startLoading();
+            
+            // Запускаем генерацию случайных ставок
+            startRandomBets();
+            
+            // Обновляем баланс при загрузке
+            const currentBalance = getCurrentBalance();
+            updateGameBalance(currentBalance);
+        });
+    </script>
+</body>
+</html>

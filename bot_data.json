@@ -1,0 +1,111 @@
+{
+  "tickets": {
+    "1": {
+      "user_id": "5710697156",
+      "username": "Metker1",
+      "first_name": "Владислав",
+      "message": "я все проиграл",
+      "status": "in_progress",
+      "created_at": "2025-11-18T16:40:34.844572",
+      "admin_id": 5710697156,
+      "admin_username": "Metker1",
+      "responses": [
+        {
+          "text": "круто",
+          "is_admin": true,
+          "timestamp": "2025-11-18T18:39:46.421190"
+        }
+      ]
+    },
+    "2": {
+      "user_id": "5710697156",
+      "username": "Metker1",
+      "first_name": "Владислав",
+      "message": "Я проиграл все деньги что делать",
+      "status": "in_progress",
+      "created_at": "2025-11-18T18:24:25.515191",
+      "admin_id": 5710697156,
+      "admin_username": "Metker1",
+      "responses": [
+        {
+          "text": "не ставте больше",
+          "is_admin": true,
+          "timestamp": "2025-11-18T18:32:12.417884"
+        },
+        {
+          "text": "ничего",
+          "is_admin": true,
+          "timestamp": "2025-11-18T18:38:16.892868"
+        }
+      ]
+    },
+    "3": {
+      "user_id": "5710697156",
+      "username": "Metker1",
+      "first_name": "Владислав",
+      "message": "/start",
+      "status": "closed",
+      "created_at": "2025-11-18T18:32:45.678191",
+      "admin_id": 5710697156,
+      "admin_username": "Metker1",
+      "responses": []
+    },
+    "4": {
+      "user_id": "725291866",
+      "username": "ocoofee",
+      "first_name": "𝙿𝚊𝚟𝚎𝚕 𝙰𝚗𝚍𝚛𝚎𝚎𝚟𝚒𝚌𝚑",
+      "message": "Лох бет ставки на спорт",
+      "status": "in_progress",
+      "created_at": "2025-11-20T15:32:51.110440",
+      "admin_id": 5710697156,
+      "admin_username": "Metker1",
+      "responses": [
+        {
+          "text": "нет ты",
+          "is_admin": true,
+          "timestamp": "2025-11-20T15:34:32.765858"
+        },
+        {
+          "text": "больше ставте больше проигрывайте",
+          "is_admin": true,
+          "timestamp": "2025-11-20T15:37:04.685289"
+        }
+      ]
+    },
+    "5": {
+      "user_id": "725291866",
+      "username": "ocoofee",
+      "first_name": "𝙿𝚊𝚟𝚎𝚕 𝙰𝚗𝚍𝚛𝚎𝚎𝚟𝚒𝚌𝚑",
+      "message": "Ало гараж",
+      "status": "in_progress",
+      "created_at": "2025-11-20T15:36:17.450506",
+      "admin_id": 5710697156,
+      "admin_username": "Metker1",
+      "responses": [
+        {
+          "text": "больше ставте больше проигрывайте",
+          "is_admin": true,
+          "timestamp": "2025-11-20T15:37:20.642907"
+        }
+      ]
+    }
+  },
+  "users": {
+    "5710697156": {
+      "username": "Metker1",
+      "first_name": "Владислав",
+      "last_name": "Шапкин",
+      "registered_at": "2025-11-18T16:34:54.642375",
+      "id": 1
+    },
+    "725291866": {
+      "username": "ocoofee",
+      "first_name": "𝙿𝚊𝚟𝚎𝚕 𝙰𝚗𝚍𝚛𝚎𝚎𝚟𝚒𝚌𝚑",
+      "last_name": null,
+      "registered_at": "2025-11-20T15:32:28.588531",
+      "id": 2
+    }
+  },
+  "ticket_counter": 6,
+  "user_counter": 3
+}

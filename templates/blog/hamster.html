@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neon Hamster Tap - Тапалка Хомяка</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --neon-pink: #ff00ff;
+      --neon-blue: #00ffff;
+      --neon-purple: #bf00ff;
+      --neon-green: #39ff14;
+      --dark-bg: #0a0a16;
+      --darker-bg: #050510;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+    
+    * { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      margin: 0; 
+      font-family: 'Exo 2', sans-serif; 
+      color: white; 
+      background: var(--darker-bg);
+      overflow-x: hidden;
+      min-height: 100vh;
+      transition: background 0.5s ease;
+    }
+
+    /* Прелоадер */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--darker-bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    
+    .preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .loader {
+      width: 120px;
+      height: 120px;
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      border-top: 5px solid var(--neon-pink);
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    
+    .loader::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 5px solid transparent;
+      border-top: 5px solid var(--neon-blue);
+      border-radius: 50%;
+      animation: spin 2s linear infinite reverse;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .preloader-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .preloader-counter {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+    }
+    
+    .loading-bar {
+      width: 300px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      margin-top: 1rem;
+      overflow: hidden;
+    }
+    
+    .loading-progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      border-radius: 5px;
+      transition: width 0.3s ease;
+    }
+
+    /* Анимированный фон */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(10, 10, 30, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 10, 30, 0.2) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    .floating-shapes {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--neon-pink);
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+    
+    .shape-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--neon-blue);
+      top: 60%;
+      left: 80%;
+      animation-delay: -5s;
+    }
+    
+    .shape-3 {
+      width: 250px;
+      height: 250px;
+      background: var(--neon-purple);
+      top: 20%;
+      left: 70%;
+      animation-delay: -10s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, 30px) scale(1.1); }
+      50% { transform: translate(-15px, 20px) scale(0.9); }
+      75% { transform: translate(10px, -15px) scale(1.05); }
+    }
+    
+    /* Заголовок с логотипом */
+    header { 
+      padding: 1rem 2rem; 
+      text-align: center; 
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+    }
+    
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+    
+    .neon-logo {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .neon-logo:hover {
+      transform: scale(1.1);
+    }
+    
+    .logo-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      animation: logoRotate 10s linear infinite;
+    }
+    
+    .logo-circle:nth-child(1) {
+      border-top-color: var(--neon-pink);
+      animation-delay: 0s;
+      animation-duration: 8s;
+    }
+    
+    .logo-circle:nth-child(2) {
+      border-right-color: var(--neon-blue);
+      animation-delay: 0.5s;
+      animation-duration: 12s;
+    }
+    
+    .logo-circle:nth-child(3) {
+      border-bottom-color: var(--neon-green);
+      animation-delay: 1s;
+      animation-duration: 10s;
+    }
+    
+    .logo-circle:nth-child(4) {
+      border-left-color: var(--neon-purple);
+      animation-delay: 1.5s;
+      animation-duration: 15s;
+    }
+    
+    .logo-inner {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      animation: innerPulse 3s ease-in-out infinite;
+      overflow: hidden;
+    }
+    
+    .logo-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+    
+    @keyframes logoRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes innerPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); }
+      50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 0, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.5); }
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .header-title {
+      margin: 0; 
+      font-size: 3rem; 
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 2s infinite alternate;
+    }
+    
+    @keyframes neonPulse {
+      0% { text-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3); }
+      100% { text-shadow: 0 0 15px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3); }
+    }
+    
+    /* Контейнер для авторизации */
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .auth-btn {
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 600;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    .auth-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+    }
+    
+    .user-panel {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .user-greeting {
+      font-size: 1rem;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+    
+    .user-balance {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--neon-blue);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .balance-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .balance-btn {
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+    }
+    
+    .balance-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+    }
+    
+    .logout-btn {
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      background: linear-gradient(45deg, #ff3333, #ff6666);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+    }
+    
+    .logout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 51, 51, 0.5);
+    }
+    
+    /* Игра Тапалка Хомяка */
+    .game-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    
+    @media (max-width: 900px) {
+      .game-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .game-area {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      border: 1px solid var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .game-area::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+    
+    .game-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+    }
+    
+    .hamster-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 1.5rem 0;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .hamster {
+      width: 100%;
+      height: 100%;
+      background: #FFD700;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 
+        0 0 30px rgba(255, 215, 0, 0.7),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.1s ease;
+      overflow: hidden;
+    }
+    
+    .hamster::before {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle at 30% 30%, #FFEC8B, #FFD700 70%);
+      border-radius: 50%;
+    }
+    
+    .hamster-eye {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #000;
+      border-radius: 50%;
+      top: 35%;
+    }
+    
+    .hamster-eye.left {
+      left: 30%;
+    }
+    
+    .hamster-eye.right {
+      right: 30%;
+    }
+    
+    .hamster-eye::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+    }
+    
+    .hamster-nose {
+      position: absolute;
+      width: 15px;
+      height: 10px;
+      background: #FF69B4;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, 0);
+    }
+    
+    .hamster-ear {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: #FFD700;
+      border-radius: 50%;
+      top: 10%;
+      z-index: -1;
+    }
+    
+    .hamster-ear.left {
+      left: 20%;
+      transform: rotate(-20deg);
+    }
+    
+    .hamster-ear.right {
+      right: 20%;
+      transform: rotate(20deg);
+    }
+    
+    .hamster-ear::before {
+      content: '';
+      position: absolute;
+      width: 60%;
+      height: 60%;
+      background: #FFA500;
+      border-radius: 50%;
+      top: 20%;
+      left: 20%;
+    }
+    
+    .hamster-container:active .hamster {
+      transform: scale(0.95);
+    }
+    
+    .hamster-container:hover .hamster {
+      animation: hamsterPulse 0.5s ease;
+    }
+    
+    @keyframes hamsterPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .game-stats {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 1.5rem;
+      gap: 1rem;
+    }
+    
+    .stat-box {
+      background: rgba(10, 10, 30, 0.7);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      flex: 1;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+    
+    .withdraw-area {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      border: 1px solid var(--neon-purple);
+      box-shadow: 0 0 20px rgba(191, 0, 255, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .withdraw-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: var(--neon-purple);
+    }
+    
+    .withdraw-info {
+      background: rgba(10, 10, 30, 0.7);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--neon-green);
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+    }
+    
+    .withdraw-info p {
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    
+    .withdraw-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group label {
+      margin-bottom: 0.5rem;
+      color: #ccc;
+    }
+    
+    .form-group input {
+      padding: 0.8rem;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-family: 'Exo 2', sans-serif;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    .withdraw-btn {
+      padding: 1rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+    
+    .withdraw-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+    }
+    
+    .withdraw-btn:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .withdraw-success {
+      color: var(--neon-green);
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: 600;
+      display: none;
+    }
+    
+    /* Анимации для игры */
+    @keyframes tapEffect {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    
+    .tap-effect {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--neon-pink) 0%, transparent 70%);
+      pointer-events: none;
+      animation: tapEffect 0.5s ease-out forwards;
+    }
+    
+    /* Модальные окна */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+      border: 1px solid var(--neon-pink);
+      position: relative;
+      animation: modalAppear 0.4s ease-out;
+    }
+    
+    @keyframes modalAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .close-btn:hover {
+      color: var(--neon-pink);
+      transform: scale(1.2);
+    }
+    
+    .modal h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--neon-blue);
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+    }
+    
+    .form-footer {
+      text-align: center;
+      margin-top: 1rem;
+      color: #ccc;
+    }
+    
+    .form-footer a {
+      color: var(--neon-blue);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    .error-message {
+      color: #ff4d4d;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      display: none;
+    }
+    
+    .success-message {
+      color: var(--neon-green);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      display: none;
+    }
+    
+    /* Эффект пульсации для баланса */
+    @keyframes balancePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .balance-updated {
+      animation: balancePulse 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <!-- Прелоадер -->
+  <div class="preloader" id="preloader">
+    <div class="loader"></div>
+    <div class="preloader-text">Neon Hamster Tap</div>
+    <div class="preloader-counter" id="preloader-counter">0%</div>
+    <div class="loading-bar">
+      <div class="loading-progress" id="loading-progress"></div>
+    </div>
+  </div>
+
+  <!-- Анимированный фон -->
+  <div class="bg-animation">
+    <div class="bg-grid"></div>
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-top">
+      <div class="logo-container">
+        <div class="neon-logo" id="neon-logo">
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-inner">HT</div>
+        </div>
+      </div>
+      
+      <!-- Контейнер для авторизации -->
+      <div class="auth-container">
+        <div id="auth-buttons">
+          <button class="auth-btn" id="login-btn">Войти</button>
+          <button class="auth-btn" id="register-btn">Регистрация</button>
+        </div>
+        <div id="user-panel" class="user-panel" style="display: none;">
+          <div class="user-info">
+            <span class="user-greeting" id="user-greeting">Привет, пользователь!</span>
+            <span class="user-balance">Баланс: <span id="balance-amount">0</span> ₽</span>
+          </div>
+          <div class="balance-actions">
+            <button class="balance-btn" id="deposit-btn">Пополнить</button>
+            <button class="balance-btn" id="withdraw-btn">Вывести</button>
+            <button class="logout-btn" id="logout-btn">Выйти</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <h1 class="header-title">Neon Hamster Tap</h1>
+    <p>Тапай хомяка и зарабатывай рубли!</p>
+  </header>
+
+  <!-- Основной контент игры -->
+  <main>
+    <div class="game-container">
+      <div class="game-area">
+        <h2 class="game-title">Тапалка Хомяка</h2>
+        
+        <div class="hamster-container" id="hamster-container">
+          <div class="hamster-ear left"></div>
+          <div class="hamster-ear right"></div>
+          <div class="hamster" id="hamster">
+            <div class="hamster-eye left"></div>
+            <div class="hamster-eye right"></div>
+            <div class="hamster-nose"></div>
+          </div>
+
+
+        </div>
+
+        <div class="game-stats">
+          <div class="stat-box">
+            <div class="stat-label">Рубли</div>
+            <div class="stat-value" id="coins">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">За клик</div>
+            <div class="stat-value" id="coins-per-click">1</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Всего кликов</div>
+            <div class="stat-value" id="total-clicks">0</div>
+          </div>
+        </div>
+        
+        <div class="game-stats" style="margin-top: 1rem;">
+          <div class="stat-box">
+            <div class="stat-label">Рекорд</div>
+            <div class="stat-value" id="record">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Курс</div>
+            <div class="stat-value">1:1</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="withdraw-area">
+        <h2 class="withdraw-title">Вывод рублей</h2>
+        
+        <div class="withdraw-info">
+          <p><strong>Как это работает:</strong></p>
+          <p>Вы зарабатываете рубли, нажимая на хомяка. Каждый рубль равен 1 монете.</p>
+          <p>Минимальная сумма для вывода: <strong>10 рублей</strong></p>
+          <p>Вывод осуществляется на ваш основной баланс в казино.</p>
+        </div>
+        
+        <div class="withdraw-form" id="withdraw-form">
+          <div class="form-group">
+            <label for="withdraw-coins">Количество рублей для вывода</label>
+            <input type="number" id="withdraw-coins" min="10" placeholder="Минимум 10 рублей">
+          </div>
+          
+          <div class="form-group">
+            <label>Будет переведено на баланс:</label>
+            <input type="text" id="withdraw-amount" value="0 руб" readonly>
+          </div>
+          
+          <button class="withdraw-btn" id="withdraw-coins-btn" disabled>Вывести рубли</button>
+          
+          <div class="withdraw-success" id="withdraw-success">
+            Рубли успешно переведены на ваш баланс!
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Модальные окна -->
+  <!-- Модальное окно входа -->
+  <div id="login-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-login">&times;</button>
+      <h2>Вход в аккаунт</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-username">Имя пользователя</label>
+          <input type="text" id="login-username" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Пароль</label>
+          <input type="password" id="login-password" required>
+        </div>
+        <button type="submit" class="submit-btn">Войти</button>
+        <div class="error-message" id="login-error"></div>
+        <div class="form-footer">
+          Нет аккаунта? <a id="show-register">Зарегистрироваться</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно регистрации -->
+  <div id="register-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-register">&times;</button>
+      <h2>Регистрация аккаунта</h2>
+      <form id="register-form">
+        <div class="form-group">
+          <label for="register-username">Имя пользователя</label>
+          <input type="text" id="register-username" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Пароль</label>
+          <input type="password" id="register-password" required>
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Подтвердите пароль</label>
+          <input type="password" id="confirm-password" required>
+        </div>
+        <button type="submit" class="submit-btn">Зарегистрироваться</button>
+        <div class="error-message" id="register-error"></div>
+        <div class="success-message" id="register-success"></div>
+        <div class="form-footer">
+          Уже есть аккаунт? <a id="show-login">Войти</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно пополнения баланса -->
+  <div id="deposit-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-deposit">&times;</button>
+      <h2>Пополнение баланса</h2>
+      <form id="deposit-form">
+        <div class="form-group">
+          <label for="deposit-amount">Сумма пополнения (₽)</label>
+          <input type="number" id="deposit-amount" min="1" required>
+        </div>
+        <button type="submit" class="submit-btn">Пополнить</button>
+        <div class="success-message" id="deposit-success"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно вывода средств -->
+  <div id="withdraw-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-withdraw">&times;</button>
+      <h2>Вывод средств</h2>
+      <form id="withdraw-form">
+        <div class="form-group">
+          <label for="withdraw-amount">Сумма вывода (₽)</label>
+          <input type="number" id="withdraw-amount" min="1" required>
+        </div>
+        <button type="submit" class="submit-btn">Вывести</button>
+        <div class="error-message" id="withdraw-error"></div>
+        <div class="success-message" id="withdraw-success"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Инициализация прелоадера
+    document.addEventListener('DOMContentLoaded', function() {
+      initPreloader();
+    });
+
+    // Прелоадер
+    function initPreloader() {
+      const preloader = document.getElementById('preloader');
+      const preloaderCounter = document.getElementById('preloader-counter');
+      const loadingProgress = document.getElementById('loading-progress');
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 1;
+        preloaderCounter.textContent = `${progress}%`;
+        loadingProgress.style.width = `${progress}%`;
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            preloader.classList.add('hidden');
+            initAuthSystem();
+            initGame();
+          }, 500);
+        }
+      }, 30); // 3 секунды загрузки
+    }
+
+    // Система авторизации
+    function initAuthSystem() {
+      const loginBtn = document.getElementById('login-btn');
+      const registerBtn = document.getElementById('register-btn');
+      const logoutBtn = document.getElementById('logout-btn');
+      const depositBtn = document.getElementById('deposit-btn');
+      const withdrawBtn = document.getElementById('withdraw-btn');
+      
+      const loginModal = document.getElementById('login-modal');
+      const registerModal = document.getElementById('register-modal');
+      const depositModal = document.getElementById('deposit-modal');
+      const withdrawModal = document.getElementById('withdraw-modal');
+      
+      const closeLogin = document.getElementById('close-login');
+      const closeRegister = document.getElementById('close-register');
+      const closeDeposit = document.getElementById('close-deposit');
+      const closeWithdraw = document.getElementById('close-withdraw');
+      
+      const showRegister = document.getElementById('show-register');
+      const showLogin = document.getElementById('show-login');
+      
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const depositForm = document.getElementById('deposit-form');
+      const withdrawForm = document.getElementById('withdraw-form');
+      
+      // Проверяем авторизацию при загрузке
+      checkAuthStatus();
+      
+      // Открытие модальных окон
+      loginBtn.addEventListener('click', () => loginModal.style.display = 'flex');
+      registerBtn.addEventListener('click', () => registerModal.style.display = 'flex');
+      depositBtn.addEventListener('click', () => depositModal.style.display = 'flex');
+      withdrawBtn.addEventListener('click', () => withdrawModal.style.display = 'flex');
+      
+      // Закрытие модальных окон
+      closeLogin.addEventListener('click', () => loginModal.style.display = 'none');
+      closeRegister.addEventListener('click', () => registerModal.style.display = 'none');
+      closeDeposit.addEventListener('click', () => depositModal.style.display = 'none');
+      closeWithdraw.addEventListener('click', () => withdrawModal.style.display = 'none');
+      
+      // Переключение между окнами входа и регистрации
+      showRegister.addEventListener('click', () => {
+        loginModal.style.display = 'none';
+        registerModal.style.display = 'flex';
+      });
+      
+      showLogin.addEventListener('click', () => {
+        registerModal.style.display = 'none';
+        loginModal.style.display = 'flex';
+      });
+      
+      // Закрытие модальных окон при клике вне их
+      window.addEventListener('click', (e) => {
+        if (e.target === loginModal) loginModal.style.display = 'none';
+        if (e.target === registerModal) registerModal.style.display = 'none';
+        if (e.target === depositModal) depositModal.style.display = 'none';
+        if (e.target === withdrawModal) withdrawModal.style.display = 'none';
+      });
+      
+      // Обработка формы входа
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const errorElement = document.getElementById('login-error');
+        
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(u => u.username === username && u.password === password);
+        
+        if (user) {
+          // Сохраняем текущего пользователя
+          localStorage.setItem('currentUser', JSON.stringify({
+            username: user.username,
+            balance: user.balance || 1000
+          }));
+          
+          loginModal.style.display = 'none';
+          checkAuthStatus();
+          loginForm.reset();
+          errorElement.style.display = 'none';
+          
+          // Загружаем данные игры для пользователя
+          loadGameData();
+        } else {
+          errorElement.textContent = 'Неверное имя пользователя или пароль';
+          errorElement.style.display = 'block';
+        }
+      });
+      
+      // Обработка формы регистрации
+      registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('register-username').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const errorElement = document.getElementById('register-error');
+        const successElement = document.getElementById('register-success');
+        
+        if (password !== confirmPassword) {
+          errorElement.textContent = 'Пароли не совпадают';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        if (password.length < 4) {
+          errorElement.textContent = 'Пароль должен содержать минимум 4 символа';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        
+        if (users.find(u => u.username === username)) {
+          errorElement.textContent = 'Пользователь с таким именем уже существует';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        // Создаем нового пользователя
+        users.push({
+          username,
+          password,
+          balance: 1000, // Начальный баланс
+          registrationDate: new Date().toISOString()
+        });
+        
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        successElement.textContent = 'Регистрация прошла успешно! Теперь вы можете войти.';
+        successElement.style.display = 'block';
+        errorElement.style.display = 'none';
+        
+        // Очищаем форму
+        registerForm.reset();
+        
+        // Переключаем на окно входа через 2 секунды
+        setTimeout(() => {
+          registerModal.style.display = 'none';
+          loginModal.style.display = 'flex';
+          successElement.style.display = 'none';
+        }, 2000);
+      });
+      
+      // Обработка формы пополнения
+      depositForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const amount = parseInt(document.getElementById('deposit-amount').value);
+        const successElement = document.getElementById('deposit-success');
+        
+        if (isNaN(amount) || amount <= 0) {
+          successElement.textContent = 'Введите корректную сумму';
+          successElement.style.color = '#ff4d4d';
+          successElement.style.display = 'block';
+          return;
+        }
+        
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+          currentUser.balance = (currentUser.balance || 0) + amount;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          
+          // Обновляем пользователя в общем списке
+          const users = JSON.parse(localStorage.getItem('users')) || [];
+          const userIndex = users.findIndex(u => u.username === currentUser.username);
+          if (userIndex !== -1) {
+            users[userIndex].balance = currentUser.balance;
+            localStorage.setItem('users', JSON.stringify(users));
+          }
+          
+          successElement.textContent = `Баланс пополнен на ${amount} ₽`;
+          successElement.style.color = 'var(--neon-green)';
+          successElement.style.display = 'block';
+          
+          // Обновляем отображение баланса
+          updateBalanceDisplay();
+          
+          // Очищаем форму через 2 секунды
+          setTimeout(() => {
+            depositForm.reset();
+            successElement.style.display = 'none';
+            depositModal.style.display = 'none';
+          }, 2000);
+        }
+      });
+      
+      // Обработка формы вывода
+      withdrawForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const amount = parseInt(document.getElementById('withdraw-amount').value);
+        const errorElement = document.getElementById('withdraw-error');
+        const successElement = document.getElementById('withdraw-success');
+        
+        if (isNaN(amount) || amount <= 0) {
+          errorElement.textContent = 'Введите корректную сумму';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+          errorElement.textContent = 'Необходимо войти в систему';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        if (amount > currentUser.balance) {
+          errorElement.textContent = 'Недостаточно средств';
+          errorElement.style.display = 'block';
+          successElement.style.display = 'none';
+          return;
+        }
+        
+        // В реальном приложении здесь был бы запрос к серверу
+        currentUser.balance -= amount;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Обновляем пользователя в общем списке
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const userIndex = users.findIndex(u => u.username === currentUser.username);
+        if (userIndex !== -1) {
+          users[userIndex].balance = currentUser.balance;
+          localStorage.setItem('users', JSON.stringify(users));
+        }
+        
+        successElement.textContent = `Запрос на вывод ${amount} ₽ принят. Средства поступят в течение 24 часов.`;
+        successElement.style.display = 'block';
+        errorElement.style.display = 'none';
+        
+        // Обновляем отображение баланса
+        updateBalanceDisplay();
+        
+        // Очищаем форму через 3 секунды
+        setTimeout(() => {
+          withdrawForm.reset();
+          successElement.style.display = 'none';
+          withdrawModal.style.display = 'none';
+        }, 3000);
+      });
+      
+      // Выход из системы
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        checkAuthStatus();
+        
+        // Сбрасываем игру
+        resetGame();
+      });
+      
+      // Функция проверки статуса авторизации
+      function checkAuthStatus() {
+        const authButtons = document.getElementById('auth-buttons');
+        const userPanel = document.getElementById('user-panel');
+        const userGreeting = document.getElementById('user-greeting');
+        
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (currentUser) {
+          authButtons.style.display = 'none';
+          userPanel.style.display = 'flex';
+          userGreeting.textContent = `Привет, ${currentUser.username}!`;
+          updateBalanceDisplay();
+        } else {
+          authButtons.style.display = 'flex';
+          userPanel.style.display = 'none';
+        }
+      }
+      
+      // Функция обновления отображения баланса
+      function updateBalanceDisplay() {
+        const balanceAmount = document.getElementById('balance-amount');
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (currentUser && balanceAmount) {
+          balanceAmount.textContent = currentUser.balance || 0;
+          balanceAmount.classList.add('balance-updated');
+          setTimeout(() => {
+            balanceAmount.classList.remove('balance-updated');
+          }, 500);
+        }
+      }
+      
+      // Экспортируем функцию для использования в других модулях
+      window.updateBalanceDisplay = updateBalanceDisplay;
+    }
+
+    // Игра Тапалка Хомяка
+    function initGame() {
+      const hamsterContainer = document.getElementById('hamster-container');
+      const coinsElement = document.getElementById('coins');
+      const coinsPerClickElement = document.getElementById('coins-per-click');
+      const totalClicksElement = document.getElementById('total-clicks');
+      const recordElement = document.getElementById('record');
+      const withdrawCoinsInput = document.getElementById('withdraw-coins');
+      const withdrawAmountElement = document.getElementById('withdraw-amount');
+      const withdrawCoinsBtn = document.getElementById('withdraw-coins-btn');
+      const withdrawSuccess = document.getElementById('withdraw-success');
+      
+      // Игровые переменные
+      let coins = 0;
+      let coinsPerClick = 1;
+      let totalClicks = 0;
+      let record = 0;
+      
+      // Курс обмена: 1 монета = 1 рубль
+      const exchangeRate = 1;
+      
+      // Загрузка данных игры
+      function loadGameData() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) return;
+        
+        const gameData = JSON.parse(localStorage.getItem(`gameData_${currentUser.username}`));
+        
+        if (gameData) {
+          coins = gameData.coins || 0;
+          coinsPerClick = gameData.coinsPerClick || 1;
+          totalClicks = gameData.totalClicks || 0;
+          record = gameData.record || 0;
+          
+          updateUI();
+          updateWithdrawForm();
+        }
+      }
+      
+      // Сохранение данных игры
+      function saveGameData() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) return;
+        
+        const gameData = {
+          coins,
+          coinsPerClick,
+          totalClicks,
+          record
+        };
+        
+        localStorage.setItem(`gameData_${currentUser.username}`, JSON.stringify(gameData));
+      }
+      
+      // Сброс игры при выходе
+      function resetGame() {
+        coins = 0;
+        coinsPerClick = 1;
+        totalClicks = 0;
+        
+        updateUI();
+        updateWithdrawForm();
+      }
+      
+      // Обновление интерфейса
+      function updateUI() {
+        coinsElement.textContent = formatNumber(coins);
+        coinsPerClickElement.textContent = formatNumber(coinsPerClick);
+        totalClicksElement.textContent = formatNumber(totalClicks);
+        recordElement.textContent = formatNumber(record);
+        
+        // Обновляем рекорд
+        if (coins > record) {
+          record = coins;
+        }
+      }
+      
+      // Форматирование чисел
+      function formatNumber(num) {
+        if (num >= 1000000) {
+          return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+          return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
+      }
+      
+      // Обновление формы вывода
+      function updateWithdrawForm() {
+        const withdrawCoins = parseInt(withdrawCoinsInput.value) || 0;
+        const rubles = withdrawCoins * exchangeRate;
+        
+        withdrawAmountElement.value = rubles.toFixed(2) + ' руб';
+        
+        // Активируем кнопку, если можно вывести
+        const canWithdraw = coins >= withdrawCoins && withdrawCoins >= 10;
+        withdrawCoinsBtn.disabled = !canWithdraw;
+      }
+      
+      // Обработчик клика по хомяку
+      hamsterContainer.addEventListener('click', (e) => {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+          alert('Для игры необходимо войти в систему');
+          return;
+        }
+        
+        // Создаем эффект клика
+        createTapEffect(e.clientX, e.clientY);
+        
+        // Увеличиваем счетчик кликов
+        totalClicks += 1;
+        
+        // Добавляем монеты
+        coins += coinsPerClick;
+        
+        // Анимация хомяка
+        const hamster = document.getElementById('hamster');
+        hamster.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          hamster.style.transform = 'scale(1)';
+        }, 100);
+        
+        updateUI();
+        updateWithdrawForm();
+        saveGameData();
+      });
+      
+      // Обработчик изменения количества монет для вывода
+      withdrawCoinsInput.addEventListener('input', () => {
+        updateWithdrawForm();
+      });
+      
+      // Обработчик кнопки вывода монет
+      withdrawCoinsBtn.addEventListener('click', () => {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) return;
+        
+        const withdrawCoins = parseInt(withdrawCoinsInput.value);
+        
+        if (withdrawCoins < 10) {
+          alert('Минимальная сумма для вывода - 10 рублей');
+          return;
+        }
+        
+        if (coins < withdrawCoins) {
+          alert('Недостаточно рублей для вывода');
+          return;
+        }
+        
+        // Переводим монеты в рубли
+        const rubles = withdrawCoins * exchangeRate;
+        
+        // Вычитаем монеты и добавляем рубли
+        coins -= withdrawCoins;
+        currentUser.balance = (currentUser.balance || 0) + rubles;
+        
+        // Сохраняем изменения
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Обновляем пользователя в общем списке
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const userIndex = users.findIndex(u => u.username === currentUser.username);
+        if (userIndex !== -1) {
+          users[userIndex].balance = currentUser.balance;
+          localStorage.setItem('users', JSON.stringify(users));
+        }
+        
+        // Обновляем интерфейс
+        updateBalanceDisplay(); // Мгновенное обновление баланса
+        updateUI();
+        updateWithdrawForm();
+        saveGameData();
+        
+        // Показываем сообщение об успехе
+        withdrawSuccess.style.display = 'block';
+        setTimeout(() => {
+          withdrawSuccess.style.display = 'none';
+        }, 3000);
+        
+        // Сбрасываем поле ввода
+        withdrawCoinsInput.value = '';
+        updateWithdrawForm();
+      });
+      
+      // Создание эффекта клика
+      function createTapEffect(x, y) {
+        const effect = document.createElement('div');
+        effect.className = 'tap-effect';
+        effect.style.left = `${x - 10}px`;
+        effect.style.top = `${y - 10}px`;
+        
+        document.body.appendChild(effect);
+        
+        setTimeout(() => {
+          effect.remove();
+        }, 500);
+      }
+      
+      // Автосохранение каждые 30 секунд
+      setInterval(() => {
+        saveGameData();
+      }, 30000);
+      
+      // Инициализация игры
+      loadGameData();
+      updateWithdrawForm();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neon Football - Расписание матчей РПЛ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --neon-pink: #ff00ff;
+      --neon-blue: #00ffff;
+      --neon-purple: #bf00ff;
+      --neon-green: #39ff14;
+      --dark-bg: #0a0a16;
+      --darker-bg: #050510;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+    
+    * { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      margin: 0; 
+      font-family: 'Exo 2', sans-serif; 
+      color: white; 
+      background: var(--darker-bg);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Анимированный фон */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(10, 10, 30, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 10, 30, 0.2) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    .floating-shapes {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--neon-pink);
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+    
+    .shape-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--neon-blue);
+      top: 60%;
+      left: 80%;
+      animation-delay: -5s;
+    }
+    
+    .shape-3 {
+      width: 250px;
+      height: 250px;
+      background: var(--neon-purple);
+      top: 20%;
+      left: 70%;
+      animation-delay: -10s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, 30px) scale(1.1); }
+      50% { transform: translate(-15px, 20px) scale(0.9); }
+      75% { transform: translate(10px, -15px) scale(1.05); }
+    }
+    
+    .neon-lines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .neon-line {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+      opacity: 0.3;
+      animation: lineMove 10s linear infinite;
+    }
+    
+    .neon-line:nth-child(1) {
+      top: 20%;
+      animation-delay: 0s;
+    }
+    
+    .neon-line:nth-child(2) {
+      top: 40%;
+      animation-delay: -2s;
+    }
+    
+    .neon-line:nth-child(3) {
+      top: 60%;
+      animation-delay: -4s;
+    }
+    
+    .neon-line:nth-child(4) {
+      top: 80%;
+      animation-delay: -6s;
+    }
+    
+    @keyframes lineMove {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    /* Заголовок */
+    header { 
+      padding: 1rem 2rem; 
+      text-align: center; 
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+    }
+    
+    .header-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+      z-index: -1;
+      animation: headerGlow 5s infinite alternate;
+    }
+    
+    @keyframes headerGlow {
+      0% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0.7;
+        transform: scale(1.1);
+      }
+    }
+    
+    .header-title {
+      margin: 0; 
+      font-size: 3rem; 
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 2s infinite alternate;
+    }
+    
+    @keyframes neonPulse {
+      0% { text-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3); }
+      100% { text-shadow: 0 0 15px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3); }
+    }
+    
+    .header-subtitle {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+      color: #ccc;
+      font-family: 'Exo 2', sans-serif;
+    }
+    
+    /* Навигация */
+    .main-nav {
+      width: 100%;
+      margin-top: 1rem;
+    }
+    
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 12px;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 5px 15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+    
+    .nav-list {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 10px;
+    }
+    
+    .nav-item {
+      position: relative;
+    }
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      padding: 12px 20px;
+      border-radius: 10px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+    
+    .nav-link:hover::before {
+      left: 100%;
+    }
+    
+    .nav-link:hover {
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+      border: 1px solid var(--neon-pink);
+      transform: translateY(-2px);
+    }
+    
+    .nav-link.active {
+      color: var(--neon-green);
+      background: rgba(57, 255, 20, 0.1);
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+      border: 1px solid var(--neon-green);
+      transform: translateY(-2px);
+    }
+    
+    /* Контейнер расписания */
+    .schedule-container {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+    
+    .schedule-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .schedule-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+    }
+    
+    .season-info {
+      color: #ccc;
+      font-size: 1.1rem;
+    }
+    
+    /* Вкладки туров */
+    .tabs-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      overflow-x: auto;
+      padding: 0.5rem 0;
+    }
+    
+    .tour-tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 0.5rem;
+      border: 1px solid var(--neon-purple);
+      box-shadow: 0 0 15px rgba(191, 0, 255, 0.3);
+    }
+    
+    .tour-tab {
+      padding: 0.8rem 1.2rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+    
+    .tour-tab:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--neon-blue);
+    }
+    
+    .tour-tab.active {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+    
+    /* Карточки матчей */
+    .matches-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .match-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      overflow: hidden;
+      border: 1px solid transparent;
+      transition: all 0.4s ease;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .match-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    
+    .match-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+    
+    .match-card:hover::before {
+      opacity: 1;
+      animation: borderRotate 3s linear infinite;
+    }
+    
+    @keyframes borderRotate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    
+    .match-header {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      padding: 1rem;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .match-date {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    
+    .match-time {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    
+    .match-content {
+      padding: 1.5rem;
+    }
+    
+    .match-teams {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 40%;
+    }
+    
+    .team-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+    
+    .team-name {
+      font-weight: 600;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    
+    .vs {
+      font-weight: bold;
+      color: var(--neon-pink);
+      font-size: 1.2rem;
+    }
+    
+    .match-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .stadium {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    
+    .stadium i {
+      color: var(--neon-green);
+    }
+    
+    .match-status {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .status-upcoming {
+      background: rgba(0, 255, 255, 0.2);
+      color: var(--neon-blue);
+      border: 1px solid var(--neon-blue);
+    }
+    
+    .status-live {
+      background: rgba(57, 255, 20, 0.2);
+      color: var(--neon-green);
+      border: 1px solid var(--neon-green);
+      animation: pulse 2s infinite;
+    }
+    
+    .status-finished {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border: 1px solid #ccc;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(57, 255, 20, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+    }
+    
+    /* Календарь */
+    .calendar-container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+    
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .calendar-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: var(--neon-blue);
+    }
+    
+    .calendar-nav {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .calendar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-blue);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .calendar-btn:hover {
+      background: var(--neon-blue);
+      color: white;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+    
+    .calendar-day {
+      text-align: center;
+      padding: 0.5rem;
+      font-weight: 600;
+      color: var(--neon-blue);
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    .calendar-date {
+      text-align: center;
+      padding: 0.8rem 0.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .calendar-date:hover {
+      background: rgba(0, 255, 255, 0.1);
+    }
+    
+    .calendar-date.active {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+    
+    .calendar-date.has-match::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--neon-green);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 900px) {
+      .matches-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .header-title {
+        font-size: 2.5rem;
+      }
+      
+      .nav-list {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      
+      .nav-link {
+        font-size: 0.8rem;
+        padding: 10px 15px;
+      }
+      
+      .tour-tabs {
+        flex-wrap: wrap;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .header-title {
+        font-size: 2rem;
+      }
+      
+      .schedule-header h2 {
+        font-size: 2rem;
+      }
+      
+      .nav-link {
+        font-size: 0.7rem;
+        padding: 8px 12px;
+      }
+      
+      .match-teams {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .team {
+        width: 100%;
+      }
+      
+      .calendar-grid {
+        gap: 0.2rem;
+      }
+      
+      .calendar-date {
+        padding: 0.5rem 0.2rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Анимированный фон -->
+  <div class="bg-animation">
+    <div class="bg-grid"></div>
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="neon-lines">
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-glow"></div>
+    <h1 class="header-title">Neon Football</h1>
+    <p class="header-subtitle">Расписание матчей Российской Премьер-Лиги</p>
+    
+    <!-- Навигация -->
+    <nav class="main-nav">
+      <div class="nav-container">
+        <ul class="nav-list">
+        <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-table"></i> Главная</a></li>
+          <li class="nav-item"><a href="{% url 'rpl' %}" class="nav-link"><i class="fas fa-table"></i> Турнирная таблица</a></li>
+          <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-calendar-alt"></i> Расписание</a></li>
+          <li class="nav-item"><a href="{% url 'statistic' %}" class="nav-link"><i class="fas fa-chart-line"></i> Статистика</a></li>
+          
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="schedule-container">
+    <div class="schedule-header">
+      <h2>Расписание матчей РПЛ</h2>
+      <p class="season-info">Сезон 2023/2024</p>
+    </div>
+
+    <!-- Календарь -->
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <h3 class="calendar-title">Декабрь 2023</h3>
+        <div class="calendar-nav">
+          <button class="calendar-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
+          <button class="calendar-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+      <div class="calendar-grid" id="calendar-grid">
+        <!-- Календарь будет заполнен через JavaScript -->
+      </div>
+    </div>
+
+    <!-- Вкладки туров -->
+    <div class="tabs-container">
+      <div class="tour-tabs" id="tour-tabs">
+        <!-- Вкладки будут заполнены через JavaScript -->
+      </div>
+    </div>
+
+    <!-- Карточки матчей -->
+    <div class="matches-container" id="matches-container">
+      <!-- Матчи будут заполнены через JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    // Данные матчей по турам
+    const matchesData = {
+      14: [
+        { date: '2023-11-25', time: '14:00', team1: { code: 'ЗН', name: 'Зенит' }, team2: { code: 'СП', name: 'Спартак' }, stadium: 'Газпром Арена' },
+        { date: '2023-11-25', time: '16:30', team1: { code: 'КР', name: 'Краснодар' }, team2: { code: 'ДМ', name: 'Динамо' }, stadium: 'Стадион Краснодар' },
+        { date: '2023-11-26', time: '14:00', team1: { code: 'ЛК', name: 'Локомотив' }, team2: { code: 'ЦС', name: 'ЦСКА' }, stadium: 'РЖД Арена' },
+        { date: '2023-11-26', time: '16:30', team1: { code: 'РО', name: 'Ростов' }, team2: { code: 'АХ', name: 'Ахмат' }, stadium: 'Ростов Арена' },
+        { date: '2023-11-27', time: '17:00', team1: { code: 'УР', name: 'Урал' }, team2: { code: 'ПА', name: 'Пари НН' }, stadium: 'Екатеринбург Арена' },
+        { date: '2023-11-27', time: '19:30', team1: { code: 'КРЛ', name: 'Крылья Советов' }, team2: { code: 'ФК', name: 'Факел' }, stadium: 'Солидарность Самара Арена' },
+        { date: '2023-11-28', time: '17:00', team1: { code: 'СО', name: 'Сочи' }, team2: { code: 'ОР', name: 'Оренбург' }, stadium: 'Фишт' },
+        { date: '2023-11-28', time: '19:30', team1: { code: 'БТ', name: 'Балтика' }, team2: { code: 'РБ', name: 'Рубин' }, stadium: 'Росто Арена' }
+      ],
+      15: [
+        { date: '2023-12-02', time: '14:00', team1: { code: 'СП', name: 'Спартак' }, team2: { code: 'КР', name: 'Краснодар' }, stadium: 'Открытие Банк Арена' },
+        { date: '2023-12-02', time: '16:30', team1: { code: 'ДМ', name: 'Динамо' }, team2: { code: 'ЛК', name: 'Локомотив' }, stadium: 'ВТБ Арена' },
+        { date: '2023-12-03', time: '14:00', team1: { code: 'ЦС', name: 'ЦСКА' }, team2: { code: 'РО', name: 'Ростов' }, stadium: 'ВЭБ Арена' },
+        { date: '2023-12-03', time: '16:30', team1: { code: 'АХ', name: 'Ахмат' }, team2: { code: 'УР', name: 'Урал' }, stadium: 'Ахмат Арена' },
+        { date: '2023-12-04', time: '17:00', team1: { code: 'ПА', name: 'Пари НН' }, team2: { code: 'КРЛ', name: 'Крылья Советов' }, stadium: 'Стадион Нижний Новгород' },
+        { date: '2023-12-04', time: '19:30', team1: { code: 'ФК', name: 'Факел' }, team2: { code: 'СО', name: 'Сочи' }, stadium: 'Центральный стадион' },
+        { date: '2023-12-05', time: '17:00', team1: { code: 'ОР', name: 'Оренбург' }, team2: { code: 'БТ', name: 'Балтика' }, stadium: 'Газовик' },
+        { date: '2023-12-05', time: '19:30', team1: { code: 'РБ', name: 'Рубин' }, team2: { code: 'ЗН', name: 'Зенит' }, stadium: 'Ак Барс Арена' }
+      ],
+      16: [
+        { date: '2023-12-09', time: '14:00', team1: { code: 'ЗН', name: 'Зенит' }, team2: { code: 'ДМ', name: 'Динамо' }, stadium: 'Газпром Арена' },
+        { date: '2023-12-09', time: '16:30', team1: { code: 'КР', name: 'Краснодар' }, team2: { code: 'ЦС', name: 'ЦСКА' }, stadium: 'Стадион Краснодар' },
+        { date: '2023-12-10', time: '14:00', team1: { code: 'ЛК', name: 'Локомотив' }, team2: { code: 'АХ', name: 'Ахмат' }, stadium: 'РЖД Арена' },
+        { date: '2023-12-10', time: '16:30', team1: { code: 'РО', name: 'Ростов' }, team2: { code: 'ПА', name: 'Пари НН' }, stadium: 'Ростов Арена' },
+        { date: '2023-12-11', time: '17:00', team1: { code: 'УР', name: 'Урал' }, team2: { code: 'ФК', name: 'Факел' }, stadium: 'Екатеринбург Арена' },
+        { date: '2023-12-11', time: '19:30', team1: { code: 'КРЛ', name: 'Крылья Советов' }, team2: { code: 'ОР', name: 'Оренбург' }, stadium: 'Солидарность Самара Арена' },
+        { date: '2023-12-12', time: '17:00', team1: { code: 'СО', name: 'Сочи' }, team2: { code: 'РБ', name: 'Рубин' }, stadium: 'Фишт' },
+        { date: '2023-12-12', time: '19:30', team1: { code: 'БТ', name: 'Балтика' }, team2: { code: 'СП', name: 'Спартак' }, stadium: 'Росто Арена' }
+      ],
+      17: [
+        { date: '2023-12-16', time: '14:00', team1: { code: 'СП', name: 'Спартак' }, team2: { code: 'ЛК', name: 'Локомотив' }, stadium: 'Открытие Банк Арена' },
+        { date: '2023-12-16', time: '16:30', team1: { code: 'ДМ', name: 'Динамо' }, team2: { code: 'РО', name: 'Ростов' }, stadium: 'ВТБ Арена' },
+        { date: '2023-12-17', time: '14:00', team1: { code: 'ЦС', name: 'ЦСКА' }, team2: { code: 'УР', name: 'Урал' }, stadium: 'ВЭБ Арена' },
+        { date: '2023-12-17', time: '16:30', team1: { code: 'АХ', name: 'Ахмат' }, team2: { code: 'КРЛ', name: 'Крылья Советов' }, stadium: 'Ахмат Арена' },
+        { date: '2023-12-18', time: '17:00', team1: { code: 'ПА', name: 'Пари НН' }, team2: { code: 'СО', name: 'Сочи' }, stadium: 'Стадион Нижний Новгород' },
+        { date: '2023-12-18', time: '19:30', team1: { code: 'ФК', name: 'Факел' }, team2: { code: 'БТ', name: 'Балтика' }, stadium: 'Центральный стадион' },
+        { date: '2023-12-19', time: '17:00', team1: { code: 'ОР', name: 'Оренбург' }, team2: { code: 'РБ', name: 'Рубин' }, stadium: 'Газовик' },
+        { date: '2023-12-19', time: '19:30', team1: { code: 'ЗН', name: 'Зенит' }, team2: { code: 'КР', name: 'Краснодар' }, stadium: 'Газпром Арена' }
+      ],
+      18: [
+        { date: '2023-12-23', time: '14:00', team1: { code: 'КР', name: 'Краснодар' }, team2: { code: 'АХ', name: 'Ахмат' }, stadium: 'Стадион Краснодар' },
+        { date: '2023-12-23', time: '16:30', team1: { code: 'ЛК', name: 'Локомотив' }, team2: { code: 'ПА', name: 'Пари НН' }, stadium: 'РЖД Арена' },
+        { date: '2023-12-24', time: '14:00', team1: { code: 'РО', name: 'Ростов' }, team2: { code: 'ФК', name: 'Факел' }, stadium: 'Ростов Арена' },
+        { date: '2023-12-24', time: '16:30', team1: { code: 'УР', name: 'Урал' }, team2: { code: 'ОР', name: 'Оренбург' }, stadium: 'Екатеринбург Арена' },
+        { date: '2023-12-25', time: '17:00', team1: { code: 'КРЛ', name: 'Крылья Советов' }, team2: { code: 'РБ', name: 'Рубин' }, stadium: 'Солидарность Самара Арена' },
+        { date: '2023-12-25', time: '19:30', team1: { code: 'СО', name: 'Сочи' }, team2: { code: 'БТ', name: 'Балтика' }, stadium: 'Фишт' },
+        { date: '2023-12-26', time: '17:00', team1: { code: 'СП', name: 'Спартак' }, team2: { code: 'ЦС', name: 'ЦСКА' }, stadium: 'Открытие Банк Арена' },
+        { date: '2023-12-26', time: '19:30', team1: { code: 'ДМ', name: 'Динамо' }, team2: { code: 'ЗН', name: 'Зенит' }, stadium: 'ВТБ Арена' }
+      ]
+    };
+
+    // Инициализация расписания матчей
+    document.addEventListener('DOMContentLoaded', function() {
+      // Обновляем дату в заголовке
+      const seasonInfo = document.querySelector('.season-info');
+      const currentDate = new Date();
+      seasonInfo.textContent = `Сезон ${currentDate.getFullYear()}/${currentDate.getFullYear() + 1}`;
+      
+      // Инициализация календаря
+      initCalendar();
+      
+      // Инициализация вкладок туров
+      initTourTabs();
+      
+      // Отображение матчей по умолчанию (тур 16)
+      displayMatchesByTour(16);
+      
+      // Обработчики для кнопок навигации календаря
+      document.getElementById('prev-month').addEventListener('click', function() {
+        console.log('Переход к предыдущему месяцу');
+        // В реальном приложении здесь была бы логика смены месяца
+      });
+      
+      document.getElementById('next-month').addEventListener('click', function() {
+        console.log('Переход к следующему месяцу');
+        // В реальном приложении здесь была бы логика смены месяца
+      });
+    });
+
+    // Инициализация календаря
+    function initCalendar() {
+      const calendarGrid = document.getElementById('calendar-grid');
+      const daysOfWeek = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+      
+      // Добавляем заголовки дней недели
+      daysOfWeek.forEach(day => {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = day;
+        calendarGrid.appendChild(dayElement);
+      });
+      
+      // Добавляем пустые ячейки для ноября
+      for (let i = 0; i < 4; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-date other-month';
+        emptyCell.textContent = 27 + i;
+        calendarGrid.appendChild(emptyCell);
+      }
+      
+      // Добавляем даты декабря
+      for (let i = 1; i <= 31; i++) {
+        const dateElement = document.createElement('div');
+        dateElement.className = 'calendar-date';
+        dateElement.textContent = i;
+        dateElement.dataset.date = `2023-12-${i.toString().padStart(2, '0')}`;
+        
+        // Проверяем, есть ли матчи в эту дату
+        if (hasMatchesOnDate(`2023-12-${i.toString().padStart(2, '0')}`)) {
+          dateElement.classList.add('has-match');
+        }
+        
+        // Выделяем сегодняшнюю дату
+        if (i === 13) {
+          dateElement.classList.add('active');
+        }
+        
+        dateElement.addEventListener('click', function() {
+          // Убираем активный класс со всех дат
+          document.querySelectorAll('.calendar-date').forEach(d => d.classList.remove('active'));
+          // Добавляем активный класс к текущей дате
+          this.classList.add('active');
+          
+          // Отображаем матчи на выбранную дату
+          displayMatchesByDate(this.dataset.date);
+          
+          // Сбрасываем активный тур
+          document.querySelectorAll('.tour-tab').forEach(tab => tab.classList.remove('active'));
+        });
+        
+        calendarGrid.appendChild(dateElement);
+      }
+      
+      // Добавляем пустые ячейки для января
+      for (let i = 1; i <= 6; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-date other-month';
+        emptyCell.textContent = i;
+        calendarGrid.appendChild(emptyCell);
+      }
+    }
+
+    // Инициализация вкладок туров
+    function initTourTabs() {
+      const tourTabs = document.getElementById('tour-tabs');
+      const tours = [14, 15, 16, 17, 18];
+      
+      tours.forEach(tour => {
+        const tab = document.createElement('div');
+        tab.className = 'tour-tab';
+        if (tour === 16) tab.classList.add('active');
+        tab.textContent = `Тур ${tour}`;
+        tab.dataset.tour = tour;
+        
+        tab.addEventListener('click', function() {
+          // Убираем активный класс со всех вкладок
+          document.querySelectorAll('.tour-tab').forEach(t => t.classList.remove('active'));
+          // Добавляем активный класс к текущей вкладке
+          this.classList.add('active');
+          
+          // Отображаем матчи для выбранного тура
+          displayMatchesByTour(parseInt(this.dataset.tour));
+          
+          // Сбрасываем активную дату в календаре
+          document.querySelectorAll('.calendar-date').forEach(d => d.classList.remove('active'));
+        });
+        
+        tourTabs.appendChild(tab);
+      });
+    }
+
+    // Проверка, есть ли матчи на указанную дату
+    function hasMatchesOnDate(date) {
+      for (const tour in matchesData) {
+        if (matchesData[tour].some(match => match.date === date)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Отображение матчей по туру
+    function displayMatchesByTour(tourNumber) {
+      const matchesContainer = document.getElementById('matches-container');
+      matchesContainer.innerHTML = '';
+      
+      if (matchesData[tourNumber]) {
+        matchesData[tourNumber].forEach(match => {
+          const matchCard = createMatchCard(match);
+          matchesContainer.appendChild(matchCard);
+        });
+      }
+    }
+
+    // Отображение матчей по дате
+    function displayMatchesByDate(date) {
+      const matchesContainer = document.getElementById('matches-container');
+      matchesContainer.innerHTML = '';
+      
+      let matchesFound = false;
+      
+      for (const tour in matchesData) {
+        matchesData[tour].forEach(match => {
+          if (match.date === date) {
+            const matchCard = createMatchCard(match);
+            matchesContainer.appendChild(matchCard);
+            matchesFound = true;
+          }
+        });
+      }
+      
+      if (!matchesFound) {
+        matchesContainer.innerHTML = '<div class="no-matches">На выбранную дату матчей не запланировано</div>';
+      }
+    }
+
+    // Создание карточки матча
+    function createMatchCard(match) {
+      const matchCard = document.createElement('div');
+      matchCard.className = 'match-card';
+      
+      // Форматирование даты
+      const dateObj = new Date(match.date);
+      const formattedDate = dateObj.toLocaleDateString('ru-RU', { 
+        day: 'numeric', 
+        month: 'long' 
+      });
+      
+      matchCard.innerHTML = `
+        <div class="match-header">
+          <div class="match-date">${formattedDate}</div>
+          <div class="match-time">${match.time}</div>
+        </div>
+        <div class="match-content">
+          <div class="match-teams">
+            <div class="team">
+              <div class="team-logo">${match.team1.code}</div>
+              <div class="team-name">${match.team1.name}</div>
+            </div>
+            <div class="vs">VS</div>
+            <div class="team">
+              <div class="team-logo">${match.team2.code}</div>
+              <div class="team-name">${match.team2.name}</div>
+            </div>
+          </div>
+          <div class="match-info">
+            <div class="stadium">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>${match.stadium}</span>
+            </div>
+            <div class="match-status status-upcoming">Предстоящий</div>
+          </div>
+        </div>
+      `;
+      
+      // Обработчик для карточки матча
+      matchCard.addEventListener('click', function() {
+        // В реальном приложении здесь был бы переход к детальной информации о матче
+        console.log(`Показываем детали матча: ${match.team1.name} vs ${match.team2.name}`);
+      });
+      
+      return matchCard;
+    }
+  </script>
+</body>
+</html>
