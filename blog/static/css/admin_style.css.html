@@ -1,0 +1,427 @@
+/* admin_style.css - Neon Casino Style for Django Admin */
+:root {
+    --neon-pink: #ff00ff;
+    --neon-blue: #00ffff;
+    --neon-purple: #bf00ff;
+    --neon-green: #39ff14;
+    --dark-bg: #0a0a16;
+    --darker-bg: #050510;
+    --card-bg: rgba(20, 20, 40, 0.8);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--darker-bg);
+    color: white;
+    font-family: 'Exo 2', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Импорт шрифтов */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap');
+
+/* Анимированный фон для админки */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(rgba(10, 10, 30, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 10, 30, 0.2) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+    z-index: -1;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+/* Header */
+#header {
+    background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+    color: white;
+    border-bottom: 2px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+}
+
+#header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: white !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+#header a:link, #header a:visited {
+    color: white !important;
+}
+
+/* Branding */
+#branding h1 {
+    color: white !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    margin: 10px 15px;
+    padding: 10px 15px;
+}
+
+.breadcrumbs a {
+    color: var(--neon-blue) !important;
+}
+
+.breadcrumbs a:hover {
+    color: var(--neon-pink) !important;
+}
+
+/* Sidebar */
+#content-related {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--neon-purple);
+    box-shadow: 0 0 20px rgba(191, 0, 255, 0.3);
+    border-radius: 15px;
+    margin: 15px;
+}
+
+#content-related .module {
+    background: transparent !important;
+}
+
+#content-related h2 {
+    background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink)) !important;
+    color: white !important;
+    font-family: 'Orbitron', sans-serif;
+    border-radius: 10px 10px 0 0;
+    padding: 10px 15px;
+}
+
+/* Main content */
+#content {
+    margin: 20px 15px;
+}
+
+#content-main {
+    background: var(--card-bg);
+    border-radius: 15px;
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    padding: 20px;
+}
+
+/* Modules */
+.module {
+    background: rgba(10, 10, 30, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.module h2 {
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)) !important;
+    color: white !important;
+    font-family: 'Orbitron', sans-serif;
+    border-radius: 8px 8px 0 0;
+    padding: 12px 15px;
+    border: none;
+}
+
+/* Tables */
+table {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+thead th {
+    background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple)) !important;
+    color: white !important;
+    font-family: 'Orbitron', sans-serif;
+    border: none !important;
+    padding: 12px 15px;
+}
+
+tbody tr {
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+tbody td, tbody th {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ccc;
+    padding: 10px 15px;
+}
+
+/* Buttons */
+input[type="submit"], button, .button {
+    background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple)) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 25px !important;
+    padding: 10px 20px !important;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+    cursor: pointer;
+}
+
+input[type="submit"]:hover, button:hover, .button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(255, 0, 255, 0.8);
+}
+
+/* Delete button special style */
+input[type="submit"][value="Delete"] {
+    background: linear-gradient(45deg, #ff3333, #ff6666) !important;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+}
+
+/* Forms */
+form {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 0;
+}
+
+label {
+    color: var(--neon-blue) !important;
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+input[type="text"], input[type="password"], input[type="email"],
+input[type="url"], input[type="number"], textarea, select {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid var(--neon-blue) !important;
+    border-radius: 5px !important;
+    color: white !important;
+    padding: 8px 12px !important;
+    width: 100% !important;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="password"]:focus,
+input[type="email"]:focus, input[type="url"]:focus,
+input[type="number"]:focus, textarea:focus, select:focus {
+    border-color: var(--neon-pink) !important;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.5) !important;
+    outline: none;
+}
+
+/* Badge styles for status */
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge.bg-secondary { background: #6c757d !important; }
+.badge.bg-success { background: var(--neon-green) !important; color: #000 !important; }
+.badge.bg-danger { background: #dc3545 !important; }
+.badge.bg-primary { background: var(--neon-blue) !important; color: #000 !important; }
+.badge.bg-warning { background: #ffc107 !important; color: #000 !important; }
+.badge.bg-info { background: var(--neon-purple) !important; }
+
+/* Pagination */
+.paginator {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.paginator a:link, .paginator a:visited {
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+    color: white !important;
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin: 0 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.paginator a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Filters */
+.selector {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.selector h2 {
+    background: linear-gradient(45deg, var(--neon-green), var(--neon-blue)) !important;
+    color: white !important;
+    font-family: 'Orbitron', sans-serif;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 15px;
+    margin: -15px -15px 15px -15px;
+}
+
+/* Messages */
+.messagelist li {
+    background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+}
+
+.errornote {
+    background: linear-gradient(45deg, #ff3333, #ff6666) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+}
+
+/* Login page specific styles */
+.login .form-row {
+    border: none;
+}
+
+.login #content {
+    background: var(--card-bg);
+    border: 1px solid var(--neon-purple);
+    box-shadow: 0 0 30px rgba(191, 0, 255, 0.5);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 50px auto;
+    max-width: 400px;
+}
+
+.login .submit-row {
+    border: none;
+    padding: 20px 0 0 0;
+}
+
+/* Image preview */
+.image-preview {
+    border: 2px solid var(--neon-blue);
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    margin: 10px 0;
+}
+
+.image-preview img {
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Search form */
+#searchbar {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid var(--neon-blue) !important;
+    border-radius: 25px !important;
+    color: white !important;
+    padding: 8px 15px !important;
+}
+
+#changelist-search .button {
+    border-radius: 25px !important;
+}
+
+/* Object tools */
+.object-tools {
+    margin-bottom: 15px;
+}
+
+.object-tools a {
+    background: linear-gradient(45deg, var(--neon-green), var(--neon-blue)) !important;
+    border-radius: 20px !important;
+    padding: 8px 16px !important;
+}
+
+.object-tools a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(57, 255, 20, 0.5);
+}
+
+/* Inline styles */
+.inline-group {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.inline-group h2 {
+    background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink)) !important;
+    color: white !important;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 15px;
+    margin: -15px -15px 15px -15px;
+}
+
+/* Calendar and clock */
+.calendar caption, .calendarbox h2 {
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)) !important;
+    color: white !important;
+}
+
+.calendar td a {
+    background: var(--neon-pink) !important;
+    color: white !important;
+}
+
+.clockbox h2 {
+    background: linear-gradient(45deg, var(--neon-green), var(--neon-blue)) !important;
+    color: white !important;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    #content {
+        margin: 10px;
+    }
+
+    #content-related {
+        margin: 10px;
+    }
+
+    .module {
+        margin-bottom: 15px;
+    }
+}
