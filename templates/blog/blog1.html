@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>5 стратегий для успешной игры в покер | Neon Casino Блог</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Основные стили из вашего сайта */
+    :root {
+      --neon-pink: #ff00ff;
+      --neon-blue: #00ffff;
+      --neon-purple: #bf00ff;
+      --neon-green: #39ff14;
+      --dark-bg: #0a0a16;
+      --darker-bg: #050510;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Exo 2', sans-serif;
+      color: white;
+      background: var(--darker-bg);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Стили для блога */
+    .blog-article-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .blog-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: var(--card-bg);
+      border-radius: 15px;
+      border: 1px solid var(--neon-purple);
+      box-shadow: 0 0 20px rgba(191, 0, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .blog-header::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+
+    .blog-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+    }
+
+    .blog-meta {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .blog-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .blog-meta-item i {
+      color: var(--neon-blue);
+    }
+
+    .blog-excerpt {
+      font-size: 1.2rem;
+      color: #ddd;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .blog-content {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+    }
+
+    .article-main {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .article-image {
+      width: 100%;
+      height: 400px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .article-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .article-image:hover img {
+      transform: scale(1.05);
+    }
+
+    .strategy-section {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .strategy-section:last-child {
+      border-bottom: none;
+    }
+
+    .strategy-number {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      margin-right: 1rem;
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+    }
+
+    .strategy-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      color: var(--neon-blue);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .strategy-content {
+      background: rgba(10, 10, 30, 0.5);
+      padding: 1.5rem;
+      border-radius: 10px;
+      border-left: 3px solid var(--neon-green);
+    }
+
+    .strategy-tips {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: rgba(57, 255, 20, 0.1);
+      border-radius: 8px;
+      border: 1px solid var(--neon-green);
+    }
+
+    .strategy-tips h4 {
+      color: var(--neon-green);
+      margin-bottom: 0.5rem;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .strategy-tips ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .strategy-tips li {
+      padding: 0.3rem 0;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .strategy-tips li::before {
+      content: '✓';
+      color: var(--neon-green);
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    .blog-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-widget {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 1.5rem;
+      border: 1px solid var(--neon-purple);
+      box-shadow: 0 0 15px rgba(191, 0, 255, 0.3);
+    }
+
+    .widget-title {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-pink);
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+
+    .related-articles {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .related-article {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .related-article:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .related-article img {
+      width: 80px;
+      height: 60px;
+      border-radius: 5px;
+      object-fit: cover;
+    }
+
+    .related-article-content h4 {
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      color: var(--neon-blue);
+    }
+
+    .related-article-content p {
+      font-size: 0.8rem;
+      color: #ccc;
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+    }
+
+    .author-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .author-details h4 {
+      color: var(--neon-green);
+      margin-bottom: 0.3rem;
+    }
+
+    .author-details p {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .article-conclusion {
+      background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+      padding: 2rem;
+      border-radius: 10px;
+      margin-top: 2rem;
+      border: 1px solid var(--neon-purple);
+    }
+
+    .conclusion-title {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-pink);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .back-to-blog {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+    }
+
+    .back-to-blog:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(255, 0, 255, 0.8);
+    }
+
+    /* Анимации */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .strategy-section {
+      animation: fadeInUp 0.6s ease forwards;
+      opacity: 0;
+    }
+
+    .strategy-section:nth-child(1) { animation-delay: 0.1s; }
+    .strategy-section:nth-child(2) { animation-delay: 0.2s; }
+    .strategy-section:nth-child(3) { animation-delay: 0.3s; }
+    .strategy-section:nth-child(4) { animation-delay: 0.4s; }
+    .strategy-section:nth-child(5) { animation-delay: 0.5s; }
+
+    /* Адаптивность */
+    @media (max-width: 900px) {
+      .blog-content {
+        grid-template-columns: 1fr;
+      }
+
+      .blog-title {
+        font-size: 2.2rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .blog-title {
+        font-size: 1.8rem;
+      }
+
+      .strategy-title {
+        font-size: 1.4rem;
+      }
+
+      .blog-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="blog-article-container">
+    <!-- Заголовок статьи -->
+    <header class="blog-header">
+      <h1 class="blog-title">5 стратегий для успешной игры в покер</h1>
+      <div class="blog-meta">
+        <div class="blog-meta-item">
+          <i class="far fa-calendar"></i>
+          <span>15 декабря 2023</span>
+        </div>
+        <div class="blog-meta-item">
+          <i class="far fa-clock"></i>
+          <span>Время чтения: 8 минут</span>
+        </div>
+        <div class="blog-meta-item">
+          <i class="far fa-user"></i>
+          <span>Профессиональный игрок</span>
+        </div>
+      </div>
+      <p class="blog-excerpt">
+        Узнайте о проверенных стратегиях, которые помогут вам увеличить шансы на победу в покере.
+        От управления банкроллом до чтения оппонентов - освойте ключевые навыки для успешной игры.
+      </p>
+    </header>
+
+    <div class="blog-content">
+      <!-- Основное содержимое статьи -->
+      <main class="article-main">
+        <div class="article-image">
+          <img src="https://sun9-61.userapi.com/s/v1/ig2/J7Qj9zdcSla0nR7__FzZQZE4lL0ZWXJtWlP16AWRP07-2J_nwoS6dhUYdv2-e9AUUuQBErXFA1DLdxTn1GF-Wwr6.jpg?quality=95&as=32x18,48x27,72x40,108x61,160x90,240x135,360x202,480x270,540x304,640x360,720x405,1080x607,1280x720&from=bu&cs=1280x0" alt="Покер стратегии">
+        </div>
+
+        <!-- Стратегия 1 -->
+        <section class="strategy-section">
+          <h2 class="strategy-title">
+            <span class="strategy-number">1</span>
+            Управление банкроллом
+          </h2>
+          <div class="strategy-content">
+            <p>Правильное управление банкроллом - основа успешной игры в покер. Это позволяет вам переживать неудачные сессии и оставаться в игре достаточно долго, чтобы дождаться выигрышных ситуаций.</p>
+            <p>Основное правило - никогда не ставить более 5% от общего банкролла за один игровой сеанс. Для турниров рекомендуется иметь как минимум 100 бай-инов для комфортной игры.</p>
+
+            <div class="strategy-tips">
+              <h4>Ключевые принципы:</h4>
+              <ul>
+                <li>Определите размер вашего игрового банкролла</li>
+                <li>Устанавливайте лимиты на каждую сессию</li>
+                <li>Никогда не играйте на деньги, которые не готовы потерять</li>
+                <li>Регулярно пересматривайте свою стратегию управления банкроллом</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Стратегия 2 -->
+        <section class="strategy-section">
+          <h2 class="strategy-title">
+            <span class="strategy-number">2</span>
+            Позиционная осведомленность
+          </h2>
+          <div class="strategy-content">
+            <p>Ваша позиция за столом значительно влияет на вашу стратегию игры. Игроки на поздних позициях (катофф и баттон) имеют преимущество, так как видят действия всех оппонентов перед принятием решения.</p>
+            <p>Используйте свою позицию для агрессивной игры с более широким диапазоном рук на поздних позициях и будьте более избирательны на ранних позициях.</p>
+
+            <div class="strategy-tips">
+              <h4>Позиционные преимущества:</h4>
+              <ul>
+                <li>Баттон - самая выгодная позиция</li>
+                <li>Расширяйте диапазон рук на поздних позициях</li>
+                <li>Будьте осторожны на ранних позициях</li>
+                <li>Используйте позицию для блефов</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Стратегия 3 -->
+        <section class="strategy-section">
+          <h2 class="strategy-title">
+            <span class="strategy-number">3</span>
+            Чтение оппонентов
+          </h2>
+          <div class="strategy-content">
+            <p>Умение "читать" оппонентов - один из самых ценных навыков в покере. Это включает в себя анализ их стиля игры, телллов (непроизвольных жестов) и паттернов ставок.</p>
+            <p>Наблюдайте за тем, как ваши оппоненты играют в разных ситуациях. Обращайте внимание на их время принятия решений, размеры ставок и манеру поведения за столом.</p>
+
+            <div class="strategy-tips">
+              <h4>Что отслеживать:</h4>
+              <ul>
+                <li>Паттерны ставок оппонентов</li>
+                <li>Время принятия решений</li>
+                <li>Физические теллы (жесты, мимика)</li>
+                <li>Изменения в стиле игры</li>
+                <li>Реакции на различные ситуации</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Стратегия 4 -->
+        <section class="strategy-section">
+          <h2 class="strategy-title">
+            <span class="strategy-number">4</span>
+            Агрессивная игра
+          </h2>
+          <div class="strategy-content">
+            <p>Агрессивная стратегия обычно приносит больше прибыли, чем пассивная. Агрессивные игроки выигрывают банки не только тогда, когда у них лучшая рука, но и заставляя оппонентов фолдить.</p>
+            <p>Ставьте и повышайте чаще, чем просто коллируйте. Это создает давление на оппонентов и дает вам два способа выиграть банк: иметь лучшую руку или заставить всех сбросить карты.</p>
+
+            <div class="strategy-tips">
+              <h4>Элементы агрессивной игры:</h4>
+              <ul>
+                <li>Чаще ставьте, а не коллируйте</li>
+                <li>Используйте контбеты (ставки на флопе после префлоп-рейза)</li>
+                <li>Блефуйте в подходящих ситуациях</li>
+                <li>Контролируйте темп игры</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Стратегия 5 -->
+        <section class="strategy-section">
+          <h2 class="strategy-title">
+            <span class="strategy-number">5</span>
+            Адаптация к столу
+          </h2>
+          <div class="strategy-content">
+            <p>Успешные игроки умеют адаптировать свою стратегию в зависимости от состава стола и стиля игры оппонентов. Не существует универсальной стратегии, которая работала бы во всех ситуациях.</p>
+            <p>Анализируйте, против каких типов игроков вы играете (тайтовые, лузовые, агрессивные, пассивные) и корректируйте свою игру соответственно.</p>
+
+            <div class="strategy-tips">
+              <h4>Типы игроков и как против них играть:</h4>
+              <ul>
+                <li>Против тайтовых - чаще блефуйте</li>
+                <li>Против лузовых - ждите сильные руки</li>
+                <li>Против агрессивных - используйте чек-рейзы</li>
+                <li>Против пассивных - контролируйте размер банка</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Заключение -->
+        <div class="article-conclusion">
+          <h3 class="conclusion-title">Заключение</h3>
+          <p>Освоение этих пяти стратегий значительно повысит ваши шансы на успех в покере. Помните, что покер - это игра навыков в долгосрочной перспективе. Постоянное обучение, анализ своей игры и адаптация к различным ситуациям - ключ к становлению успешным игроком.</p>
+          <p>Начните применять эти стратегии в наших покер-румах и участвуйте в турнирах, чтобы отточить свои навыки на практике!</p>
+        </div>
+
+        <a href="/" class="back-to-blog">
+          <i class="fas fa-arrow-left"></i>
+          Вернуться к блогу
+        </a>
+      </main>
+
+      <!-- Боковая панель -->
+      <aside class="blog-sidebar">
+        <!-- Информация об авторе -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">Об авторе</h3>
+          <div class="author-info">
+            <div class="author-avatar">ПИ</div>
+            <div class="author-details">
+              <h4>Профессиональный игрок</h4>
+              <p>Опыт игры: 10+ лет</p>
+              <p>Специализация: Техасский Холдем</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Похожие статьи -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">Похожие статьи</h3>
+          <div class="related-articles">
+            <a href="{% url 'blog2' %}" class="related-article">
+
+              <div class="related-article-content">
+                <h4>Топ-10 игровых автоматов с высоким RTP</h4>
+                <p>Увеличьте свои шансы на выигрыш</p>
+              </div>
+            </a>
+            <a href="{% url 'blog4' %}" class="related-article">
+
+              <div class="related-article-content">
+                <h4>Бинарные опционы: полное руководство</h4>
+                <p>Как зарабатывать до 90% прибыли</p>
+              </div>
+            </a>
+            <a href="{% url 'blog5' %}" class="related-article">
+
+              <div class="related-article-content">
+                <h4>Neon Poker Championship: подготовка</h4>
+                <p>Советы для участия в крупных турнирах</p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Призыв к действию -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">Готовы играть?</h3>
+          <p style="margin-bottom: 1rem; color: #ccc;">Примените эти стратегии на практике в наших покер-румах!</p>
+
+
+
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Простая анимация появления элементов при скролле
+    document.addEventListener('DOMContentLoaded', function() {
+      const strategySections = document.querySelectorAll('.strategy-section');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
+
+      strategySections.forEach(section => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(30px)';
+        section.style.transition = 'all 0.6s ease';
+        observer.observe(section);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neon Football - Статистика команд РПЛ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Все стили остаются без изменений */
+    :root {
+      --neon-pink: #ff00ff;
+      --neon-blue: #00ffff;
+      --neon-purple: #bf00ff;
+      --neon-green: #39ff14;
+      --dark-bg: #0a0a16;
+      --darker-bg: #050510;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+    
+    * { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      margin: 0; 
+      font-family: 'Exo 2', sans-serif; 
+      color: white; 
+      background: var(--darker-bg);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Анимированный фон */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(10, 10, 30, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 10, 30, 0.2) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    .floating-shapes {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--neon-pink);
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+    
+    .shape-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--neon-blue);
+      top: 60%;
+      left: 80%;
+      animation-delay: -5s;
+    }
+    
+    .shape-3 {
+      width: 250px;
+      height: 250px;
+      background: var(--neon-purple);
+      top: 20%;
+      left: 70%;
+      animation-delay: -10s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, 30px) scale(1.1); }
+      50% { transform: translate(-15px, 20px) scale(0.9); }
+      75% { transform: translate(10px, -15px) scale(1.05); }
+    }
+    
+    .neon-lines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .neon-line {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+      opacity: 0.3;
+      animation: lineMove 10s linear infinite;
+    }
+    
+    .neon-line:nth-child(1) {
+      top: 20%;
+      animation-delay: 0s;
+    }
+    
+    .neon-line:nth-child(2) {
+      top: 40%;
+      animation-delay: -2s;
+    }
+    
+    .neon-line:nth-child(3) {
+      top: 60%;
+      animation-delay: -4s;
+    }
+    
+    .neon-line:nth-child(4) {
+      top: 80%;
+      animation-delay: -6s;
+    }
+    
+    @keyframes lineMove {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    /* Заголовок */
+    header { 
+      padding: 1rem 2rem; 
+      text-align: center; 
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+    }
+    
+    .header-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+      z-index: -1;
+      animation: headerGlow 5s infinite alternate;
+    }
+    
+    @keyframes headerGlow {
+      0% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0.7;
+        transform: scale(1.1);
+      }
+    }
+    
+    .header-title {
+      margin: 0; 
+      font-size: 3rem; 
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 2s infinite alternate;
+    }
+    
+    @keyframes neonPulse {
+      0% { text-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3); }
+      100% { text-shadow: 0 0 15px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3); }
+    }
+    
+    .header-subtitle {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+      color: #ccc;
+      font-family: 'Exo 2', sans-serif;
+    }
+    
+    /* Навигация */
+    .main-nav {
+      width: 100%;
+      margin-top: 1rem;
+    }
+    
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 12px;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 5px 15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+    
+    .nav-list {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 10px;
+    }
+    
+    .nav-item {
+      position: relative;
+    }
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      padding: 12px 20px;
+      border-radius: 10px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+    
+    .nav-link:hover::before {
+      left: 100%;
+    }
+    
+    .nav-link:hover {
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+      border: 1px solid var(--neon-pink);
+      transform: translateY(-2px);
+    }
+    
+    .nav-link.active {
+      color: var(--neon-green);
+      background: rgba(57, 255, 20, 0.1);
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+      border: 1px solid var(--neon-green);
+      transform: translateY(-2px);
+    }
+    
+    /* Контейнер статистики */
+    .stats-container {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+    
+    .stats-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .stats-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+    }
+    
+    .season-info {
+      color: #ccc;
+      font-size: 1.1rem;
+    }
+    
+    /* Фильтры и поиск */
+    .stats-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 0.8rem 1rem 0.8rem 2.5rem;
+      border-radius: 30px;
+      border: 1px solid var(--neon-blue);
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-family: 'Exo 2', sans-serif;
+      transition: all 0.3s ease;
+    }
+    
+    .search-box input:focus {
+      outline: none;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+    
+    .search-box i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--neon-blue);
+    }
+    
+    .stats-filters {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .filter-select {
+      padding: 0.8rem 1rem;
+      border-radius: 30px;
+      border: 1px solid var(--neon-purple);
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-family: 'Exo 2', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-select:focus {
+      outline: none;
+      box-shadow: 0 0 15px rgba(191, 0, 255, 0.5);
+    }
+    
+    /* Карточки команд */
+    .teams-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .team-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      overflow: hidden;
+      border: 1px solid transparent;
+      transition: all 0.4s ease;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .team-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    
+    .team-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+    
+    .team-card:hover::before {
+      opacity: 1;
+      animation: borderRotate 3s linear infinite;
+    }
+    
+    @keyframes borderRotate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    
+    .team-header {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .team-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .team-logo {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
+    
+    .team-details h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .team-position {
+      font-size: 1.1rem;
+      color: var(--neon-green);
+      font-weight: 600;
+    }
+    
+    .team-stats {
+      text-align: right;
+    }
+    
+    .team-points {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+    }
+    
+    .team-form {
+      display: flex;
+      gap: 5px;
+      margin-top: 0.5rem;
+      justify-content: flex-end;
+    }
+    
+    .form-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .form-win {
+      background: var(--neon-green);
+      box-shadow: 0 0 5px rgba(57, 255, 20, 0.7);
+    }
+    
+    .form-draw {
+      background: #ffcc00;
+      box-shadow: 0 0 5px rgba(255, 204, 0, 0.7);
+    }
+    
+    .form-lose {
+      background: #ff4d4d;
+      box-shadow: 0 0 5px rgba(255, 77, 77, 0.7);
+    }
+    
+    .team-content {
+      padding: 1.5rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.8rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--neon-blue);
+      margin-bottom: 0.3rem;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: #ccc;
+    }
+    
+    .top-players {
+      margin-top: 1rem;
+    }
+    
+    .top-players h4 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+      color: var(--neon-pink);
+    }
+    
+    .player-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .player-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+    }
+    
+    .player-name {
+      font-weight: 500;
+    }
+    
+    .player-stats {
+      display: flex;
+      gap: 0.8rem;
+    }
+    
+    .player-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.8rem;
+    }
+    
+    .player-stat i {
+      color: var(--neon-green);
+    }
+    
+    .view-details {
+      width: 100%;
+      padding: 0.8rem;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+    
+    .view-details:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+    }
+    
+    /* Модальное окно с детальной статистикой */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 15px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+      border: 1px solid var(--neon-pink);
+      position: relative;
+      animation: modalAppear 0.4s ease-out;
+    }
+    
+    @keyframes modalAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    
+    .close-btn:hover {
+      color: var(--neon-pink);
+      transform: scale(1.2);
+    }
+    
+    .modal-header {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    
+    .modal-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
+    
+    .modal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .stats-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+    
+    .stats-tab {
+      padding: 0.5rem 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid transparent;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+    }
+    
+    .stats-tab.active {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+    
+    .stats-section {
+      display: none;
+    }
+    
+    .stats-section.active {
+      display: block;
+    }
+    
+    .detailed-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .detailed-stat {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .detailed-stat .stat-value {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .players-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    
+    .players-table th {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.8rem;
+      text-align: left;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .players-table td {
+      padding: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .players-table tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 900px) {
+      .teams-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .header-title {
+        font-size: 2.5rem;
+      }
+      
+      .nav-list {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      
+      .nav-link {
+        font-size: 0.8rem;
+        padding: 10px 15px;
+      }
+      
+      .stats-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .stats-filters {
+        justify-content: center;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .header-title {
+        font-size: 2rem;
+      }
+      
+      .stats-header h2 {
+        font-size: 2rem;
+      }
+      
+      .nav-link {
+        font-size: 0.7rem;
+        padding: 8px 12px;
+      }
+      
+      .team-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+      
+      .team-stats {
+        text-align: center;
+      }
+      
+      .team-form {
+        justify-content: center;
+      }
+      
+      .modal-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Анимированный фон -->
+  <div class="bg-animation">
+    <div class="bg-grid"></div>
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="neon-lines">
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-glow"></div>
+    <h1 class="header-title">Neon Football</h1>
+    <p class="header-subtitle">Статистика команд Российской Премьер-Лиги</p>
+    
+    <!-- Навигация -->
+    <nav class="main-nav">
+      <div class="nav-container">
+        <ul class="nav-list">
+             <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-table"></i> Главная</a></li>
+          <li class="nav-item"><a href="{% url 'rpl' %}" class="nav-link"><i class="fas fa-table"></i> Турнирная таблица</a></li>
+          <li class="nav-item"><a href="{% url 'rezult_rpl' %}" class="nav-link"><i class="fas fa-calendar-alt"></i> Расписание</a></li>
+          <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-chart-line"></i> Статистика</a></li>
+          
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="stats-container">
+    <div class="stats-header">
+      <h2>Статистика команд РПЛ</h2>
+      <p class="season-info">Сезон 2023/2024</p>
+    </div>
+
+    <!-- Фильтры и поиск -->
+    <div class="stats-controls">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="team-search" placeholder="Поиск команды...">
+      </div>
+      <div class="stats-filters">
+        <select class="filter-select" id="position-filter">
+          <option value="all">Все позиции</option>
+          <option value="1-3">Топ-3</option>
+          <option value="4-8">Зона еврокубков</option>
+          <option value="9-14">Середина таблицы</option>
+          <option value="15-16">Зона вылета</option>
+        </select>
+        <select class="filter-select" id="sort-by">
+          <option value="position">По позиции</option>
+          <option value="points">По очкам</option>
+          <option value="wins">По победам</option>
+          <option value="goals">По забитым голам</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Карточки команд -->
+    <div class="teams-container" id="teams-container">
+      <!-- Карточки будут заполнены через JavaScript -->
+    </div>
+  </div>
+
+  <!-- Модальное окно с детальной статистикой -->
+  <div class="modal" id="team-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-modal">&times;</button>
+      <div class="modal-header" id="modal-header">
+        <!-- Заполнится через JavaScript -->
+      </div>
+      <div class="modal-body">
+        <div class="stats-tabs">
+          <div class="stats-tab active" data-tab="overview">Обзор</div>
+          <div class="stats-tab" data-tab="players">Игроки</div>
+          <div class="stats-tab" data-tab="matches">Матчи</div>
+        </div>
+        
+        <div class="stats-section active" id="overview-section">
+          <div class="detailed-stats" id="detailed-stats">
+            <!-- Заполнится через JavaScript -->
+          </div>
+          <h4>Последние матчи</h4>
+          <div class="team-form" id="modal-team-form">
+            <!-- Заполнится через JavaScript -->
+          </div>
+        </div>
+        
+        <div class="stats-section" id="players-section">
+          <table class="players-table">
+            <thead>
+              <tr>
+                <th>Игрок</th>
+                <th>Позиция</th>
+                <th>Матчи</th>
+                <th>Голы</th>
+                <th>Пасы</th>
+              </tr>
+            </thead>
+            <tbody id="players-table-body">
+              <!-- Заполнится через JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="stats-section" id="matches-section">
+          <p>Здесь будет детальная информация о матчах команды</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Данные статистики команд (16 команд РПЛ)
+    const teamsStats = [
+      {
+        id: 1,
+        code: 'ЗН',
+        name: 'Зенит',
+        position: 1,
+        points: 45,
+        matches: 18,
+        wins: 14,
+        draws: 3,
+        losses: 1,
+        goalsFor: 38,
+        goalsAgainst: 12,
+        goalDifference: 26,
+        form: ['win', 'win', 'draw', 'win', 'win'],
+        topPlayers: [
+          { name: 'Малком', goals: 12, assists: 5 },
+          { name: 'Клаудиньо', goals: 8, assists: 7 },
+          { name: 'Вендел', goals: 4, assists: 6 }
+        ],
+        stadium: 'Газпром Арена',
+        coach: 'Сергей Семак',
+        founded: 1925,
+        avgPossession: 58.3,
+        shotsPerGame: 15.2,
+        passAccuracy: 86.7,
+        cleanSheets: 9
+      },
+      {
+        id: 2,
+        code: 'КР',
+        name: 'Краснодар',
+        position: 2,
+        points: 38,
+        matches: 18,
+        wins: 11,
+        draws: 5,
+        losses: 2,
+        goalsFor: 31,
+        goalsAgainst: 17,
+        goalDifference: 14,
+        form: ['win', 'lose', 'win', 'draw', 'win'],
+        topPlayers: [
+          { name: 'Олатунжи', goals: 10, assists: 3 },
+          { name: 'Сперцян', goals: 6, assists: 8 },
+          { name: 'Ионов', goals: 5, assists: 4 }
+        ],
+        stadium: 'Стадион Краснодар',
+        coach: 'Мурад Мусаев',
+        founded: 2008,
+        avgPossession: 52.1,
+        shotsPerGame: 13.8,
+        passAccuracy: 82.4,
+        cleanSheets: 7
+      },
+      {
+        id: 3,
+        code: 'ДМ',
+        name: 'Динамо',
+        position: 3,
+        points: 36,
+        matches: 18,
+        wins: 10,
+        draws: 6,
+        losses: 2,
+        goalsFor: 33,
+        goalsAgainst: 20,
+        goalDifference: 13,
+        form: ['win', 'draw', 'win', 'win', 'draw'],
+        topPlayers: [
+          { name: 'Смолов', goals: 14, assists: 3 },
+          { name: 'Захарян', goals: 5, assists: 9 },
+          { name: 'Тюкавин', goals: 7, assists: 4 }
+        ],
+        stadium: 'ВТБ Арена',
+        coach: 'Марцел Личка',
+        founded: 1923,
+        avgPossession: 55.7,
+        shotsPerGame: 14.5,
+        passAccuracy: 84.9,
+        cleanSheets: 6
+      },
+      {
+        id: 4,
+        code: 'ЛК',
+        name: 'Локомотив',
+        position: 4,
+        points: 34,
+        matches: 18,
+        wins: 9,
+        draws: 7,
+        losses: 2,
+        goalsFor: 30,
+        goalsAgainst: 18,
+        goalDifference: 12,
+        form: ['win', 'win', 'draw', 'win', 'win'],
+        topPlayers: [
+          { name: 'Игнатьев', goals: 8, assists: 4 },
+          { name: 'Пиняев', goals: 6, assists: 6 },
+          { name: 'Кукоря', goals: 5, assists: 5 }
+        ],
+        stadium: 'РЖД Арена',
+        coach: 'Михаил Галактионов',
+        founded: 1922,
+        avgPossession: 53.8,
+        shotsPerGame: 13.1,
+        passAccuracy: 83.2,
+        cleanSheets: 8
+      },
+      {
+        id: 5,
+        code: 'СП',
+        name: 'Спартак',
+        position: 5,
+        points: 32,
+        matches: 18,
+        wins: 9,
+        draws: 5,
+        losses: 4,
+        goalsFor: 29,
+        goalsAgainst: 22,
+        goalDifference: 7,
+        form: ['lose', 'win', 'draw', 'win', 'lose'],
+        topPlayers: [
+          { name: 'Промес', goals: 11, assists: 6 },
+          { name: 'Соболев', goals: 8, assists: 3 },
+          { name: 'Зобнин', goals: 3, assists: 7 }
+        ],
+        stadium: 'Открытие Банк Арена',
+        coach: 'Гильермо Абаскаль',
+        founded: 1922,
+        avgPossession: 54.2,
+        shotsPerGame: 14.7,
+        passAccuracy: 83.8,
+        cleanSheets: 5
+      },
+      {
+        id: 6,
+        code: 'ЦС',
+        name: 'ЦСКА',
+        position: 6,
+        points: 31,
+        matches: 18,
+        wins: 8,
+        draws: 7,
+        losses: 3,
+        goalsFor: 27,
+        goalsAgainst: 21,
+        goalDifference: 6,
+        form: ['win', 'draw', 'win', 'draw', 'win'],
+        topPlayers: [
+          { name: 'Чалов', goals: 9, assists: 4 },
+          { name: 'Обляков', goals: 6, assists: 8 },
+          { name: 'Медина', goals: 5, assists: 5 }
+        ],
+        stadium: 'ВЭБ Арена',
+        coach: 'Владимир Федотов',
+        founded: 1911,
+        avgPossession: 52.9,
+        shotsPerGame: 13.9,
+        passAccuracy: 82.7,
+        cleanSheets: 6
+      },
+      {
+        id: 7,
+        code: 'РБ',
+        name: 'Ростов',
+        position: 7,
+        points: 29,
+        matches: 18,
+        wins: 8,
+        draws: 5,
+        losses: 5,
+        goalsFor: 28,
+        goalsAgainst: 25,
+        goalDifference: 3,
+        form: ['win', 'draw', 'lose', 'win', 'draw'],
+        topPlayers: [
+          { name: 'Комличенко', goals: 8, assists: 2 },
+          { name: 'Голенков', goals: 5, assists: 4 },
+          { name: 'Уткин', goals: 4, assists: 6 }
+        ],
+        stadium: 'Ростов Арена',
+        coach: 'Валерий Карпин',
+        founded: 1930,
+        avgPossession: 51.5,
+        shotsPerGame: 12.8,
+        passAccuracy: 81.9,
+        cleanSheets: 5
+      },
+      {
+        id: 8,
+        code: 'АХ',
+        name: 'Ахмат',
+        position: 8,
+        points: 28,
+        matches: 18,
+        wins: 7,
+        draws: 7,
+        losses: 4,
+        goalsFor: 24,
+        goalsAgainst: 20,
+        goalDifference: 4,
+        form: ['draw', 'win', 'lose', 'win', 'draw'],
+        topPlayers: [
+          { name: 'Берхамов', goals: 7, assists: 3 },
+          { name: 'Конде', goals: 5, assists: 4 },
+          { name: 'Тимофеев', goals: 4, assists: 5 }
+        ],
+        stadium: 'Ахмат-Арена',
+        coach: 'Михаил Галактионов',
+        founded: 1958,
+        avgPossession: 48.7,
+        shotsPerGame: 11.9,
+        passAccuracy: 79.8,
+        cleanSheets: 6
+      },
+      {
+        id: 9,
+        code: 'ОР',
+        name: 'Оренбург',
+        position: 9,
+        points: 26,
+        matches: 18,
+        wins: 7,
+        draws: 5,
+        losses: 6,
+        goalsFor: 26,
+        goalsAgainst: 28,
+        goalDifference: -2,
+        form: ['win', 'lose', 'win', 'draw', 'lose'],
+        topPlayers: [
+          { name: 'Флорентин', goals: 6, assists: 4 },
+          { name: 'Мануковский', goals: 5, assists: 3 },
+          { name: 'Сулейманов', goals: 4, assists: 5 }
+        ],
+        stadium: 'Газовик',
+        coach: 'Давид Деограсия',
+        founded: 1976,
+        avgPossession: 49.3,
+        shotsPerGame: 12.5,
+        passAccuracy: 80.2,
+        cleanSheets: 4
+      },
+      {
+        id: 10,
+        code: 'СЧ',
+        name: 'Сочи',
+        position: 10,
+        points: 25,
+        matches: 18,
+        wins: 7,
+        draws: 4,
+        losses: 7,
+        goalsFor: 25,
+        goalsAgainst: 29,
+        goalDifference: -4,
+        form: ['lose', 'win', 'draw', 'lose', 'win'],
+        topPlayers: [
+          { name: 'Нобоа', goals: 5, assists: 6 },
+          { name: 'Бурмистров', goals: 6, assists: 3 },
+          { name: 'Юсупов', goals: 4, assists: 4 }
+        ],
+        stadium: 'Фишт',
+        coach: 'Роберт Морено',
+        founded: 2018,
+        avgPossession: 50.8,
+        shotsPerGame: 13.1,
+        passAccuracy: 81.5,
+        cleanSheets: 3
+      },
+      {
+        id: 11,
+        code: 'УР',
+        name: 'Урал',
+        position: 11,
+        points: 23,
+        matches: 18,
+        wins: 6,
+        draws: 5,
+        losses: 7,
+        goalsFor: 22,
+        goalsAgainst: 27,
+        goalDifference: -5,
+        form: ['draw', 'lose', 'win', 'draw', 'lose'],
+        topPlayers: [
+          { name: 'Бикфалви', goals: 7, assists: 2 },
+          { name: 'Емельянов', goals: 4, assists: 4 },
+          { name: 'Кашчелан', goals: 3, assists: 5 }
+        ],
+        stadium: 'Екатеринбург Арена',
+        coach: 'Виктор Гончаренко',
+        founded: 1930,
+        avgPossession: 47.9,
+        shotsPerGame: 11.3,
+        passAccuracy: 78.6,
+        cleanSheets: 4
+      },
+      {
+        id: 12,
+        code: 'КРЛ',
+        name: 'Крылья Советов',
+        position: 12,
+        points: 22,
+        matches: 18,
+        wins: 6,
+        draws: 4,
+        losses: 8,
+        goalsFor: 23,
+        goalsAgainst: 30,
+        goalDifference: -7,
+        form: ['lose', 'win', 'draw', 'lose', 'win'],
+        topPlayers: [
+          { name: 'Гацкан', goals: 5, assists: 4 },
+          { name: 'Пихаленок', goals: 4, assists: 5 },
+          { name: 'Сарвели', goals: 4, assists: 3 }
+        ],
+        stadium: 'Солидарность Самара Арена',
+        coach: 'Игорь Осинькин',
+        founded: 1942,
+        avgPossession: 48.5,
+        shotsPerGame: 12.0,
+        passAccuracy: 79.3,
+        cleanSheets: 3
+      },
+      {
+        id: 13,
+        code: 'ФК',
+        name: 'Факел',
+        position: 13,
+        points: 20,
+        matches: 18,
+        wins: 4,
+        draws: 8,
+        losses: 6,
+        goalsFor: 19,
+        goalsAgainst: 25,
+        goalDifference: -6,
+        form: ['draw', 'draw', 'lose', 'win', 'draw'],
+        topPlayers: [
+          { name: 'Аппаев', goals: 5, assists: 2 },
+          { name: 'Ковалев', goals: 3, assists: 4 },
+          { name: 'Морозов', goals: 3, assists: 3 }
+        ],
+        stadium: 'Центральный',
+        coach: 'Сергей Ташуев',
+        founded: 1947,
+        avgPossession: 46.2,
+        shotsPerGame: 10.7,
+        passAccuracy: 77.4,
+        cleanSheets: 4
+      },
+      {
+        id: 14,
+        code: 'БТ',
+        name: 'Балтика',
+        position: 14,
+        points: 19,
+        matches: 18,
+        wins: 4,
+        draws: 7,
+        losses: 7,
+        goalsFor: 18,
+        goalsAgainst: 26,
+        goalDifference: -8,
+        form: ['draw', 'lose', 'win', 'draw', 'lose'],
+        topPlayers: [
+          { name: 'Кулаков', goals: 4, assists: 3 },
+          { name: 'Литвинов', goals: 3, assists: 4 },
+          { name: 'Мухин', goals: 3, assists: 2 }
+        ],
+        stadium: 'Ростех Арена',
+        coach: 'Сергей Игнашевич',
+        founded: 1954,
+        avgPossession: 45.8,
+        shotsPerGame: 10.5,
+        passAccuracy: 76.9,
+        cleanSheets: 3
+      },
+      {
+        id: 15,
+        code: 'ПР',
+        name: 'Пари НН',
+        position: 15,
+        points: 17,
+        matches: 18,
+        wins: 4,
+        draws: 5,
+        losses: 9,
+        goalsFor: 17,
+        goalsAgainst: 29,
+        goalDifference: -12,
+        form: ['lose', 'draw', 'lose', 'win', 'lose'],
+        topPlayers: [
+          { name: 'Калинский', goals: 4, assists: 2 },
+          { name: 'Сутормин', goals: 3, assists: 3 },
+          { name: 'Зотов', goals: 2, assists: 4 }
+        ],
+        stadium: 'Нижний Новгород',
+        coach: 'Артур Йоло',
+        founded: 2015,
+        avgPossession: 47.1,
+        shotsPerGame: 10.9,
+        passAccuracy: 78.1,
+        cleanSheets: 2
+      },
+      {
+        id: 16,
+        code: 'РБ',
+        name: 'Рубин',
+        position: 16,
+        points: 15,
+        matches: 18,
+        wins: 3,
+        draws: 6,
+        losses: 9,
+        goalsFor: 16,
+        goalsAgainst: 31,
+        goalDifference: -15,
+        form: ['lose', 'draw', 'lose', 'win', 'draw'],
+        topPlayers: [
+          { name: 'Дзагоев', goals: 3, assists: 4 },
+          { name: 'Баша', goals: 3, assists: 2 },
+          { name: 'Ломовицкий', goals: 2, assists: 3 }
+        ],
+        stadium: 'Ак Барс Арена',
+        coach: 'Рашид Рахимов',
+        founded: 1958,
+        avgPossession: 46.5,
+        shotsPerGame: 10.2,
+        passAccuracy: 77.0,
+        cleanSheets: 2
+      }
+    ];
+
+    // Инициализация статистики команд
+    document.addEventListener('DOMContentLoaded', function() {
+      // Обновляем дату в заголовке
+      const seasonInfo = document.querySelector('.season-info');
+      const currentDate = new Date();
+      seasonInfo.textContent = `Сезон ${currentDate.getFullYear()}/${currentDate.getFullYear() + 1}`;
+      
+      // Отображение карточек команд
+      displayTeams(teamsStats);
+      
+      // Обработчики для фильтров
+      document.getElementById('team-search').addEventListener('input', filterTeams);
+      document.getElementById('position-filter').addEventListener('change', filterTeams);
+      document.getElementById('sort-by').addEventListener('change', filterTeams);
+      
+      // Обработчик для закрытия модального окна
+      document.getElementById('close-modal').addEventListener('click', function() {
+        document.getElementById('team-modal').style.display = 'none';
+      });
+      
+      // Обработчик для клика вне модального окна
+      document.getElementById('team-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.style.display = 'none';
+        }
+      });
+      
+      // Обработчики для вкладок в модальном окне
+      document.querySelectorAll('.stats-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          // Убираем активный класс со всех вкладок
+          document.querySelectorAll('.stats-tab').forEach(t => t.classList.remove('active'));
+          // Добавляем активный класс к текущей вкладке
+          this.classList.add('active');
+          
+          // Скрываем все секции
+          document.querySelectorAll('.stats-section').forEach(section => {
+            section.classList.remove('active');
+          });
+          
+          // Показываем выбранную секцию
+          const tabId = this.getAttribute('data-tab');
+          document.getElementById(`${tabId}-section`).classList.add('active');
+        });
+      });
+    });
+
+    // Отображение карточек команд
+    function displayTeams(teams) {
+      const teamsContainer = document.getElementById('teams-container');
+      teamsContainer.innerHTML = '';
+      
+      teams.forEach(team => {
+        const teamCard = createTeamCard(team);
+        teamsContainer.appendChild(teamCard);
+      });
+    }
+
+    // Создание карточки команды
+    function createTeamCard(team) {
+      const teamCard = document.createElement('div');
+      teamCard.className = 'team-card';
+      teamCard.dataset.teamId = team.id;
+      
+      // Создание индикаторов формы
+      const formIndicators = team.form.map(result => {
+        let className = 'form-indicator ';
+        if (result === 'win') className += 'form-win';
+        else if (result === 'draw') className += 'form-draw';
+        else className += 'form-lose';
+        return `<div class="${className}"></div>`;
+      }).join('');
+      
+      // Создание списка лучших игроков
+      const topPlayersList = team.topPlayers.map(player => {
+        return `
+          <div class="player-item">
+            <div class="player-name">${player.name}</div>
+            <div class="player-stats">
+              <div class="player-stat">
+                <i class="fas fa-futbol"></i>
+                <span>${player.goals}</span>
+              </div>
+              <div class="player-stat">
+                <i class="fas fa-assistive-listening-systems"></i>
+                <span>${player.assists}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      teamCard.innerHTML = `
+        <div class="team-header">
+          <div class="team-info">
+            <div class="team-logo">${team.code}</div>
+            <div class="team-details">
+              <h3>${team.name}</h3>
+              <div class="team-position">${team.position} место</div>
+            </div>
+          </div>
+          <div class="team-stats">
+            <div class="team-points">${team.points}</div>
+            <div class="team-form">
+              ${formIndicators}
+            </div>
+          </div>
+        </div>
+        <div class="team-content">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-value">${team.matches}</div>
+              <div class="stat-label">Матчи</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${team.wins}</div>
+              <div class="stat-label">Победы</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${team.draws}</div>
+              <div class="stat-label">Ничьи</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${team.losses}</div>
+              <div class="stat-label">Поражения</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${team.goalsFor}</div>
+              <div class="stat-label">Забито</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${team.goalsAgainst}</div>
+              <div class="stat-label">Пропущено</div>
+            </div>
+          </div>
+          <div class="top-players">
+            <h4>Лучшие игроки</h4>
+            <div class="player-list">
+              ${topPlayersList}
+            </div>
+          </div>
+          <button class="view-details" data-team-id="${team.id}">Подробная статистика</button>
+        </div>
+      `;
+      
+      // Обработчик для кнопки "Подробная статистика"
+      teamCard.querySelector('.view-details').addEventListener('click', function() {
+        const teamId = this.getAttribute('data-team-id');
+        showTeamDetails(teamId);
+      });
+      
+      return teamCard;
+    }
+
+    // Фильтрация и сортировка команд
+    function filterTeams() {
+      const searchTerm = document.getElementById('team-search').value.toLowerCase();
+      const positionFilter = document.getElementById('position-filter').value;
+      const sortBy = document.getElementById('sort-by').value;
+      
+      let filteredTeams = teamsStats.filter(team => {
+        // Поиск по названию команды
+        const matchesSearch = team.name.toLowerCase().includes(searchTerm) || 
+                            team.code.toLowerCase().includes(searchTerm);
+        
+        // Фильтрация по позиции
+        let matchesPosition = true;
+        if (positionFilter !== 'all') {
+          const [min, max] = positionFilter.split('-').map(Number);
+          matchesPosition = team.position >= min && team.position <= max;
+        }
+        
+        return matchesSearch && matchesPosition;
+      });
+      
+      // Сортировка команд
+      filteredTeams.sort((a, b) => {
+        if (sortBy === 'position') {
+          return a.position - b.position;
+        } else if (sortBy === 'points') {
+          return b.points - a.points;
+        } else if (sortBy === 'wins') {
+          return b.wins - a.wins;
+        } else if (sortBy === 'goals') {
+          return b.goalsFor - a.goalsFor;
+        }
+        return 0;
+      });
+      
+      // Отображение отфильтрованных команд
+      displayTeams(filteredTeams);
+    }
+
+    // Показать детальную статистику команды
+    function showTeamDetails(teamId) {
+      const team = teamsStats.find(t => t.id == teamId);
+      if (!team) return;
+      
+      // Заполнение заголовка модального окна
+      const modalHeader = document.getElementById('modal-header');
+      modalHeader.innerHTML = `
+        <div class="modal-logo">${team.code}</div>
+        <div>
+          <h2 class="modal-title">${team.name}</h2>
+          <p>Тренер: ${team.coach} | Стадион: ${team.stadium}</p>
+        </div>
+      `;
+      
+      // Заполнение детальной статистики
+      const detailedStats = document.getElementById('detailed-stats');
+      detailedStats.innerHTML = `
+        <div class="detailed-stat">
+          <div class="stat-value">${team.avgPossession}%</div>
+          <div class="stat-label">Владение мячом</div>
+        </div>
+        <div class="detailed-stat">
+          <div class="stat-value">${team.shotsPerGame}</div>
+          <div class="stat-label">Удары за игру</div>
+        </div>
+        <div class="detailed-stat">
+          <div class="stat-value">${team.passAccuracy}%</div>
+          <div class="stat-label">Точность передач</div>
+        </div>
+        <div class="detailed-stat">
+          <div class="stat-value">${team.cleanSheets}</div>
+          <div class="stat-label">Сухие матчи</div>
+        </div>
+      `;
+      
+      // Заполнение формы команды
+      const modalTeamForm = document.getElementById('modal-team-form');
+      modalTeamForm.innerHTML = team.form.map(result => {
+        let className = 'form-indicator ';
+        if (result === 'win') className += 'form-win';
+        else if (result === 'draw') className += 'form-draw';
+        else className += 'form-lose';
+        return `<div class="${className}"></div>`;
+      }).join('');
+      
+      // Заполнение таблицы игроков
+      const playersTableBody = document.getElementById('players-table-body');
+      // В реальном приложении здесь были бы данные об игроках
+      playersTableBody.innerHTML = `
+        <tr>
+          <td>${team.topPlayers[0].name}</td>
+          <td>Нападающий</td>
+          <td>18</td>
+          <td>${team.topPlayers[0].goals}</td>
+          <td>${team.topPlayers[0].assists}</td>
+        </tr>
+        <tr>
+          <td>${team.topPlayers[1].name}</td>
+          <td>Полузащитник</td>
+          <td>17</td>
+          <td>${team.topPlayers[1].goals}</td>
+          <td>${team.topPlayers[1].assists}</td>
+        </tr>
+        <tr>
+          <td>${team.topPlayers[2].name}</td>
+          <td>Нападающий</td>
+          <td>16</td>
+          <td>${team.topPlayers[2].goals}</td>
+          <td>${team.topPlayers[2].assists}</td>
+        </tr>
+      `;
+      
+      // Показываем модальное окно
+      document.getElementById('team-modal').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>

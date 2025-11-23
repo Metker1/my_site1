@@ -1,0 +1,41 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ post.title }} - Мой Блог{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'post_list' %}">Главная</a></li>
+            <li class="breadcrumb-item active">{{ post.title }}</li>
+        </ol>
+    </nav>
+
+    <article>
+        <header class="mb-4">
+            <span class="badge category-badge mb-2">{{ post.category.name }}</span>
+            <h1 class="display-5 fw-bold">{{ post.title }}</h1>
+            <div class="text-muted mb-3">
+                <i class="far fa-calendar"></i> {{ post.created|date:"d.m.Y H:i" }} | 
+                <i class="far fa-eye"></i> {{ post.views }} просмотров
+            </div>
+        </header>
+
+        {% if post.image %}
+        <div class="text-center mb-4">
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded" style="max-height: 400px; object-fit: cover;">
+        </div>
+        {% endif %}
+
+        <div class="post-content fs-5 lh-base">
+            {{ post.full_text|linebreaks }}
+        </div>
+
+        <div class="mt-5 pt-4 border-top">
+            <a href="{% url 'post_list' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Назад к статьям
+            </a>
+        </div>
+    </article>
+</div>
+{% endblock %}

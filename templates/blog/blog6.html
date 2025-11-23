@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Как обеспечить безопасность при игре в онлайн-казино | Neon Casino</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Основные стили из вашего сайта */
+    :root {
+      --neon-pink: #ff00ff;
+      --neon-blue: #00ffff;
+      --neon-purple: #bf00ff;
+      --neon-green: #39ff14;
+      --dark-bg: #0a0a16;
+      --darker-bg: #050510;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Exo 2', sans-serif;
+      color: white;
+      background: var(--darker-bg);
+      overflow-x: hidden;
+      min-height: 100vh;
+      transition: background 0.5s ease;
+    }
+
+    /* Прелоадер */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--darker-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader {
+      width: 80px;
+      height: 80px;
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      border-top: 5px solid var(--neon-pink);
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+      position: relative;
+    }
+
+    .loader::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 5px solid transparent;
+      border-top: 5px solid var(--neon-blue);
+      border-radius: 50%;
+      animation: spin 2s linear infinite reverse;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Анимированный фон */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(10, 10, 30, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 10, 30, 0.2) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    .floating-shapes {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--neon-pink);
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+
+    .shape-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--neon-blue);
+      top: 60%;
+      left: 80%;
+      animation-delay: -5s;
+    }
+
+    .shape-3 {
+      width: 250px;
+      height: 250px;
+      background: var(--neon-purple);
+      top: 20%;
+      left: 70%;
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, 30px) scale(1.1); }
+      50% { transform: translate(-15px, 20px) scale(0.9); }
+      75% { transform: translate(10px, -15px) scale(1.05); }
+    }
+
+    .neon-lines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .neon-line {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+      opacity: 0.3;
+      animation: lineMove 10s linear infinite;
+    }
+
+    .neon-line:nth-child(1) {
+      top: 20%;
+      animation-delay: 0s;
+    }
+
+    .neon-line:nth-child(2) {
+      top: 40%;
+      animation-delay: -2s;
+    }
+
+    .neon-line:nth-child(3) {
+      top: 60%;
+      animation-delay: -4s;
+    }
+
+    .neon-line:nth-child(4) {
+      top: 80%;
+      animation-delay: -6s;
+    }
+
+    @keyframes lineMove {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .particles-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--neon-green);
+      animation: particleFloat 15s infinite linear;
+    }
+
+    @keyframes particleFloat {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(100px);
+        opacity: 0;
+      }
+    }
+
+    /* Заголовок с логотипом */
+    header {
+      padding: 1rem 2rem;
+      text-align: center;
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .neon-logo {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .neon-logo:hover {
+      transform: scale(1.1);
+    }
+
+    .logo-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      animation: logoRotate 10s linear infinite;
+    }
+
+    .logo-circle:nth-child(1) {
+      border-top-color: var(--neon-pink);
+      animation-delay: 0s;
+      animation-duration: 8s;
+    }
+
+    .logo-circle:nth-child(2) {
+      border-right-color: var(--neon-blue);
+      animation-delay: 0.5s;
+      animation-duration: 12s;
+    }
+
+    .logo-circle:nth-child(3) {
+      border-bottom-color: var(--neon-green);
+      animation-delay: 1s;
+      animation-duration: 10s;
+    }
+
+    .logo-circle:nth-child(4) {
+      border-left-color: var(--neon-purple);
+      animation-delay: 1.5s;
+      animation-duration: 15s;
+    }
+
+    .logo-inner {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      animation: innerPulse 3s ease-in-out infinite;
+      overflow: hidden;
+    }
+
+    .logo-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes logoRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes innerPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); }
+      50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 0, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.5); }
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .header-title {
+      margin: 0;
+      font-size: 3rem;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 2s infinite alternate;
+    }
+
+    @keyframes neonPulse {
+      0% { text-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3); }
+      100% { text-shadow: 0 0 15px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3); }
+    }
+
+    /* Новая красивая навигация */
+    .main-nav {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 12px;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 5px 15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+
+    .nav-list {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 10px;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      padding: 12px 20px;
+      border-radius: 10px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+
+    .nav-link:hover::before {
+      left: 100%;
+    }
+
+    .nav-link:hover {
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+      border: 1px solid var(--neon-pink);
+      transform: translateY(-2px);
+    }
+
+    .nav-link.active {
+      color: var(--neon-green);
+      background: rgba(57, 255, 20, 0.1);
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+      border: 1px solid var(--neon-green);
+      transform: translateY(-2px);
+    }
+
+    .nav-link i {
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover i {
+      transform: scale(1.2);
+    }
+
+    .nav-link.active i {
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+    }
+
+    /* Стили для контента статьи */
+    .article-container {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+
+    .article-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .article-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+    }
+
+    .article-subtitle {
+      font-size: 1.5rem;
+      color: #ccc;
+      margin-bottom: 2rem;
+    }
+
+    .article-meta {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    .article-meta i {
+      color: var(--neon-blue);
+      margin-right: 5px;
+    }
+
+    .article-content {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 3rem;
+      box-shadow: 0 0 20px rgba(191, 0, 255, 0.3);
+      border: 1px solid var(--neon-purple);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .article-content::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+
+    .article-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .article-section {
+      margin-bottom: 3rem;
+    }
+
+    .article-section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      color: var(--neon-blue);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .article-section-title i {
+      color: var(--neon-pink);
+    }
+
+    .article-text {
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      color: #ddd;
+      font-size: 1.1rem;
+    }
+
+    .tips-list {
+      list-style: none;
+      margin: 2rem 0;
+    }
+
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: rgba(10, 10, 30, 0.5);
+      border-radius: 10px;
+      border-left: 3px solid var(--neon-green);
+      transition: all 0.3s ease;
+    }
+
+    .tip-item:hover {
+      transform: translateX(10px);
+      box-shadow: 0 5px 15px rgba(57, 255, 20, 0.2);
+    }
+
+    .tip-number {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      margin-right: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .tip-content h4 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-green);
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+    }
+
+    .tip-content p {
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .warning-box {
+      border-left: 4px solid #ff3333;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      background: rgba(255, 51, 51, 0.1);
+      border-radius: 0 10px 10px 0;
+      position: relative;
+    }
+
+    .warning-box::before {
+      content: '⚠';
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      font-size: 2rem;
+      color: #ff3333;
+      opacity: 0.5;
+    }
+
+    .warning-title {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff3333;
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+    }
+
+    .warning-text {
+      color: #ff9999;
+      line-height: 1.6;
+    }
+
+    .security-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .security-card {
+      background: rgba(10, 10, 30, 0.5);
+      border-radius: 10px;
+      padding: 1.5rem;
+      border: 1px solid var(--neon-blue);
+      transition: all 0.3s ease;
+    }
+
+    .security-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+    }
+
+    .security-icon {
+      font-size: 2.5rem;
+      color: var(--neon-blue);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .security-card h4 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-blue);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .security-card p {
+      color: #ccc;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2rem 0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .comparison-table th {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      padding: 1rem;
+      text-align: left;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .comparison-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(10, 10, 30, 0.5);
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .positive {
+      color: var(--neon-green);
+    }
+
+    .negative {
+      color: #ff3333;
+    }
+
+    .quote-block {
+      border-left: 4px solid var(--neon-pink);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      background: rgba(255, 0, 255, 0.1);
+      border-radius: 0 10px 10px 0;
+      position: relative;
+    }
+
+    .quote-block::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      font-size: 4rem;
+      color: var(--neon-pink);
+      opacity: 0.3;
+      font-family: serif;
+    }
+
+    .quote-text {
+      font-style: italic;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .quote-author {
+      text-align: right;
+      color: var(--neon-blue);
+      font-weight: 600;
+    }
+
+    .article-footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .article-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      border: 1px solid var(--neon-blue);
+      transition: all 0.3s ease;
+    }
+
+    .tag:hover {
+      background: var(--neon-blue);
+      color: #000;
+      transform: translateY(-2px);
+    }
+
+    .article-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .action-btn {
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+    }
+
+    .action-btn.secondary {
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+    }
+
+    /* Кнопка возврата на главную */
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 2rem 0;
+      transition: all 0.3s ease;
+    }
+
+    .back-home:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 255, 255, 0.5);
+    }
+
+    /* Адаптивность */
+    @media (max-width: 900px) {
+      .article-title {
+        font-size: 2.5rem;
+      }
+
+      .article-content {
+        padding: 2rem;
+      }
+
+      .article-section-title {
+        font-size: 1.8rem;
+      }
+
+      .nav-list {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .article-footer {
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      .article-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .security-features {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 2rem;
+      }
+
+      .article-subtitle {
+        font-size: 1.2rem;
+      }
+
+      .article-content {
+        padding: 1.5rem;
+      }
+
+      .article-section-title {
+        font-size: 1.5rem;
+      }
+
+      .tip-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .tip-number {
+        margin-bottom: 1rem;
+      }
+
+      .article-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .comparison-table {
+        font-size: 0.9rem;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Прелоадер -->
+  <div class="preloader" id="preloader">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Анимированный фон -->
+  <div class="bg-animation">
+    <div class="bg-grid"></div>
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="neon-lines">
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+    </div>
+    <div class="particles-container" id="particles-container"></div>
+  </div>
+
+  <header>
+    <div class="header-top">
+      <div class="logo-container">
+        <a href="index.html" class="neon-logo">
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-circle"></div>
+          <div class="logo-inner">NC</div>
+        </a>
+      </div>
+    </div>
+
+    <h1 class="header-title">Neon Casino</h1>
+
+
+  </header>
+
+  <div class="article-container">
+    <!-- Кнопка возврата на главную -->
+    <a href="/" class="back-home">
+      <i class="fas fa-arrow-left"></i>
+      Назад к блогу
+    </a>
+
+    <!-- Заголовок статьи -->
+    <div class="article-header">
+      <h1 class="article-title">Как обеспечить безопасность при игре в онлайн-казино</h1>
+      <p class="article-subtitle">Важные советы по защите ваших данных и средств</p>
+      <div class="article-meta">
+        <span><i class="far fa-calendar"></i> 25 ноября 2023</span>
+        <span><i class="far fa-clock"></i> Время чтения: 12 минут</span>
+        <span><i class="far fa-user"></i> Автор: Эксперт по кибербезопасности</span>
+      </div>
+    </div>
+
+    <!-- Контент статьи -->
+    <div class="article-content">
+      <img src="https://picsum.photos/seed/security-article/1200/600" alt="Безопасность в онлайн-казино" class="article-image">
+
+      <div class="article-section">
+        <p class="article-text">
+          С развитием онлайн-гемблинга вопросы безопасности становятся как никогда актуальными.
+          Каждый игрок должен знать, как защитить свои данные и средства от мошенников.
+          В этой статье мы рассмотрим ключевые аспекты безопасности при игре в онлайн-казино и научим отличать легальные площадки от мошеннических.
+        </p>
+      </div>
+
+      <div class="article-section">
+        <h2 class="article-section-title"><i class="fas fa-shield-alt"></i> Признаки легального онлайн-казино</h2>
+        <p class="article-text">
+          Легальные онлайн-казино всегда имеют определенные характеристики, которые отличают их от мошеннических сайтов.
+        </p>
+
+        <div class="tips-list">
+          <div class="tip-item">
+            <div class="tip-number">1</div>
+            <div class="tip-content">
+              <h4>Лицензия и регулирование</h4>
+              <p>Легальные казино всегда имеют действующую лицензию от авторитетных регуляторов, таких как Мальта, Кюрасао, Великобритания или Гибралтар. Лицензия обычно указана в футере сайта.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">2</div>
+            <div class="tip-content">
+              <h4>SSL-шифрование</h4>
+              <p>Надежные казино используют SSL-шифрование для защиты данных пользователей. Адрес сайта должен начинаться с "https://", а в адресной строке должен быть значок замка.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">3</div>
+            <div class="tip-content">
+              <h4>Проверенные платежные системы</h4>
+              <p>Легальные площадки сотрудничают с известными платежными системами: Visa, MasterCard, PayPal, Skrill, Neteller и другими. Наличие таких вариантов оплаты - хороший знак.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">4</div>
+            <div class="tip-content">
+              <h4>Политика конфиденциальности и условия использования</h4>
+              <p>Четко прописанные правила, условия бонусов и политика конфиденциальности - признаки серьезного отношения к клиентам.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-section">
+        <h2 class="article-section-title"><i class="fas fa-exclamation-triangle"></i> Признаки мошеннических сайтов</h2>
+        <p class="article-text">
+          Мошеннические онлайн-казино часто используют определенные тактики, чтобы обмануть игроков.
+        </p>
+
+        <div class="warning-box">
+          <h3 class="warning-title">Предупреждение!</h3>
+          <p class="warning-text">Если вы заметили хотя бы один из этих признаков, лучше избегать такого казино.</p>
+        </div>
+
+        <div class="tips-list">
+          <div class="tip-item">
+            <div class="tip-number">1</div>
+            <div class="tip-content">
+              <h4>Отсутствие лицензии или поддельная лицензия</h4>
+              <p>Если лицензия не указана или выглядит подозрительно, проверьте ее номер на сайте регулятора. Мошенники часто используют поддельные лицензии.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">2</div>
+            <div class="tip-content">
+              <h4>Слишком щедрые бонусы</h4>
+              <p>Нереалистично высокие бонусы с минимальными условиями отыгрыша часто являются приманкой мошенников.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">3</div>
+            <div class="tip-content">
+              <h4>Плохие отзывы и репутация</h4>
+              <p>Перед регистрацией проверьте отзывы на независимых ресурсах. Множество негативных отзывов - серьезный предупредительный сигнал.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">4</div>
+            <div class="tip-content">
+              <h4>Отсутствие службы поддержки</h4>
+              <p>Если казино не предоставляет нормальной службы поддержки или контакты ненадежны, это серьезный повод для беспокойства.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-section">
+        <h2 class="article-section-title"><i class="fas fa-user-shield"></i> Защита личных данных</h2>
+        <p class="article-text">
+          Защита ваших личных данных - ключевой аспект безопасности при игре в онлайн-казино.
+        </p>
+
+        <div class="security-features">
+          <div class="security-card">
+            <div class="security-icon">
+              <i class="fas fa-lock"></i>
+            </div>
+            <h4>Надежные пароли</h4>
+            <p>Используйте уникальные сложные пароли для каждого казино. Включите буквы, цифры и специальные символы.</p>
+          </div>
+
+          <div class="security-card">
+            <div class="security-icon">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h4>Двухфакторная аутентификация</h4>
+            <p>Активируйте двухфакторную аутентификацию, если казино предоставляет такую возможность.</p>
+          </div>
+
+          <div class="security-card">
+            <div class="security-icon">
+              <i class="fas fa-wifi"></i>
+            </div>
+            <h4>Безопасное соединение</h4>
+            <p>Никогда не играйте в казино через публичные Wi-Fi сети. Используйте только защищенные соединения.</p>
+          </div>
+        </div>
+
+        <div class="quote-block">
+          <p class="quote-text">Безопасность в онлайн-казино начинается с выбора надежной площадки, но не заканчивается на этом. Каждый игрок должен принимать активные меры для защиты своих данных и средств.</p>
+          <p class="quote-author">- Специалист по кибербезопасности</p>
+        </div>
+      </div>
+
+      <div class="article-section">
+        <h2 class="article-section-title"><i class="fas fa-money-bill-wave"></i> Безопасность финансовых операций</h2>
+        <p class="article-text">
+          Защита ваших финансовых средств - один из самых важных аспектов безопасности.
+        </p>
+
+        <div class="tips-list">
+          <div class="tip-item">
+            <div class="tip-number">1</div>
+            <div class="tip-content">
+              <h4>Проверяйте платежные системы</h4>
+              <p>Убедитесь, что казино использует надежные платежные шлюзы и системы обработки платежей.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">2</div>
+            <div class="tip-content">
+              <h4>Ограничивайте депозиты</h4>
+              <p>Установите лимиты на пополнение счета, чтобы контролировать свои расходы и минимизировать риски.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">3</div>
+            <div class="tip-content">
+              <h4>Верифицируйте аккаунт заранее</h4>
+              <p>Пройдите верификацию аккаунта до начала игры, чтобы избежать проблем с выводом средств позже.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">4</div>
+            <div class="tip-content">
+              <h4>Внимательно читайте условия вывода</h4>
+              <p>Обращайте внимание на условия вывода средств, включая комиссии, лимиты и сроки обработки.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-section">
+        <h2 class="article-section-title"><i class="fas fa-balance-scale"></i> Сравнение легальных и мошеннических казино</h2>
+        <p class="article-text">
+          Эта таблица поможет вам быстро определить, имеете ли вы дело с легальным казино или мошенническим сайтом.
+        </p>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Критерий</th>
+              <th>Легальное казино</th>
+              <th>Мошенническое казино</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Лицензия</td>
+              <td class="positive">Действующая лицензия авторитетного регулятора</td>
+              <td class="negative">Отсутствует или поддельная</td>
+            </tr>
+            <tr>
+              <td>SSL-шифрование</td>
+              <td class="positive">Используется, адрес начинается с https://</td>
+              <td class="negative">Отсутствует или ненадежное</td>
+            </tr>
+            <tr>
+              <td>Платежные системы</td>
+              <td class="positive">Известные и проверенные системы</td>
+              <td class="negative">Сомнительные или неизвестные системы</td>
+            </tr>
+            <tr>
+              <td>Поддержка</td>
+              <td class="positive">Многоканальная, отзывчивая</td>
+              <td class="negative">Отсутствует или не отвечает</td>
+            </tr>
+            <tr>
+              <td>Отзывы</td>
+              <td class="positive">В основном положительные на независимых ресурсах</td>
+              <td class="negative">Много негативных отзывов</td>
+            </tr>
+            <tr>
+              <td>Политика конфиденциальности</td>
+              <td class="positive">Четкая и прозрачная</td>
+              <td class="negative">Расплывчатая или отсутствует</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="article-section">
+        <h2 class="article-section-title"><i class="fas fa-tools"></i> Дополнительные меры безопасности</h2>
+        <p class="article-text">
+          Помимо выбора надежного казино, существуют дополнительные меры, которые помогут защитить ваши данные и средства.
+        </p>
+
+        <div class="tips-list">
+          <div class="tip-item">
+            <div class="tip-number">1</div>
+            <div class="tip-content">
+              <h4>Обновляйте программное обеспечение</h4>
+              <p>Регулярно обновляйте операционную систему, браузер и антивирусное программное обеспечение.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">2</div>
+            <div class="tip-content">
+              <h4>Используйте антивирус</h4>
+              <p>Установите надежное антивирусное программное обеспечение и регулярно проверяйте систему.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">3</div>
+            <div class="tip-content">
+              <h4>Будьте осторожны с фишингом</h4>
+              <p>Не переходите по подозрительным ссылкам в электронных письмах и не предоставляйте данные по телефону.</p>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <div class="tip-number">4</div>
+            <div class="tip-content">
+              <h4>Мониторьте активность аккаунта</h4>
+              <p>Регулярно проверяйте историю транзакций и активность вашего аккаунта.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-block">
+          <p class="quote-text">Безопасность в онлайн-казино - это совместная ответственность площадки и игрока. Даже самое защищенное казино не сможет уберечь вас от последствий неосторожного поведения.</p>
+          <p class="quote-author">- Эксперт по игровой индустрии</p>
+        </div>
+      </div>
+
+      <div class="article-section">
+        <h2 class="article-section-title"><i class="fas fa-check-circle"></i> Заключение</h2>
+        <p class="article-text">
+          Безопасность при игре в онлайн-казино зависит от множества факторов, но основными являются выбор надежной площадки и ответственное поведение игрока.
+          Следуя рекомендациям из этой статьи, вы сможете минимизировать риски и наслаждаться игрой в безопасной среде.
+        </p>
+
+        <p class="article-text">
+          Помните, что безопасность - это не разовое мероприятие, а постоянный процесс. Регулярно обновляйте свои знания о методах защиты и оставайтесь бдительными.
+        </p>
+      </div>
+
+      <div class="article-footer">
+        <div class="article-tags">
+          <span class="tag">Безопасность</span>
+          <span class="tag">Онлайн-казино</span>
+          <span class="tag">Защита данных</span>
+          <span class="tag">Мошенничество</span>
+          <span class="tag">Кибербезопасность</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', function() {
+      // Создание частиц для фона
+      const container = document.getElementById('particles-container');
+      const particleCount = 30;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+
+        const left = Math.random() * 100;
+        const size = Math.random() * 4 + 2;
+        const duration = Math.random() * 20 + 10;
+        const delay = Math.random() * 10;
+
+        particle.style.left = `${left}%`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+
+        const colors = ['var(--neon-pink)', 'var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-green)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.background = randomColor;
+        particle.style.boxShadow = `0 0 10px ${randomColor}`;
+
+        container.appendChild(particle);
+      }
+
+      // Прелоадер
+      window.addEventListener('load', function() {
+        const preloader = document.getElementById('preloader');
+        setTimeout(() => {
+          preloader.classList.add('hidden');
+        }, 1000);
+      });
+
+      // Добавляем блестки к логотипу
+      const logo = document.querySelector('.neon-logo');
+      for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'logo-sparkle';
+
+        const angle = (i / 8) * 2 * Math.PI;
+        const distance = 45;
+        const x = 50 + Math.cos(angle) * distance;
+        const y = 50 + Math.sin(angle) * distance;
+
+        sparkle.style.left = `${x}%`;
+        sparkle.style.top = `${y}%`;
+        sparkle.style.animationDelay = `${i * 0.25}s`;
+
+        logo.appendChild(sparkle);
+      }
+
+      // Обработчики для кнопок действий
+      const actionButtons = document.querySelectorAll('.action-btn');
+      actionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          if (this.querySelector('.fa-share-alt')) {
+            alert('Функция "Поделиться" будет реализована в будущем обновлении');
+          } else if (this.querySelector('.fa-bookmark')) {
+            alert('Статья добавлена в закладки');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

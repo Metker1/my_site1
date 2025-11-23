@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neon Football - Таблица РПЛ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --neon-pink: #ff00ff;
+      --neon-blue: #00ffff;
+      --neon-purple: #bf00ff;
+      --neon-green: #39ff14;
+      --dark-bg: #0a0a16;
+      --darker-bg: #050510;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+    
+    /* Стили для прелоадера */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--darker-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    
+    .preloader-content {
+      text-align: center;
+      position: relative;
+      z-index: 100;
+    }
+    
+    .preloader-logo {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .preloader-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      animation: logoRotate 3s linear infinite;
+    }
+    
+    .preloader-circle:nth-child(1) {
+      border-top-color: var(--neon-pink);
+      animation-delay: 0s;
+    }
+    
+    .preloader-circle:nth-child(2) {
+      border-right-color: var(--neon-blue);
+      animation-delay: 0.5s;
+    }
+    
+    .preloader-circle:nth-child(3) {
+      border-bottom-color: var(--neon-green);
+      animation-delay: 1s;
+    }
+    
+    .preloader-circle:nth-child(4) {
+      border-left-color: var(--neon-purple);
+      animation-delay: 1.5s;
+    }
+    
+    .preloader-inner {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.7);
+      animation: innerPulse 1.5s ease-in-out infinite;
+      overflow: hidden;
+    }
+    
+    .preloader-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: rotate(45deg);
+      animation: shine 2s infinite;
+    }
+    
+    .preloader-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 1.5s infinite alternate;
+    }
+    
+    .preloader-subtitle {
+      font-family: 'Exo 2', sans-serif;
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: var(--neon-blue);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .preloader-progress {
+      width: 300px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    
+    .preloader-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      border-radius: 5px;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+    }
+    
+    .preloader-percentage {
+      margin-top: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+    
+    .preloader-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .preloader-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--neon-green);
+      animation: preloaderParticleFloat 5s infinite linear;
+    }
+    
+    @keyframes preloaderParticleFloat {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(100px);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes logoRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes innerPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); }
+      50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 0, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.5); }
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    @keyframes neonPulse {
+      0% { text-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3); }
+      100% { text-shadow: 0 0 15px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3); }
+    }
+    
+    /* Остальные стили остаются без изменений */
+    * { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      margin: 0; 
+      font-family: 'Exo 2', sans-serif; 
+      color: white; 
+      background: var(--darker-bg);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Анимированный фон */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(10, 10, 30, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 10, 30, 0.2) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    .floating-shapes {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--neon-pink);
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+    
+    .shape-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--neon-blue);
+      top: 60%;
+      left: 80%;
+      animation-delay: -5s;
+    }
+    
+    .shape-3 {
+      width: 250px;
+      height: 250px;
+      background: var(--neon-purple);
+      top: 20%;
+      left: 70%;
+      animation-delay: -10s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, 30px) scale(1.1); }
+      50% { transform: translate(-15px, 20px) scale(0.9); }
+      75% { transform: translate(10px, -15px) scale(1.05); }
+    }
+    
+    .neon-lines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .neon-line {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+      opacity: 0.3;
+      animation: lineMove 10s linear infinite;
+    }
+    
+    .neon-line:nth-child(1) {
+      top: 20%;
+      animation-delay: 0s;
+    }
+    
+    .neon-line:nth-child(2) {
+      top: 40%;
+      animation-delay: -2s;
+    }
+    
+    .neon-line:nth-child(3) {
+      top: 60%;
+      animation-delay: -4s;
+    }
+    
+    .neon-line:nth-child(4) {
+      top: 80%;
+      animation-delay: -6s;
+    }
+    
+    @keyframes lineMove {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    /* Заголовок */
+    header { 
+      padding: 1rem 2rem; 
+      text-align: center; 
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+    }
+    
+    .header-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+      z-index: -1;
+      animation: headerGlow 5s infinite alternate;
+    }
+    
+    @keyframes headerGlow {
+      0% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0.7;
+        transform: scale(1.1);
+      }
+    }
+    
+    .header-title {
+      margin: 0; 
+      font-size: 3rem; 
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+      animation: neonPulse 2s infinite alternate;
+    }
+    
+    .header-subtitle {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+      color: #ccc;
+      font-family: 'Exo 2', sans-serif;
+    }
+    
+    /* Навигация */
+    .main-nav {
+      width: 100%;
+      margin-top: 1rem;
+    }
+    
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 12px;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 5px 15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+    
+    .nav-list {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 10px;
+    }
+    
+    .nav-item {
+      position: relative;
+    }
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      padding: 12px 20px;
+      border-radius: 10px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+    
+    .nav-link:hover::before {
+      left: 100%;
+    }
+    
+    .nav-link:hover {
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+      border: 1px solid var(--neon-pink);
+      transform: translateY(-2px);
+    }
+    
+    .nav-link.active {
+      color: var(--neon-green);
+      background: rgba(57, 255, 20, 0.1);
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+      border: 1px solid var(--neon-green);
+      transform: translateY(-2px);
+    }
+    
+    /* Контейнер таблицы */
+    .table-container {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+    
+    .table-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .table-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+    }
+    
+    .season-info {
+      color: #ccc;
+      font-size: 1.1rem;
+    }
+    
+    /* Таблица */
+    .rpl-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      position: relative;
+    }
+    
+    .rpl-table::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+      z-index: -1;
+      border-radius: 17px;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+    
+    .rpl-table thead {
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+    }
+    
+    .rpl-table th {
+      padding: 1.2rem 1rem;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .rpl-table tbody tr {
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .rpl-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: scale(1.01);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .rpl-table td {
+      padding: 1rem;
+      text-align: center;
+      font-weight: 400;
+    }
+    
+    .team-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+    
+    .team-logo {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .team-name {
+      font-weight: 600;
+    }
+    
+    /* Стили для позиций */
+    .position {
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    .position-1 {
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+    }
+    
+    .position-2, .position-3 {
+      color: var(--neon-blue);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .position-4, .position-5 {
+      color: var(--neon-purple);
+      text-shadow: 0 0 10px rgba(191, 0, 255, 0.5);
+    }
+    
+    .relegation {
+      color: #ff4d4d;
+      text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+    }
+    
+    /* Статистика */
+    .stats-highlight {
+      font-weight: bold;
+    }
+    
+    .positive {
+      color: var(--neon-green);
+    }
+    
+    .negative {
+      color: #ff4d4d;
+    }
+    
+    /* Легенда */
+    .table-legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--card-bg);
+      border-radius: 15px;
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 15px;
+      height: 15px;
+      border-radius: 3px;
+    }
+    
+    .champions-league {
+      background: var(--neon-green);
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+    }
+    
+    .europa-league {
+      background: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .conference-league {
+      background: var(--neon-purple);
+      box-shadow: 0 0 10px rgba(191, 0, 255, 0.5);
+    }
+    
+    .relegation-zone {
+      background: #ff4d4d;
+      box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 900px) {
+      .rpl-table {
+        font-size: 0.85rem;
+      }
+      
+      .rpl-table th, .rpl-table td {
+        padding: 0.8rem 0.5rem;
+      }
+      
+      .team-cell {
+        gap: 8px;
+      }
+      
+      .team-logo {
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
+      }
+      
+      .header-title {
+        font-size: 2.5rem;
+      }
+      
+      .nav-list {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      
+      .nav-link {
+        font-size: 0.8rem;
+        padding: 10px 15px;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .rpl-table {
+        font-size: 0.75rem;
+      }
+      
+      .rpl-table th, .rpl-table td {
+        padding: 0.6rem 0.3rem;
+      }
+      
+      .team-cell {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+      }
+      
+      .team-logo {
+        width: 25px;
+        height: 25px;
+        font-size: 0.6rem;
+      }
+      
+      .header-title {
+        font-size: 2rem;
+      }
+      
+      .table-header h2 {
+        font-size: 2rem;
+      }
+      
+      .nav-link {
+        font-size: 0.7rem;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Прелоадер -->
+  <div id="preloader">
+    <div class="preloader-particles" id="preloader-particles"></div>
+    <div class="preloader-content">
+      <div class="preloader-logo">
+        <div class="preloader-circle"></div>
+        <div class="preloader-circle"></div>
+        <div class="preloader-circle"></div>
+        <div class="preloader-circle"></div>
+        <div class="preloader-inner">NF</div>
+      </div>
+      <h1 class="preloader-title">NEON FOOTBALL</h1>
+      <p class="preloader-subtitle">Загрузка турнирной таблицы...</p>
+      <div class="preloader-progress">
+        <div class="preloader-progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="preloader-percentage" id="progress-percentage">0%</div>
+    </div>
+  </div>
+
+  <!-- Анимированный фон -->
+  <div class="bg-animation">
+    <div class="bg-grid"></div>
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="neon-lines">
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+      <div class="neon-line"></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-glow"></div>
+    <h1 class="header-title">Neon Football</h1>
+    <p class="header-subtitle">Статистика и результаты Российской Премьер-Лиги</p>
+    
+    <!-- Навигация -->
+    <nav class="main-nav">
+      <div class="nav-container">
+        <ul class="nav-list">
+          <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-table"></i> Главная</a></li>
+          <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-table"></i> Турнирная таблица</a></li>
+          <li class="nav-item"><a href="{% url 'rezult_rpl' %}" class="nav-link"><i class="fas fa-calendar-alt"></i> Расписание</a></li>
+          <li class="nav-item"><a href="{% url 'statistic' %}" class="nav-link"><i class="fas fa-chart-line"></i> Статистика</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="table-container">
+    <div class="table-header">
+      <h2>Турнирная таблица РПЛ</h2>
+      <p class="season-info">Сезон 2023/2024</p>
+    </div>
+
+    <table class="rpl-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Команда</th>
+          <th>И</th>
+          <th>В</th>
+          <th>Н</th>
+          <th>П</th>
+          <th>ЗМ</th>
+          <th>ПМ</th>
+          <th>РМ</th>
+          <th>О</th>
+          <th>Форма</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="position position-1">1</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">ЗН</div>
+              <span class="team-name">Зенит</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>14</td>
+          <td>3</td>
+          <td>1</td>
+          <td class="stats-highlight positive">38</td>
+          <td>12</td>
+          <td class="stats-highlight positive">+26</td>
+          <td class="stats-highlight positive">45</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: var(--neon-green)">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position position-2">2</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">КР</div>
+              <span class="team-name">Краснодар</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>11</td>
+          <td>5</td>
+          <td>2</td>
+          <td class="stats-highlight positive">31</td>
+          <td>17</td>
+          <td class="stats-highlight positive">+14</td>
+          <td class="stats-highlight positive">38</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position position-3">3</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">ДМ</div>
+              <span class="team-name">Динамо</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>10</td>
+          <td>6</td>
+          <td>2</td>
+          <td class="stats-highlight positive">33</td>
+          <td>20</td>
+          <td class="stats-highlight positive">+13</td>
+          <td class="stats-highlight positive">36</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position position-4">4</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">ЛК</div>
+              <span class="team-name">Локомотив</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>9</td>
+          <td>7</td>
+          <td>2</td>
+          <td class="stats-highlight positive">30</td>
+          <td>18</td>
+          <td class="stats-highlight positive">+12</td>
+          <td class="stats-highlight positive">34</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: var(--neon-green)">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position position-5">5</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">СП</div>
+              <span class="team-name">Спартак</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>9</td>
+          <td>5</td>
+          <td>4</td>
+          <td class="stats-highlight positive">29</td>
+          <td>22</td>
+          <td class="stats-highlight positive">+7</td>
+          <td class="stats-highlight positive">32</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ff4d4d">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">6</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">ЦС</div>
+              <span class="team-name">ЦСКА</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>8</td>
+          <td>7</td>
+          <td>3</td>
+          <td>27</td>
+          <td>21</td>
+          <td class="stats-highlight positive">+6</td>
+          <td>31</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">7</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">РО</div>
+              <span class="team-name">Ростов</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>7</td>
+          <td>6</td>
+          <td>5</td>
+          <td>29</td>
+          <td>28</td>
+          <td>+1</td>
+          <td>27</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">8</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">АХ</div>
+              <span class="team-name">Ахмат</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>7</td>
+          <td>4</td>
+          <td>7</td>
+          <td>22</td>
+          <td>24</td>
+          <td class="stats-highlight negative">-2</td>
+          <td>25</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">9</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">УР</div>
+              <span class="team-name">Урал</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>6</td>
+          <td>5</td>
+          <td>7</td>
+          <td>21</td>
+          <td>26</td>
+          <td class="stats-highlight negative">-5</td>
+          <td>23</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">10</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">ПА</div>
+              <span class="team-name">Пари НН</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>6</td>
+          <td>4</td>
+          <td>8</td>
+          <td>19</td>
+          <td>24</td>
+          <td class="stats-highlight negative">-5</td>
+          <td>22</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ffcc00">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">11</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">КРЛ</div>
+              <span class="team-name">Крылья Советов</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>5</td>
+          <td>6</td>
+          <td>7</td>
+          <td>27</td>
+          <td>32</td>
+          <td class="stats-highlight negative">-5</td>
+          <td>21</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">12</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">ФК</div>
+              <span class="team-name">Факел</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>4</td>
+          <td>6</td>
+          <td>8</td>
+          <td>18</td>
+          <td>26</td>
+          <td class="stats-highlight negative">-8</td>
+          <td>18</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ffcc00">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">13</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">ОР</div>
+              <span class="team-name">Оренбург</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>4</td>
+          <td>5</td>
+          <td>9</td>
+          <td>20</td>
+          <td>30</td>
+          <td class="stats-highlight negative">-10</td>
+          <td>17</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ff4d4d">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position">14</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">СО</div>
+              <span class="team-name">Сочи</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>4</td>
+          <td>4</td>
+          <td>10</td>
+          <td>21</td>
+          <td>33</td>
+          <td class="stats-highlight negative">-12</td>
+          <td>16</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: var(--neon-green)">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position relegation">15</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">БТ</div>
+              <span class="team-name">Балтика</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>3</td>
+          <td>5</td>
+          <td>10</td>
+          <td>15</td>
+          <td>28</td>
+          <td class="stats-highlight negative">-13</td>
+          <td>14</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ff4d4d">●</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="position relegation">16</span></td>
+          <td>
+            <div class="team-cell">
+              <div class="team-logo">РБ</div>
+              <span class="team-name">Рубин</span>
+            </div>
+          </td>
+          <td>18</td>
+          <td>2</td>
+          <td>4</td>
+          <td>12</td>
+          <td>13</td>
+          <td>31</td>
+          <td class="stats-highlight negative">-18</td>
+          <td>10</td>
+          <td>
+            <div style="display: flex; gap: 3px; justify-content: center;">
+              <span style="color: #ffcc00">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ff4d4d">●</span>
+              <span style="color: #ffcc00">●</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Легенда таблицы -->
+    <div class="table-legend">
+      <div class="legend-item">
+        <div class="legend-color champions-league"></div>
+        <span>Лига Чемпионов</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color europa-league"></div>
+        <span>Лига Европы</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color conference-league"></div>
+        <span>Лига Конференций</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color relegation-zone"></div>
+        <span>Зона вылета</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Функция для инициализации прелоадера
+    function initPreloader() {
+      const preloader = document.getElementById('preloader');
+      const progressBar = document.getElementById('progress-bar');
+      const progressPercentage = document.getElementById('progress-percentage');
+      const preloaderParticles = document.getElementById('preloader-particles');
+      
+      // Создание частиц для прелоадера
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'preloader-particle';
+        
+        const left = Math.random() * 100;
+        const size = Math.random() * 4 + 2;
+        const duration = Math.random() * 5 + 3;
+        const delay = Math.random() * 5;
+        
+        particle.style.left = `${left}%`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+        
+        const colors = ['var(--neon-pink)', 'var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-green)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.background = randomColor;
+        particle.style.boxShadow = `0 0 10px ${randomColor}`;
+        
+        preloaderParticles.appendChild(particle);
+      }
+      
+      // Симуляция загрузки
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          
+          // Завершение загрузки
+          setTimeout(() => {
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+              preloader.style.display = 'none';
+            }, 500);
+          }, 300);
+        }
+        
+        progressBar.style.width = `${progress}%`;
+        progressPercentage.textContent = `${Math.round(progress)}%`;
+      }, 100); // Обновляем каждые 100мс, всего около 3 секунд
+    }
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      initPreloader();
+      
+      // Добавляем обработчики для строк таблицы
+      const tableRows = document.querySelectorAll('.rpl-table tbody tr');
+      
+      tableRows.forEach(row => {
+        row.addEventListener('click', function() {
+          // Убираем выделение со всех строк
+          tableRows.forEach(r => r.style.background = '');
+          
+          // Выделяем текущую строку
+          this.style.background = 'rgba(255, 255, 255, 0.1)';
+        });
+      });
+      
+      // Обновляем дату в заголовке
+      const seasonInfo = document.querySelector('.season-info');
+      const currentDate = new Date();
+      seasonInfo.textContent = `Сезон ${currentDate.getFullYear()}/${currentDate.getFullYear() + 1}`;
+    });
+  </script>
+</body>
+</html>

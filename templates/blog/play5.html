@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper Royale | Казино-сапер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Прелоадер */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            overflow: hidden;
+        }
+
+        .preloader-content {
+            text-align: center;
+            color: #d4af37;
+            position: relative;
+            z-index: 10;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+        }
+
+        .outer-loader {
+            width: 120px;
+            height: 120px;
+            border: 3px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            border-top-color: #d4af37;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .middle-loader {
+            width: 90px;
+            height: 90px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top-color: #d4af37;
+            animation: spin 1.5s linear infinite reverse;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+        }
+
+        .inner-loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            border-radius: 50%;
+            border-top-color: #d4af37;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+
+        .loader-dot {
+            width: 15px;
+            height: 15px;
+            background: #d4af37;
+            border-radius: 50%;
+            position: absolute;
+            top: 52.5px;
+            left: 52.5px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        .preloader-text {
+            font-size: 1.2rem;
+            margin-top: 15px;
+            color: #d4af37;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        .preloader-subtitle {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            color: #c0c0c0;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        .preloader-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 2px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .preloader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #d4af37, #f4e4a6);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .preloader-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #d4af37;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.7; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1.05); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Основные стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Playfair Display', 'Times New Roman', serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #f1f1f1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 3px solid #d4af37;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            position: relative;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+            to { text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 30px rgba(212, 175, 55, 0.6); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #c0c0c0;
+            font-style: italic;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            animation: slideUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .casino-container {
+            background: rgba(20, 20, 35, 0.9);
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 25px;
+            width: 70%;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .casino-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        .players-table {
+            background: rgba(20, 20, 35, 0.9);
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            padding: 25px;
+            width: 30%;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .players-table:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        .players-table::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #d4af37, #f4e4a6, #d4af37);
+            z-index: 10;
+        }
+
+        .players-table h2 {
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: rgba(10, 10, 20, 0.8);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #d4af37;
+            border-bottom: 2px solid #d4af37;
+        }
+
+        .table-header div {
+            flex: 1;
+            text-align: center;
+        }
+
+        .table-header div:first-child {
+            text-align: left;
+        }
+
+        .table-header div:last-child {
+            text-align: right;
+        }
+
+        .players-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #333;
+            animation: fadeIn 0.5s ease-in;
+            transition: all 0.3s;
+        }
+
+        .player-row:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateX(5px);
+        }
+
+        .player-row.win {
+            background: rgba(77, 255, 77, 0.1);
+        }
+
+        .player-row.lose {
+            background: rgba(255, 77, 77, 0.1);
+        }
+
+        .player-name {
+            font-weight: bold;
+            color: #d4af37;
+            flex: 1;
+            text-align: left;
+        }
+
+        .player-bet {
+            color: #4d9dff;
+            flex: 1;
+            text-align: center;
+        }
+
+        .player-result {
+            font-weight: bold;
+            flex: 1;
+            text-align: right;
+        }
+
+        .player-result.win {
+            color: #4dff4d;
+            animation: pulse 1s infinite;
+        }
+
+        .player-result.lose {
+            color: #ff4d4d;
+        }
+
+        .table-explanation {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: rgba(10, 10, 20, 0.7);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #c0c0c0;
+            border-left: 3px solid #d4af37;
+        }
+
+        .table-explanation p {
+            margin-bottom: 5px;
+        }
+
+        .table-explanation ul {
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+
+        .table-explanation li {
+            margin-bottom: 3px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .casino-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #d4af37, #f4e4a6, #d4af37);
+            z-index: 10;
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(10, 10, 20, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #444;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .player-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .betting-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+            padding-left: 20px;
+            border-left: 1px solid #444;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #d4af37;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: #111;
+            padding: 5px 15px;
+            border-radius: 5px;
+            min-width: 120px;
+            text-align: center;
+            border: 1px solid #333;
+            color: #fff;
+            transition: all 0.3s;
+        }
+
+        .stat-value:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        #balance {
+            color: #4dff4d;
+        }
+
+        #current-bet {
+            color: #4d9dff;
+        }
+
+        #multiplier {
+            color: #ffcc00;
+        }
+
+        #mines-count {
+            color: #ff4d4d;
+        }
+
+        #timer {
+            color: #4dff4d;
+        }
+
+        .bet-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .bet-btn {
+            background: linear-gradient(to bottom, #4d9dff, #2a75d9);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bet-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .bet-btn:hover::after {
+            left: 100%;
+        }
+
+        .bet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .bet-btn:active {
+            transform: translateY(1px);
+        }
+
+        .bet-input {
+            background: #111;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .bet-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .cashout-btn {
+            background: linear-gradient(to bottom, #ffcc00, #e6b800);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .cashout-btn:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cashout-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .cashout-btn:disabled::after {
+            display: none;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background: linear-gradient(to bottom, #d4af37, #b8941f);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #e6c158, #c9a227);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .difficulty-btn {
+            background: rgba(40, 40, 60, 0.7);
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .difficulty-btn.active {
+            background: rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            border-color: #d4af37;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 3px;
+            margin: 0 auto;
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #555;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(145deg, #4a4a6a, #3a3a5a);
+            border: 1px solid #2a2a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            border-radius: 3px;
+            transition: all 0.2s;
+            box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .cell:hover::before {
+            opacity: 1;
+        }
+
+        .cell:hover {
+            background: linear-gradient(145deg, #5a5a7a, #4a4a6a);
+            transform: scale(1.05);
+        }
+
+        .cell.revealed {
+            background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+            animation: reveal 0.3s ease-out;
+        }
+
+        @keyframes reveal {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .cell.flagged::after {
+            content: "🚩";
+            font-size: 18px;
+            animation: flag 0.3s ease-out;
+        }
+
+        @keyframes flag {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .cell.mine::after {
+            content: "💣";
+            font-size: 18px;
+            animation: mineReveal 0.5s ease-out;
+        }
+
+        @keyframes mineReveal {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .cell.mine.revealed {
+            background: linear-gradient(145deg, #ff4d4d, #cc0000);
+            animation: mineExplode 0.5s ease-out;
+        }
+
+        @keyframes mineExplode {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .cell-1 { color: #4d9dff; }
+        .cell-2 { color: #4dff4d; }
+        .cell-3 { color: #ff4d4d; }
+        .cell-4 { color: #9900cc; }
+        .cell-5 { color: #cc6600; }
+        .cell-6 { color: #00cccc; }
+        .cell-7 { color: #000000; }
+        .cell-8 { color: #808080; }
+
+        .game-message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.5rem;
+            min-height: 40px;
+            color: #d4af37;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .win {
+            color: #4dff4d;
+            text-shadow: 0 0 10px rgba(77, 255, 77, 0.5);
+        }
+
+        .lose {
+            color: #ff4d4d;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+        }
+
+        .instructions {
+            margin-top: 30px;
+            background: rgba(10, 10, 20, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #d4af37;
+            max-width: 900px;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        .instructions h3 {
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .instructions p {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .decorative-element {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 5rem;
+            color: #d4af37;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .multiplier-display {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.8rem;
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .bet-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quick-bet {
+            background: rgba(40, 40, 60, 0.7);
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .quick-bet:hover {
+            background: rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .casino-container, .players-table {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .player-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .betting-panel {
+                padding-left: 0;
+                border-left: none;
+                border-top: 1px solid #444;
+                padding-top: 15px;
+            }
+            
+            .cell {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .game-board {
+                grid-template-columns: repeat(9, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cell {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .game-board {
+                grid-template-columns: repeat(9, 1fr);
+            }
+            
+            .game-controls {
+                flex-direction: column;
+            }
+        }
+
+        /* Стили для системы авторизации */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .auth-btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            background: linear-gradient(45deg, #d4af37, #b8941f);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 600;
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+        }
+        
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-greeting {
+            font-size: 1rem;
+            color: #4dff4d;
+            text-shadow: 0 0 10px rgba(77, 255, 77, 0.5);
+        }
+        
+        .user-balance {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        .balance-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .balance-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            background: linear-gradient(45deg, #d4af37, #b8941f);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .balance-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+        }
+        
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            background: linear-gradient(45deg, #ff3333, #ff6666);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.5);
+        }
+        
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: rgba(20, 20, 35, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+            border: 1px solid #d4af37;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: #d4af37;
+            transform: scale(1.2);
+        }
+        
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #d4af37;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-family: 'Exo 2', sans-serif;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(45deg, #d4af37, #b8941f);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 1rem;
+            color: #ccc;
+        }
+        
+        .form-footer a {
+            color: #d4af37;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            color: #4dff4d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Прелоадер -->
+    <div id="preloader">
+        <div class="preloader-particles" id="particles"></div>
+        <div class="preloader-content">
+            <div class="loader-container">
+                <div class="outer-loader"></div>
+                <div class="middle-loader"></div>
+                <div class="inner-loader"></div>
+                <div class="loader-dot"></div>
+            </div>
+            <h2>MINESWEEPER ROYALE</h2>
+            <p class="preloader-text">Загрузка игрового мира...</p>
+            <p class="preloader-subtitle">Готовим для вас захватывающее приключение в мире казино-сапера</p>
+            <div class="preloader-progress">
+                <div class="preloader-progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-login">&times;</button>
+            <h2>Вход в аккаунт</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Имя пользователя</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Пароль</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="submit-btn">Войти</button>
+                <div class="error-message" id="login-error"></div>
+                <div class="form-footer">
+                    Нет аккаунта? <a id="show-register">Зарегистрироваться</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-register">&times;</button>
+            <h2>Регистрация аккаунта</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">Имя пользователя</label>
+                    <input type="text" id="register-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Пароль</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Подтвердите пароль</label>
+                    <input type="password" id="confirm-password" required>
+                </div>
+                <button type="submit" class="submit-btn">Зарегистрироваться</button>
+                <div class="error-message" id="register-error"></div>
+                <div class="success-message" id="register-success"></div>
+                <div class="form-footer">
+                    Уже есть аккаунт? <a id="show-login">Войти</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно пополнения баланса -->
+    <div id="deposit-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-deposit">&times;</button>
+            <h2>Пополнение баланса</h2>
+            <form id="deposit-form">
+                <div class="form-group">
+                    <label for="deposit-amount">Сумма пополнения (₽)</label>
+                    <input type="number" id="deposit-amount" min="1" required>
+                </div>
+                <button type="submit" class="submit-btn">Пополнить</button>
+                <div class="success-message" id="deposit-success"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно вывода средств -->
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-withdraw">&times;</button>
+            <h2>Вывод средств</h2>
+            <form id="withdraw-form">
+                <div class="form-group">
+                    <label for="withdraw-amount">Сумма вывода (₽)</label>
+                    <input type="number" id="withdraw-amount" min="1" required>
+                </div>
+                <button type="submit" class="submit-btn">Вывести</button>
+                <div class="error-message" id="withdraw-error"></div>
+                <div class="success-message" id="withdraw-success"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="header">
+        <h1>MINESWEEPER ROYALE</h1>
+        <div class="subtitle">Искусство находить сокровища, избегая мин</div>
+        
+        <!-- Контейнер для авторизации -->
+        <div class="auth-container">
+            <div id="auth-buttons">
+                <button class="auth-btn" id="login-btn">Войти</button>
+                <button class="auth-btn" id="register-btn">Регистрация</button>
+            </div>
+            <div id="user-panel" class="user-panel" style="display: none;">
+                <div class="user-info">
+                    <span class="user-greeting" id="user-greeting">Привет, пользователь!</span>
+                    <span class="user-balance">Баланс: <span id="balance-amount">0</span> ₽</span>
+                </div>
+                <div class="balance-actions">
+                    <button class="balance-btn" id="deposit-btn">Пополнить</button>
+                    <button class="balance-btn" id="withdraw-btn">Вывести</button>
+                    <button class="logout-btn" id="logout-btn">Выйти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="casino-container">
+            <div class="decorative-elements">
+                <div class="decorative-element" style="top: 10%; left: 5%;">♠</div>
+                <div class="decorative-element" style="top: 15%; right: 10%;">♥</div>
+                <div class="decorative-element" style="bottom: 20%; left: 8%;">♦</div>
+                <div class="decorative-element" style="bottom: 10%; right: 5%;">♣</div>
+            </div>
+
+            <div class="player-info">
+                <div class="player-stats">
+                    <div class="stat">
+                        <div class="stat-label">БАЛАНС</div>
+                        <div class="stat-value" id="balance">1000</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">ТЕКУЩАЯ СТАВКА</div>
+                        <div class="stat-value" id="current-bet">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">МНОЖИТЕЛЬ</div>
+                        <div class="stat-value" id="multiplier">1.00x</div>
+                    </div>
+                </div>
+                <div class="betting-panel">
+                    <div class="stat">
+                        <div class="stat-label">СТАВКА</div>
+                        <input type="number" class="bet-input" id="bet-amount" min="10" max="1000" value="100">
+                    </div>
+                    <div class="bet-buttons">
+                        <button class="quick-bet" data-bet="10">10</button>
+                        <button class="quick-bet" data-bet="50">50</button>
+                        <button class="quick-bet" data-bet="100">100</button>
+                        <button class="quick-bet" data-bet="500">500</button>
+                    </div>
+                    <div class="bet-controls">
+                        <button class="bet-btn" id="place-bet">СДЕЛАТЬ СТАВКУ</button>
+                        <button class="bet-btn cashout-btn" id="cashout" disabled>ЗАБРАТЬ ВЫИГРЫШ</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-label">МИНЫ</div>
+                    <div class="stat-value" id="mines-count">10</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">ВРЕМЯ</div>
+                    <div class="stat-value" id="timer">000</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">ОТКРЫТО КЛЕТОК</div>
+                    <div class="stat-value" id="opened-count">0</div>
+                </div>
+            </div>
+
+            <div class="multiplier-display" id="multiplier-display">
+                МНОЖИТЕЛЬ: <span id="current-multiplier">1.00x</span>
+            </div>
+
+            <div class="game-controls">
+                <button class="btn" id="new-game">
+                    <span>🔄</span> НОВАЯ ИГРА
+                </button>
+                <button class="btn" id="hint">
+                    <span>💡</span> ПОДСКАЗКА
+                </button>
+            </div>
+
+            <div class="difficulty-selector">
+                <button class="difficulty-btn active" data-difficulty="easy">ЛЕГКО</button>
+                <button class="difficulty-btn" data-difficulty="medium">СРЕДНЕ</button>
+                <button class="difficulty-btn" data-difficulty="hard">СЛОЖНО</button>
+            </div>
+
+            <div class="game-board" id="game-board">
+                <!-- Игровое поле будет сгенерировано JavaScript -->
+            </div>
+
+            <div class="game-message" id="game-message">
+                Сделайте ставку и начните игру
+            </div>
+        </div>
+
+        <div class="players-table">
+            <h2>🔄 ЖИВЫЕ СТАВКИ</h2>
+            
+            <div class="table-header">
+                <div>ИГРОК</div>
+                <div>СТАВКА</div>
+                <div>РЕЗУЛЬТАТ</div>
+            </div>
+            
+            <div class="players-list" id="players-list">
+                <!-- Список игроков будет заполнен JavaScript -->
+            </div>
+            
+            <div class="table-explanation">
+                <p><strong>Пояснение к таблице:</strong></p>
+                <ul>
+                    <li><strong>Игрок</strong> - имя игрока</li>
+                    <li><strong>Ставка</strong> - сумма поставленных фишек</li>
+                    <li><strong>Результат</strong> - выигрыш или проигрыш</li>
+                </ul>
+                <p>Зеленый цвет - выигрыш, красный - проигрыш.</p>
+                <p><em>Данные обновляются в реальном времени</em></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h3>Как играть:</h3>
+        <p>• Установите ставку и начните игру</p>
+        <p>• Левый клик - открыть клетку (открывается только одна клетка за клик)</p>
+        <p>• Правый клик - поставить/убрать флажок</p>
+        <p>• За каждую открытую клетку без мины множитель увеличивается на основе вероятности</p>
+        <p>• Нажмите "Забрать выигрыш" в любой момент, чтобы получить ставку × множитель</p>
+        <p>• Если вы наступите на мину, вы потеряете ставку</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Анимация прелоадера
+            const preloader = document.getElementById('preloader');
+            const progressBar = document.getElementById('progress-bar');
+            const particlesContainer = document.getElementById('particles');
+            
+            // Создание частиц для прелоадера
+            function createParticles() {
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    // Случайная позиция
+                    const left = Math.random() * 100;
+                    const top = Math.random() * 100;
+                    
+                    particle.style.left = `${left}%`;
+                    particle.style.top = `${top}%`;
+                    
+                    // Случайная анимация
+                    const duration = 3 + Math.random() * 4;
+                    const delay = Math.random() * 5;
+                    
+                    particle.style.animation = `float ${duration}s infinite ${delay}s`;
+                    particle.style.opacity = 0.3 + Math.random() * 0.5;
+                    particle.style.width = `${2 + Math.random() * 4}px`;
+                    particle.style.height = particle.style.width;
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
+            // Запуск анимации прелоадера
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 1;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    
+                    // Скрываем прелоадер через 3 секунды
+                    setTimeout(() => {
+                        preloader.style.opacity = '0';
+                        preloader.style.transform = 'scale(1.1)';
+                        
+                        setTimeout(() => {
+                            preloader.style.display = 'none';
+                        }, 800);
+                    }, 500);
+                }
+            }, 30); // 100% за 3 секунды
+            
+            createParticles();
+
+            // Конфигурация игры
+            const config = {
+                easy: { rows: 9, cols: 9, mines: 10 },
+                medium: { rows: 16, cols: 16, mines: 40 },
+                hard: { rows: 16, cols: 30, mines: 99 }
+            };
+
+            // Список имен для симуляции игроков
+            const playerNames = [
+                "Алексей", "Мария", "Дмитрий", "Анна", "Сергей", "Ольга", "Иван", "Елена",
+                "Михаил", "Наталья", "Андрей", "Татьяна", "Павел", "Юлия", "Владимир", "Светлана",
+                "Артем", "Алина", "Роман", "Ксения", "Никита", "Виктория", "Евгений", "Ирина",
+                "Александр", "Марина", "Максим", "Екатерина", "Денис", "Ангелина"
+            ];
+
+            let currentDifficulty = 'easy';
+            let gameState = {
+                board: [],
+                mines: [],
+                revealed: [],
+                flagged: [],
+                gameOver: false,
+                gameWon: false,
+                firstClick: true,
+                startTime: null,
+                timerInterval: null,
+                openedCells: 0,
+                balance: 1000,
+                currentBet: 0,
+                multiplier: 1.0,
+                gameActive: false,
+                baseMultiplier: 1.0
+            };
+
+            // Элементы DOM
+            const gameBoard = document.getElementById('game-board');
+            const minesCountElement = document.getElementById('mines-count');
+            const timerElement = document.getElementById('timer');
+            const openedCountElement = document.getElementById('opened-count');
+            const gameMessage = document.getElementById('game-message');
+            const newGameButton = document.getElementById('new-game');
+            const hintButton = document.getElementById('hint');
+            const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+            const balanceElement = document.getElementById('balance');
+            const currentBetElement = document.getElementById('current-bet');
+            const multiplierElement = document.getElementById('multiplier');
+            const betAmountInput = document.getElementById('bet-amount');
+            const placeBetButton = document.getElementById('place-bet');
+            const cashoutButton = document.getElementById('cashout');
+            const multiplierDisplay = document.getElementById('multiplier-display');
+            const currentMultiplierElement = document.getElementById('current-multiplier');
+            const quickBetButtons = document.querySelectorAll('.quick-bet');
+            const playersList = document.getElementById('players-list');
+
+            // Инициализация игры
+            function initGame() {
+                const { rows, cols, mines } = config[currentDifficulty];
+                
+                // Сброс состояния игры
+                gameState = {
+                    board: Array(rows).fill().map(() => Array(cols).fill(0)),
+                    mines: [],
+                    revealed: Array(rows).fill().map(() => Array(cols).fill(false)),
+                    flagged: Array(rows).fill().map(() => Array(cols).fill(false)),
+                    gameOver: false,
+                    gameWon: false,
+                    firstClick: true,
+                    startTime: null,
+                    timerInterval: null,
+                    openedCells: 0,
+                    balance: getCurrentBalance(),
+                    currentBet: 0,
+                    multiplier: 1.0,
+                    gameActive: false,
+                    baseMultiplier: calculateBaseMultiplier()
+                };
+
+                // Обновление интерфейса
+                minesCountElement.textContent = mines.toString().padStart(3, '0');
+                timerElement.textContent = '000';
+                openedCountElement.textContent = '0';
+                gameMessage.textContent = 'Сделайте ставку и начните игру';
+                gameMessage.className = 'game-message';
+                currentBetElement.textContent = '0';
+                multiplierElement.textContent = '1.00x';
+                currentMultiplierElement.textContent = '1.00x';
+                cashoutButton.disabled = true;
+                
+                // Разблокируем поле ставки
+                betAmountInput.disabled = false;
+                placeBetButton.disabled = false;
+                
+                // Создание игрового поля
+                createBoard(rows, cols);
+                
+                // Остановка таймера, если он запущен
+                if (gameState.timerInterval) {
+                    clearInterval(gameState.timerInterval);
+                    gameState.timerInterval = null;
+                }
+            }
+
+            // Получение текущего баланса пользователя
+            function getCurrentBalance() {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
+                    return user.balance || 1000;
+                }
+                return 1000;
+            }
+
+            // Обновление баланса в игре и в системе
+            function updateBalance(newBalance) {
+                gameState.balance = newBalance;
+                balanceElement.textContent = newBalance;
+                
+                // Обновляем баланс в системе авторизации
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
+                    user.balance = newBalance;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    // Обновляем баланс в массиве всех пользователей
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const userIndex = users.findIndex(u => u.username === user.username);
+                    if (userIndex !== -1) {
+                        users[userIndex].balance = newBalance;
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    
+                    // Обновляем отображение баланса в header
+                    const balanceAmount = document.getElementById('balance-amount');
+                    if (balanceAmount) {
+                        balanceAmount.textContent = newBalance;
+                    }
+                }
+            }
+
+            // Расчет базового множителя на основе вероятности
+            function calculateBaseMultiplier() {
+                const { rows, cols, mines } = config[currentDifficulty];
+                const totalCells = rows * cols;
+                const safeCells = totalCells - mines;
+                
+                // Более реалистичный расчет множителя как в казино
+                // Чем больше мин, тем выше множитель за каждую клетку
+                return 1 + (mines / safeCells) * 0.8;
+            }
+
+            // Создание игрового поля
+            function createBoard(rows, cols) {
+                gameBoard.innerHTML = '';
+                gameBoard.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.dataset.row = i;
+                        cell.dataset.col = j;
+                        
+                        // Обработчики событий
+                        cell.addEventListener('click', handleLeftClick);
+                        cell.addEventListener('contextmenu', handleRightClick);
+                        
+                        gameBoard.appendChild(cell);
+                    }
+                }
+            }
+
+            // Размещение мин после первого клика
+            function placeMines(firstRow, firstCol, rows, cols, mines) {
+                const { mines: totalMines } = config[currentDifficulty];
+                let minesPlaced = 0;
+                
+                while (minesPlaced < totalMines) {
+                    const row = Math.floor(Math.random() * rows);
+                    const col = Math.floor(Math.random() * cols);
+                    
+                    // Не ставим мину на первую открытую клетку и вокруг нее
+                    if ((row === firstRow && col === firstCol) || 
+                        (Math.abs(row - firstRow) <= 1 && Math.abs(col - firstCol) <= 1)) {
+                        continue;
+                    }
+                    
+                    if (!gameState.mines.some(mine => mine.row === row && mine.col === col)) {
+                        gameState.mines.push({ row, col });
+                        gameState.board[row][col] = -1; // -1 означает мину
+                        minesPlaced++;
+                    }
+                }
+                
+                // Расчет чисел для клеток
+                calculateNumbers(rows, cols);
+            }
+
+            // Расчет чисел для клеток (сколько мин вокруг)
+            function calculateNumbers(rows, cols) {
+                const directions = [
+                    [-1, -1], [-1, 0], [-1, 1],
+                    [0, -1],           [0, 1],
+                    [1, -1],  [1, 0],  [1, 1]
+                ];
+                
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        if (gameState.board[i][j] === -1) continue;
+                        
+                        let count = 0;
+                        for (const [dx, dy] of directions) {
+                            const newRow = i + dx;
+                            const newCol = j + dy;
+                            
+                            if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                                if (gameState.board[newRow][newCol] === -1) {
+                                    count++;
+                                }
+                            }
+                        }
+                        
+                        gameState.board[i][j] = count;
+                    }
+                }
+            }
+
+            // Обработка левого клика (открытие клетки)
+            function handleLeftClick(e) {
+                e.preventDefault();
+                
+                if (!gameState.gameActive) {
+                    gameMessage.textContent = 'Сначала сделайте ставку!';
+                    return;
+                }
+                
+                const row = parseInt(e.target.dataset.row);
+                const col = parseInt(e.target.dataset.col);
+                
+                if (gameState.gameOver || gameState.gameWon || gameState.flagged[row][col] || gameState.revealed[row][col]) {
+                    return;
+                }
+                
+                // Первый клик - размещаем мины
+                if (gameState.firstClick) {
+                    const { rows, cols, mines } = config[currentDifficulty];
+                    placeMines(row, col, rows, cols, mines);
+                    gameState.firstClick = false;
+                    
+                    // Запуск таймера
+                    gameState.startTime = Date.now();
+                    gameState.timerInterval = setInterval(updateTimer, 1000);
+                    
+                    // Активация кнопки "Забрать выигрыш"
+                    cashoutButton.disabled = false;
+                }
+                
+                // Открытие только одной клетки
+                revealSingleCell(row, col);
+                
+                // Проверка победы
+                checkWin();
+            }
+
+            // Обработка правого клика (установка флажка)
+            function handleRightClick(e) {
+                e.preventDefault();
+                const row = parseInt(e.target.dataset.row);
+                const col = parseInt(e.target.dataset.col);
+                
+                if (!gameState.gameActive || gameState.gameOver || gameState.gameWon || gameState.revealed[row][col]) {
+                    return;
+                }
+                
+                // Установка/снятие флажка
+                gameState.flagged[row][col] = !gameState.flagged[row][col];
+                updateCellDisplay(row, col);
+                
+                // Обновление счетчика мин
+                updateMinesCount();
+            }
+
+            // Открытие одной клетки
+            function revealSingleCell(row, col) {
+                if (gameState.revealed[row][col] || gameState.flagged[row][col]) {
+                    return;
+                }
+                
+                gameState.revealed[row][col] = true;
+                gameState.openedCells++;
+                openedCountElement.textContent = gameState.openedCells;
+                
+                // Если наступили на мину
+                if (gameState.board[row][col] === -1) {
+                    gameState.gameOver = true;
+                    gameState.gameActive = false;
+                    revealAllMines();
+                    gameMessage.textContent = 'ИГРА ОКОНЧЕНА! Вы наступили на мину и потеряли ставку!';
+                    gameMessage.className = 'game-message lose';
+                    
+                    if (gameState.timerInterval) {
+                        clearInterval(gameState.timerInterval);
+                    }
+                    
+                    cashoutButton.disabled = true;
+                    
+                    // Разблокируем поле ставки для новой игры
+                    betAmountInput.disabled = false;
+                    placeBetButton.disabled = false;
+                    return;
+                }
+                
+                // Увеличиваем множитель за безопасную клетку
+                if (gameState.board[row][col] !== -1) {
+                    // Реалистичный рост множителя как в казино
+                    gameState.multiplier *= gameState.baseMultiplier;
+                    updateMultiplierDisplay();
+                }
+                
+                // Обновление отображения клетки
+                updateCellDisplay(row, col);
+            }
+
+            // Обновление отображения клетки
+            function updateCellDisplay(row, col) {
+                const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                
+                if (gameState.flagged[row][col]) {
+                    cell.className = 'cell flagged';
+                } else if (gameState.revealed[row][col]) {
+                    cell.className = 'cell revealed';
+                    
+                    if (gameState.board[row][col] > 0) {
+                        cell.textContent = gameState.board[row][col];
+                        cell.classList.add(`cell-${gameState.board[row][col]}`);
+                    } else if (gameState.board[row][col] === -1) {
+                        cell.className = 'cell mine revealed';
+                    }
+                } else {
+                    cell.className = 'cell';
+                    cell.textContent = '';
+                    cell.classList.remove(...Array.from(cell.classList).filter(cls => cls.startsWith('cell-')));
+                }
+            }
+
+            // Показать все мины (при проигрыше)
+            function revealAllMines() {
+                for (const mine of gameState.mines) {
+                    const cell = document.querySelector(`.cell[data-row="${mine.row}"][data-col="${mine.col}"]`);
+                    if (!gameState.flagged[mine.row][mine.col]) {
+                        cell.className = 'cell mine revealed';
+                    }
+                }
+            }
+
+            // Проверка победы
+            function checkWin() {
+                const { rows, cols, mines } = config[currentDifficulty];
+                let revealedCount = 0;
+                
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        if (gameState.revealed[i][j]) {
+                            revealedCount++;
+                        }
+                    }
+                }
+                
+                if (revealedCount === rows * cols - mines) {
+                    gameState.gameWon = true;
+                    gameState.gameActive = false;
+                    const winAmount = Math.floor(gameState.currentBet * gameState.multiplier);
+                    gameMessage.textContent = `ПОБЕДА! Вы выиграли ${winAmount}!`;
+                    gameMessage.className = 'game-message win';
+                    
+                    if (gameState.timerInterval) {
+                        clearInterval(gameState.timerInterval);
+                    }
+                    
+                    // Выплата выигрыша
+                    updateBalance(gameState.balance + winAmount);
+                    cashoutButton.disabled = true;
+                    
+                    // Разблокируем поле ставки
+                    betAmountInput.disabled = false;
+                    placeBetButton.disabled = false;
+                }
+            }
+
+            // Обновление счетчика мин
+            function updateMinesCount() {
+                const { mines } = config[currentDifficulty];
+                let flaggedCount = 0;
+                
+                for (let i = 0; i < gameState.flagged.length; i++) {
+                    for (let j = 0; j < gameState.flagged[i].length; j++) {
+                        if (gameState.flagged[i][j]) {
+                            flaggedCount++;
+                        }
+                    }
+                }
+                
+                minesCountElement.textContent = (mines - flaggedCount).toString().padStart(3, '0');
+            }
+
+            // Обновление таймера
+            function updateTimer() {
+                if (gameState.startTime) {
+                    const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+                    timerElement.textContent = elapsed.toString().padStart(3, '0');
+                }
+            }
+
+            // Обновление отображения множителя
+            function updateMultiplierDisplay() {
+                const multiplierText = gameState.multiplier.toFixed(2) + 'x';
+                multiplierElement.textContent = multiplierText;
+                currentMultiplierElement.textContent = multiplierText;
+                
+                // Анимация изменения множителя
+                multiplierDisplay.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    multiplierDisplay.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // Симуляция живых игроков
+            function simulateLivePlayers() {
+                // Очищаем список игроков
+                playersList.innerHTML = '';
+                
+                // Генерируем случайное количество игроков от 5 до 15
+                const playerCount = Math.floor(Math.random() * 11) + 5;
+                
+                for (let i = 0; i < playerCount; i++) {
+                    const playerName = playerNames[Math.floor(Math.random() * playerNames.length)];
+                    const betAmount = Math.floor(Math.random() * 500) + 10;
+                    const isWin = Math.random() > 0.5;
+                    const multiplier = (Math.random() * 5 + 1).toFixed(2);
+                    const winAmount = isWin ? Math.floor(betAmount * multiplier) : 0;
+                    
+                    const playerRow = document.createElement('div');
+                    playerRow.className = `player-row ${isWin ? 'win' : 'lose'}`;
+                    
+                    playerRow.innerHTML = `
+                        <div class="player-name">${playerName}</div>
+                        <div class="player-bet">${betAmount}</div>
+                        <div class="player-result ${isWin ? 'win' : 'lose'}">${isWin ? `+${winAmount}` : `-${betAmount}`}</div>
+                    `;
+                    
+                    playersList.appendChild(playerRow);
+                }
+            }
+
+            // Обработчики кнопок
+            newGameButton.addEventListener('click', initGame);
+            
+            hintButton.addEventListener('click', function() {
+                if (!gameState.gameActive || gameState.gameOver || gameState.gameWon || gameState.firstClick) {
+                    return;
+                }
+                
+                // Находим неоткрытую клетку без флажка, которая не является миной
+                const { rows, cols } = config[currentDifficulty];
+                let safeCells = [];
+                
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        if (!gameState.revealed[i][j] && !gameState.flagged[i][j] && 
+                            gameState.board[i][j] !== -1) {
+                            safeCells.push({ row: i, col: j });
+                        }
+                    }
+                }
+                
+                if (safeCells.length > 0) {
+                    const randomCell = safeCells[Math.floor(Math.random() * safeCells.length)];
+                    revealSingleCell(randomCell.row, randomCell.col);
+                    checkWin();
+                }
+            });
+            
+            // Обработчики кнопок сложности
+            difficultyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    difficultyButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentDifficulty = this.dataset.difficulty;
+                    initGame();
+                });
+            });
+
+            // Обработчик кнопки "Сделать ставку"
+            placeBetButton.addEventListener('click', function() {
+                const betAmount = parseInt(betAmountInput.value);
+                
+                if (isNaN(betAmount) || betAmount < 10) {
+                    gameMessage.textContent = 'Минимальная ставка - 10!';
+                    return;
+                }
+                
+                if (betAmount > gameState.balance) {
+                    gameMessage.textContent = 'Недостаточно средств на балансе!';
+                    return;
+                }
+                
+                // Устанавливаем ставку
+                gameState.currentBet = betAmount;
+                updateBalance(gameState.balance - betAmount);
+                gameState.gameActive = true;
+                gameState.baseMultiplier = calculateBaseMultiplier();
+                
+                // Обновляем интерфейс
+                currentBetElement.textContent = gameState.currentBet;
+                gameMessage.textContent = 'Игра началась! Откройте первую клетку.';
+                
+                // Блокируем поле ставки
+                betAmountInput.disabled = true;
+                placeBetButton.disabled = true;
+            });
+            
+            // Обработчик кнопки "Забрать выигрыш"
+            cashoutButton.addEventListener('click', function() {
+                if (!gameState.gameActive || gameState.firstClick) {
+                    return;
+                }
+                
+                // Вычисляем выигрыш
+                const winAmount = Math.floor(gameState.currentBet * gameState.multiplier);
+                
+                // Добавляем выигрыш к балансу
+                updateBalance(gameState.balance + winAmount);
+                
+                // Показываем сообщение
+                gameMessage.textContent = `Вы забрали выигрыш: ${winAmount}!`;
+                gameMessage.className = 'game-message win';
+                
+                // Завершаем игру
+                gameState.gameActive = false;
+                gameState.gameOver = true;
+                cashoutButton.disabled = true;
+                
+                // Разблокируем поле ставки
+                betAmountInput.disabled = false;
+                placeBetButton.disabled = false;
+                
+                // Останавливаем таймер
+                if (gameState.timerInterval) {
+                    clearInterval(gameState.timerInterval);
+                }
+            });
+
+            // Обработчики кнопок быстрой ставки
+            quickBetButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const betValue = parseInt(this.dataset.bet);
+                    betAmountInput.value = betValue;
+                });
+            });
+
+            // Запускаем симуляцию живых игроков
+            simulateLivePlayers();
+            setInterval(simulateLivePlayers, 5000); // Обновляем каждые 5 секунд
+
+            // Инициализация системы авторизации
+            initAuthSystem();
+
+            // Начальная инициализация игры
+            initGame();
+        });
+
+        // Система авторизации с балансом
+        function initAuthSystem() {
+            // Элементы DOM
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const depositBtn = document.getElementById('deposit-btn');
+            const withdrawBtn = document.getElementById('withdraw-btn');
+            
+            const loginModal = document.getElementById('login-modal');
+            const registerModal = document.getElementById('register-modal');
+            const depositModal = document.getElementById('deposit-modal');
+            const withdrawModal = document.getElementById('withdraw-modal');
+            
+            const closeLogin = document.getElementById('close-login');
+            const closeRegister = document.getElementById('close-register');
+            const closeDeposit = document.getElementById('close-deposit');
+            const closeWithdraw = document.getElementById('close-withdraw');
+            
+            const showRegister = document.getElementById('show-register');
+            const showLogin = document.getElementById('show-login');
+            
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const depositForm = document.getElementById('deposit-form');
+            const withdrawForm = document.getElementById('withdraw-form');
+            
+            const authButtons = document.getElementById('auth-buttons');
+            const userPanel = document.getElementById('user-panel');
+            const userGreeting = document.getElementById('user-greeting');
+            const balanceAmount = document.getElementById('balance-amount');
+            
+            const loginError = document.getElementById('login-error');
+            const registerError = document.getElementById('register-error');
+            const registerSuccess = document.getElementById('register-success');
+            const depositSuccess = document.getElementById('deposit-success');
+            const withdrawError = document.getElementById('withdraw-error');
+            const withdrawSuccess = document.getElementById('withdraw-success');
+
+            // Проверяем, авторизован ли пользователь при загрузке страницы
+            checkAuthStatus();
+
+            // Обработчики событий для кнопок
+            loginBtn.addEventListener('click', () => openModal(loginModal));
+            registerBtn.addEventListener('click', () => openModal(registerModal));
+            logoutBtn.addEventListener('click', logout);
+            depositBtn.addEventListener('click', () => openModal(depositModal));
+            withdrawBtn.addEventListener('click', () => openModal(withdrawModal));
+            
+            closeLogin.addEventListener('click', () => closeModal(loginModal));
+            closeRegister.addEventListener('click', () => closeModal(registerModal));
+            closeDeposit.addEventListener('click', () => closeModal(depositModal));
+            closeWithdraw.addEventListener('click', () => closeModal(withdrawModal));
+            
+            showRegister.addEventListener('click', () => {
+                closeModal(loginModal);
+                openModal(registerModal);
+            });
+            
+            showLogin.addEventListener('click', () => {
+                closeModal(registerModal);
+                openModal(loginModal);
+            });
+            
+            // Обработчики форм
+            loginForm.addEventListener('submit', handleLogin);
+            registerForm.addEventListener('submit', handleRegister);
+            depositForm.addEventListener('submit', handleDeposit);
+            withdrawForm.addEventListener('submit', handleWithdraw);
+            
+            // Функции
+            function openModal(modal) {
+                modal.style.display = 'flex';
+                clearMessages();
+            }
+            
+            function closeModal(modal) {
+                modal.style.display = 'none';
+                clearMessages();
+                // Очищаем поля форм
+                if (modal === loginModal) {
+                    loginForm.reset();
+                } else if (modal === registerModal) {
+                    registerForm.reset();
+                } else if (modal === depositModal) {
+                    depositForm.reset();
+                } else if (modal === withdrawModal) {
+                    withdrawForm.reset();
+                }
+            }
+            
+            function clearMessages() {
+                loginError.style.display = 'none';
+                registerError.style.display = 'none';
+                registerSuccess.style.display = 'none';
+                depositSuccess.style.display = 'none';
+                withdrawError.style.display = 'none';
+                withdrawSuccess.style.display = 'none';
+            }
+            
+            function checkAuthStatus() {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    // Пользователь авторизован
+                    const user = JSON.parse(currentUser);
+                    authButtons.style.display = 'none';
+                    userPanel.style.display = 'flex';
+                    userGreeting.textContent = `Привет, ${user.username}!`;
+                    balanceAmount.textContent = user.balance || 0;
+                    
+                    // Обновляем баланс в игре
+                    const balanceElement = document.getElementById('balance');
+                    if (balanceElement) {
+                        balanceElement.textContent = user.balance || 0;
+                    }
+                } else {
+                    // Пользователь не авторизован
+                    authButtons.style.display = 'flex';
+                    userPanel.style.display = 'none';
+                }
+            }
+            
+            function updateUserBalance(newBalance) {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) {
+                    currentUser.balance = newBalance;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Обновляем баланс в массиве всех пользователей
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const userIndex = users.findIndex(u => u.username === currentUser.username);
+                    if (userIndex !== -1) {
+                        users[userIndex].balance = newBalance;
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    
+                    // Обновляем отображение баланса
+                    balanceAmount.textContent = newBalance;
+                    
+                    // Обновляем баланс в игре
+                    const balanceElement = document.getElementById('balance');
+                    if (balanceElement) {
+                        balanceElement.textContent = newBalance;
+                    }
+                }
+            }
+            
+            function handleLogin(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                
+                // Получаем всех пользователей из localStorage
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                // Ищем пользователя с таким именем и паролем
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    // Успешный вход
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    checkAuthStatus();
+                    closeModal(loginModal);
+                    
+                    // Обновляем игру с новым балансом
+                    if (window.initGame) {
+                        window.initGame();
+                    }
+                } else {
+                    // Ошибка входа
+                    loginError.textContent = 'Неверное имя пользователя или пароль';
+                    loginError.style.display = 'block';
+                }
+            }
+            
+            function handleRegister(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('register-username').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                // Проверяем, совпадают ли пароли
+                if (password !== confirmPassword) {
+                    registerError.textContent = 'Пароли не совпадают';
+                    registerError.style.display = 'block';
+                    return;
+                }
+                
+                // Проверяем, существует ли уже пользователь с таким именем
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const existingUser = users.find(u => u.username === username);
+                
+                if (existingUser) {
+                    registerError.textContent = 'Пользователь с таким именем уже существует';
+                    registerError.style.display = 'block';
+                    return;
+                }
+                
+                // Добавляем нового пользователя с начальным балансом 1000
+                const newUser = { 
+                    username, 
+                    password, 
+                    balance: 1000  // Начальный баланс
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Показываем сообщение об успехе
+                registerSuccess.textContent = 'Аккаунт успешно создан! Теперь вы можете войти.';
+                registerSuccess.style.display = 'block';
+                
+                // Очищаем форму через 2 секунды и переключаемся на форму входа
+                setTimeout(() => {
+                    registerForm.reset();
+                    closeModal(registerModal);
+                    openModal(loginModal);
+                }, 2000);
+            }
+            
+            function handleDeposit(e) {
+                e.preventDefault();
+                
+                const amount = parseInt(document.getElementById('deposit-amount').value);
+                
+                if (isNaN(amount) || amount <= 0) {
+                    depositSuccess.textContent = 'Введите корректную сумму';
+                    depositSuccess.style.color = '#ff4d4d';
+                    depositSuccess.style.display = 'block';
+                    return;
+                }
+                
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) {
+                    const newBalance = (currentUser.balance || 0) + amount;
+                    updateUserBalance(newBalance);
+                    
+                    depositSuccess.textContent = `Баланс успешно пополнен на ${amount} ₽`;
+                    depositSuccess.style.color = '#4dff4d';
+                    depositSuccess.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeModal(depositModal);
+                    }, 1500);
+                }
+            }
+            
+            function handleWithdraw(e) {
+                e.preventDefault();
+                
+                const amount = parseInt(document.getElementById('withdraw-amount').value);
+                
+                if (isNaN(amount) || amount <= 0) {
+                    withdrawError.textContent = 'Введите корректную сумму';
+                    withdrawError.style.display = 'block';
+                    return;
+                }
+                
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) {
+                    const currentBalance = currentUser.balance || 0;
+                    
+                    if (amount > currentBalance) {
+                        withdrawError.textContent = 'Недостаточно средств на балансе';
+                        withdrawError.style.display = 'block';
+                        return;
+                    }
+                    
+                    const newBalance = currentBalance - amount;
+                    updateUserBalance(newBalance);
+                    
+                    withdrawSuccess.textContent = `Средства в размере ${amount} ₽ успешно выведены`;
+                    withdrawSuccess.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeModal(withdrawModal);
+                    }, 1500);
+                }
+            }
+            
+            function logout() {
+                localStorage.removeItem('currentUser');
+                checkAuthStatus();
+                
+                // Перезагружаем игру
+                if (window.initGame) {
+                    window.initGame();
+                }
+            }
+            
+            // Закрытие модальных окон при клике вне их
+            window.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    closeModal(loginModal);
+                }
+                if (e.target === registerModal) {
+                    closeModal(registerModal);
+                }
+                if (e.target === depositModal) {
+                    closeModal(depositModal);
+                }
+                if (e.target === withdrawModal) {
+                    closeModal(withdrawModal);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
